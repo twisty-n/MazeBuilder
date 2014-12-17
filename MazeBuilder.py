@@ -28,6 +28,7 @@ def build():
     :return:    An instance of Tk to launch
     """
     root = Tk()
+    root.title("MazeBuilder")
     root.geometry(str(WIN_X)+"x"+str(WIN_Y)+"+"+str(POSITION)+"+"+str(POSITION))
     mazeBuilder = MazeBuilder(root)
     return root
@@ -48,6 +49,11 @@ class SubMenu():
         self._options = {}
         self._label = label
         self._menu = Menu(parent_menu)
+        self._key_underline = 0
+
+    def add_option(self, label, action, type_func, shortcut):
+        #TODO implement
+        pass
 
     def add_option(self, label, action, type_func):
         """
@@ -82,6 +88,8 @@ class SubMenu():
         :param label:       The label of the menu item that needs to be removed
         """
         del self._options[label]
+        index = self._menu.index(label)
+        self._menu.delete(index, index)
 
 
 class MenuBar():
@@ -108,16 +116,32 @@ class MenuBar():
 
     def construct(self):
         """
-        Construct the default menu bar
+        Construct the default menu bar with all of the default options
+
+        Constructs the default menu bar with its associated submodules
+        While at the moment this is hardcoded, there my be some scope in the future to
+        allow it all to be configurable
         """
         file_sub = SubMenu(self._root_menu, "File")
         file_sub.add_option("Load Environment", (lambda: print("File:Load_Environment Undefined")), "command")
         file_sub.add_option("Save Environment", (lambda: print("File:Save_Environment Undefined")), "command")
         file_sub.add_option("Quit", quit, "command")
-        self.addEntry("File", file_sub)
+        self.addEntry(file_sub._label, file_sub)
+
         place_sub = SubMenu(self._root_menu, "Place")
+        place_sub.add_option("Place Node", (lambda: print("Place:Place_Node_Undefined")), "command")
+        place_sub.add_option("Place Object", (lambda: print("Place:Place_Object_Undefined")), "command")
+        self.addEntry(place_sub._label, place_sub)
+
         configure_sub = SubMenu(self._root_menu, "Configure")
+        configure_sub.add_option("Environment", (lambda: print("Configure:Environment_Undefined")), "command")
+        configure_sub.add_option("VR Settings", (lambda: print("Configure:VR Settings_Undefined")), "command")
+        self.addEntry(configure_sub._label, configure_sub)
+
         tools_sub = SubMenu(self._root_menu, "Tools")
+        tools_sub.add_option("Debug", (lambda: print("Tools:Debug_Undefined")), "checkbutton")
+        tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "command")
+        self.addEntry(tools_sub._label, tools_sub)
 
     def addEntry(self, label, submenu):
         """
