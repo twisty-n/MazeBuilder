@@ -13,8 +13,10 @@ File: MazeBuilder.py
 
 #Imports
 
-from Tkinter import Frame, Tk, Menu
+from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE
 from Exceptions import DuplicateCommandException
+from UtilWidgets import StatusBar, Dialog
+from DiaDoges import EnviroDialog
 
 
 WIN_X = 700         #Defines the window X width
@@ -28,6 +30,7 @@ def build():
     :return:    An instance of Tk to launch
     """
     root = Tk()
+    #TODO, get the icon working
     root.title("MazeBuilder")
     root.geometry(str(WIN_X)+"x"+str(WIN_Y)+"+"+str(POSITION)+"+"+str(POSITION))
     mazeBuilder = MazeBuilder(root)
@@ -134,13 +137,13 @@ class MenuBar():
         self.addEntry(place_sub._label, place_sub)
 
         configure_sub = SubMenu(self._root_menu, "Configure")
-        configure_sub.add_option("Environment", (lambda: print("Configure:Environment_Undefined")), "command")
+        configure_sub.add_option("Environment", (lambda: EnviroDialog(self._root)), "command")
         configure_sub.add_option("VR Settings", (lambda: print("Configure:VR Settings_Undefined")), "command")
         self.addEntry(configure_sub._label, configure_sub)
 
         tools_sub = SubMenu(self._root_menu, "Tools")
         tools_sub.add_option("Debug", (lambda: print("Tools:Debug_Undefined")), "checkbutton")
-        tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "command")
+        tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "checkbutton")
         self.addEntry(tools_sub._label, tools_sub)
 
     def addEntry(self, label, submenu):
@@ -165,7 +168,13 @@ class MazeBuilder(Frame):
         _menuBar(MenuBar):  The menubar that contains all of the needed menu options
     """
     def __init__(self, parent):
+        Frame.__init__(self, parent)
         self.parent = parent
         self.menubar = MenuBar(self.parent)
+        self.construct()
+
+    def construct(self):
+        #TODO, add in geometry management and layout management
+        pass
 
 
