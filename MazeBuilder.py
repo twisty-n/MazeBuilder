@@ -129,6 +129,7 @@ class MenuBar():
         file_sub = SubMenu(self._root_menu, "File")
         file_sub.add_option("Load Environment", (lambda: print("File:Load_Environment Undefined")), "command")
         file_sub.add_option("Save Environment", (lambda: print("File:Save_Environment Undefined")), "command")
+        file_sub.add_option("Export Environment", (lambda: print("File: Load_Environment Undefined")), "command")
         file_sub.add_option("Quit", quit, "command")
         self.addEntry(file_sub._label, file_sub)
 

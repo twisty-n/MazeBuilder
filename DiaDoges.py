@@ -1,7 +1,7 @@
 __author__ = 'tristan_dev'
 
 from UtilWidgets import Dialog, ImagePicker
-from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton
+from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW
 import Debug
 
 class EnviroDialog(Dialog):
@@ -49,11 +49,11 @@ class VRConfigDialog(Dialog):
     def body(self, parent):
 
         #Define all of the labels for our options
-        Label(parent, text="Frame Angle:", padx=3).grid(row=0, column=0)
-        Label(parent, text="Eye Height:", padx=3).grid(row=1, column=0)
-        Label(parent, text="MinDistToWall:", padx=3).grid(row=2, column=0)
-        Label(parent, text="Distortion:", padx=3).grid(row=3, column=0)
-        Label(parent, text="Windowed:", padx=3).grid(row=4, column=0)
+        Label(parent, text="Frame Angle:", padx=3, anchor=SW, height=2).grid(row=0, column=0, sticky=W)
+        Label(parent, text="Eye Height:", padx=3, anchor=SW, height=2).grid(row=1, column=0, pady=2, sticky=W )
+        Label(parent, text="MinDistToWall:", padx=3, anchor=SW, height=2).grid(row=2, column=0, pady=2,  sticky=W)
+        Label(parent, text="Distortion:", padx=3).grid(row=3, column=0, pady=2, sticky=W)
+        Label(parent, text="Windowed:", padx=3).grid(row=4, column=0, pady=2, sticky=W)
 
         self._frameAngle = Scale(parent, from_=-20, to=20, orient=HORIZONTAL)
         self._frameAngle.set(-5)
