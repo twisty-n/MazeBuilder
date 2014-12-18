@@ -16,7 +16,7 @@ File: MazeBuilder.py
 from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE
 from Exceptions import DuplicateCommandException
 from UtilWidgets import StatusBar, Dialog
-from DiaDoges import EnviroDialog
+from DiaDoges import EnviroDialog, VRConfigDialog
 
 
 WIN_X = 700         #Defines the window X width
@@ -118,6 +118,7 @@ class MenuBar():
         self.construct()
 
     def construct(self):
+        #TODO: remap all hardcoded calls to the Command Manager
         """
         Construct the default menu bar with all of the default options
 
@@ -138,7 +139,7 @@ class MenuBar():
 
         configure_sub = SubMenu(self._root_menu, "Configure")
         configure_sub.add_option("Environment", (lambda: EnviroDialog(self._root)), "command")
-        configure_sub.add_option("VR Settings", (lambda: print("Configure:VR Settings_Undefined")), "command")
+        configure_sub.add_option("VR Settings", (lambda: VRConfigDialog(self._root)), "command")
         self.addEntry(configure_sub._label, configure_sub)
 
         tools_sub = SubMenu(self._root_menu, "Tools")
@@ -175,6 +176,7 @@ class MazeBuilder(Frame):
 
     def construct(self):
         #TODO, add in geometry management and layout management
+        #TODO, add in validation before export. Stored as XML
         pass
 
 

@@ -23,6 +23,8 @@ import Debug
 class ImagePicker(Frame):
     """
     A custom widget that allows for the selection and preview of a picture
+
+    #TODO: Consider adding feature that moves pic to correct folder if needed
     """
     def __init__(self, parent, label, default="No File Selected"):
         Frame.__init__(self, parent)
@@ -32,8 +34,8 @@ class ImagePicker(Frame):
         self._parent = parent
 
         #Text label
-        self._label = Label(self, text=label)
-        self._label.grid(row=0, column=0, sticky=E, padx=2)
+        self._label = Label(self, text=label, anchor=W)
+        self._label.grid(row=0, column=0, sticky=W, padx=2)
         self._label.config(width=10)
 
         #The label that displays the name of the selected file
