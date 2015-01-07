@@ -16,7 +16,9 @@ File: MazeBuilder.py
 from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE
 from Exceptions import DuplicateCommandException
 from UtilWidgets import StatusBar, Dialog
-from DiaDoges import EnviroDialog, VRConfigDialog
+from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog
+from UtilWidgets import SubMenu
+import Debug
 
 
 WIN_X = 700         #Defines the window X width
@@ -42,60 +44,8 @@ def launch():
     """
     build().mainloop()
 
-class SubMenu():
 
-    def __init__(self, parent_menu, label):
-        """
-
-        """
-        self._parent_menu = parent_menu
-        self._options = {}
-        self._label = label
-        self._menu = Menu(parent_menu)
-        self._key_underline = 0
-
-    def add_option(self, label, action, type_func, shortcut):
-        #TODO implement
-        pass
-
-    def add_option(self, label, action, type_func):
-        """
-        Adds a menu item to the submenu
-
-        Adds a menu item to the dictionary of menu items that make up this
-        submenu. Also adds the command to actual Tk menu structure,
-        Function will fail if the menu item already exists
-        :param label(string):           The label of the option to add
-        :param action(function):        The action callback to be executed
-        :param type_func(string):       The menu entry function for the type of item to add to the menu
-        """
-        _type = \
-        {          "command"        : self._menu.add_command,
-                   "checkbutton"    : self._menu.add_checkbutton,
-                   "radiobutton"    : self._menu.add_radiobutton
-        }
-
-        if label in self._options:
-            raise DuplicateCommandException(label)
-
-        self._options[label] = action
-        _type[type_func](label=label, command=action)
-
-    def remove_option(self, label):
-        """
-        Remove a menu option from this submenu
-
-        Removes a menu option from this submenu
-        Will fail silently if the menu item does not exist
-
-        :param label:       The label of the menu item that needs to be removed
-        """
-        del self._options[label]
-        index = self._menu.index(label)
-        self._menu.delete(index, index)
-
-
-class MenuBar():
+class MainMBMenuBar():
     """
     Encapsulates all of the functions required of the MazeBuilder menu bar
 
@@ -134,7 +84,7 @@ class MenuBar():
         self.addEntry(file_sub._label, file_sub)
 
         place_sub = SubMenu(self._root_menu, "Place")
-        place_sub.add_option("Place Node", (lambda: print("Place:Place_Node_Undefined")), "command")
+        place_sub.add_option("Place Node", (lambda: NodeDialog(self._root)), "command")
         place_sub.add_option("Place Object", (lambda: print("Place:Place_Object_Undefined")), "command")
         self.addEntry(place_sub._label, place_sub)
 
@@ -144,7 +94,7 @@ class MenuBar():
         self.addEntry(configure_sub._label, configure_sub)
 
         tools_sub = SubMenu(self._root_menu, "Tools")
-        tools_sub.add_option("Debug", (lambda: print("Tools:Debug_Undefined")), "checkbutton")
+        tools_sub.add_option("Debug", (lambda: Debug.d_level.toggle()), "checkbutton")
         tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "checkbutton")
         self.addEntry(tools_sub._label, tools_sub)
 
@@ -172,7 +122,7 @@ class MazeBuilder(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
-        self.menubar = MenuBar(self.parent)
+        self.menubar = MainMBMenuBar(self.parent)
         self.construct()
 
     def construct(self):

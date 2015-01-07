@@ -25,3 +25,11 @@ class DuplicateCommandException(CommandException):
     def __init__(self, label="UNDEFINED", msg="Duplicate command exception. Command label already exists in menu"):
         self._label = label
         self._msg = msg
+
+class DuplicateListHeapItemException(Exception):
+    def  __init__(self, item):
+        Exception.__init__("Item" + str(item) + "already exists in ListHeap")
+
+class MaxItemLimitReachedException(Exception):
+    def __init__(self):
+        Exception.__init__("Maximum number of items reached for this ListHeap")

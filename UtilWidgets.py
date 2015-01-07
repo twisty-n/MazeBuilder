@@ -5,27 +5,94 @@ MazeBuilder, Stroke Recovery Project, HMRI
 Author: Tristan Newmann
 Developed with 2.7
 
-File: MazeBuilder.py
+File: UtilWidgets.py
 Classes based on those listed in
 http://effbot.org/tkinterbook/tkinter-application-windows.htm
+
+Contains a custom, but generalised widgets library
 """
 
 from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
-    ACTIVE, Button, LEFT, E, Canvas
+    ACTIVE, Button, LEFT, E, Canvas, Listbox, SINGLE, END, \
+    ANCHOR, Menu
 import tkFileDialog
 from PIL import Image, ImageTk
 import Debug
+from Exceptions import DuplicateListHeapItemException, DuplicateCommandException
 
 
 #TODO add in a populate method which fills dialogues from the
 #database
 
+class Event:
+
+    CLICK_M1 = 1
+    CLICK_M2 = 2
+    CLICK_M3 = 3
+    D_CLICK_M1 = 4
+    D_CLICK_M2 = 5
+    D_CLICK_M3 = 6
+
+class SubMenu():
+
+    def __init__(self, parent_menu, label):
+        """
+
+        """
+        self._parent_menu = parent_menu
+        self._options = {}
+        self._label = label
+        self._menu = Menu(parent_menu)
+        self._key_underline = 0
+
+    def add_option(self, label, action, type_func, shortcut):
+        #TODO implement
+        pass
+
+    def add_option(self, label, action, type_func):
+        """
+        Adds a menu item to the submenu
+
+        Adds a menu item to the dictionary of menu items that make up this
+        submenu. Also adds the command to actual Tk menu structure,
+        Function will fail if the menu item already exists
+        :param label(string):           The label of the option to add
+        :param action(function):        The action callback to be executed
+        :param type_func(string):       The menu entry function for the type of item to add to the menu
+        """
+        _type = \
+            {          "command"        : self._menu.add_command,
+                       "checkbutton"    : self._menu.add_checkbutton,
+                       "radiobutton"    : self._menu.add_radiobutton
+            }
+
+        if label in self._options:
+            raise DuplicateCommandException(label)
+
+        self._options[label] = action
+        _type[type_func](label=label, command=action)
+
+    def remove_option(self, label):
+        """
+        Remove a menu option from this submenu
+
+        Removes a menu option from this submenu
+        Will fail silently if the menu item does not exist
+
+        :param label:       The label of the menu item that needs to be removed
+        """
+        del self._options[label]
+        index = self._menu.index(label)
+        self._menu.delete(index, index)
+
 class ImagePicker(Frame):
     """
     A custom widget that allows for the selection and preview of a picture
-
-    #TODO: Consider adding feature that moves pic to correct folder if needed
+    Note that in the current format, the image picker is specific to the
+    maze builder project
     """
+    #TODO: make the image picker widget generic
+    #TODO: Consider adding feature that moves pic to correct folder if needed
     def __init__(self, parent, label, default="No File Selected"):
         Frame.__init__(self, parent)
         self._image_ref = None
@@ -201,3 +268,51 @@ class ImageViewDialog(Dialog):
     def body(self, parent):
         img = Label(parent, image = self._photo, text="Unable to display image")
         img.pack()
+
+
+class ListHeap(Frame):
+    """
+    A widget that encapsulates a list box, allow adding and delete and contextual interaction
+        with a set of items in a list box
+    """
+
+    def __init__(self, parent, max_limit):
+        """
+
+        :param parent:          The parent tk item
+        :param max_limit:       The maximum number of items allowed to be added to the listheap
+        :return:
+        """
+        Frame.__init__(self, parent)
+        self._items = {}
+        self._parent = parent
+        self._max_limit = max_limit
+        self._listbox = Listbox(self, selectmode=SINGLE)
+        self._listbox.grid(row=0, column=0)
+
+        # Bind mouse events
+        self._listbox.bind("<Double-Button-1>", self._handle_db_click)
+        self._listbox.bind("<Button-2>", self._handle_r_click)
+
+    def add_new(self, item, key):
+        if key in self._items:
+            raise DuplicateListHeapItemException(key)
+        if len(self._items) >= self._max_limit:
+            raise
+        self._items[key] = item
+        self._listbox.insert(END, key)
+
+    def remove(self, key):
+        del self._items[key]
+        self._listbox.delete(ANCHOR)
+
+    def remove_all(self):
+        self._items.clear()
+        self._listbox.delete(0, END)
+
+    def _handle_db_click(self, event):
+        pass
+
+    def _handle_r_click(self, event):
+        pass
+
