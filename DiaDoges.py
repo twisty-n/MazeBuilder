@@ -23,7 +23,15 @@ import Debug
 # Classes
 
 class EnviroDialog(Dialog):
+    """
+    Dialog for editing the simulation environment details
+    """
     def __init__(self, parent):
+        """
+        Construct the dialog
+        :param parent:          The tk element that is the parent of the dialog
+        :return:                An instance of EnviroDialog
+        """
         self._entries = {
             "floorTexVal": None,
             "wallHeight": None,
@@ -34,7 +42,11 @@ class EnviroDialog(Dialog):
         Dialog.__init__(self, parent, "Environment Configuration")
 
     def body(self, parent):
-
+        """
+        Overridden method defining the body of the dialog
+        :param parent:
+        :return:
+        """
         self._floorSel = ImagePicker(parent, "Floor Texture:").grid(row=0, columnspan=4)
         self._skySel = ImagePicker(parent, "Sky Texture:").grid(row=1, columnspan=4)
 
@@ -52,8 +64,16 @@ class EnviroDialog(Dialog):
 
     # TODO populate the handler methods
 
+
 class VRConfigDialog(Dialog):
+    """
+    Defines a custom dialog for editing the Virtual Reality params
+    """
+
     def __init__(self, parent):
+        """
+        Construct the dialog
+        """
         self._entries = {
             "frameAngle"    : None,
             "distortion"     : False,
@@ -65,6 +85,11 @@ class VRConfigDialog(Dialog):
         Dialog.__init__(self, parent, "VR Configuration")
 
     def body(self, parent):
+        """
+        Overridden method defining the body of the dialog
+        :param parent:
+        :return:
+        """
 
         # Define all of the labels for our options
         Label(parent, text="Frame Angle:", padx=3, anchor=SW, height=2).grid(row=0, column=0, sticky=W)
@@ -93,25 +118,43 @@ class VRConfigDialog(Dialog):
         self._windowed.grid(row=4, column=1, padx=3)
 
     def _toggle_distortion(self):
+        """
+        Toggle the distortion flag
+        :return:
+        """
         val = self._entries["distortion"]
         self._entries["distortion"] = not val
         Debug.printi("Distortion toggled to " + (str(not val)), Debug.Level.INFO)
 
     def _toggle_windowed(self):
+        """
+        Toggle the windowed flag
+        :return:
+        """
         val = self._entries["windowed"]
         self._entries["windowed"] = not val
         Debug.printi("Windowing toggled to " + (str(not val)), Debug.Level.INFO)
 
 class NodeDialog(Dialog):
-
+    """
+    Defines a custom dialog for node configuration
+    """
     def __init__(self, parent):
+        """
+        Construct the inital node dialog
+        :param parent:          The tk parent instance to spawn the node from
+        :return:                An instance of NodeDialog
+        """
         self._entries = {
 
         }
         Dialog.__init__(self, parent, "Node Builder")
 
     def body(self, parent):
-
+        """
+        Define the custom body of the dialog
+        :param parent:          The parent instance of the dialog      
+        """
         # Define the labels of all of the widgets that are to be used
         Label(parent, text="Node ID:", anchor=SW).grid(row=0, column=0, sticky=W)
         Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
