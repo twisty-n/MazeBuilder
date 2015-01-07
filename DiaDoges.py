@@ -96,18 +96,25 @@ class NodeDialog(Dialog):
     def body(self, parent):
 
         # Define the labels of all of the widgets that are to be used
-        Label(parent, text="Node ID:", padx=3, anchor=SW, height=2).grid(row=0, column=0, sticky=W)
-        Label(parent, text="x-Coord:", padx=3, anchor=SW, height=2).grid(row=1, column=0, sticky=W)
-        Label(parent, text="y-Coord:", padx=3, anchor=SW, height=2).grid(row=2, column=0, sticky=W)
+        Label(parent, text="Node ID:", anchor=SW).grid(row=0, column=0, sticky=W)
+        Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
+        Label(parent, text="y-Coord:", anchor=SW).grid(row=2, column=0, sticky=W)
+
+        self._node_id = Entry(parent, width=5)
+        self._node_id.grid(column=1, row=0)
+        self._x_coord = Entry(parent, width=5)
+        self._x_coord.grid(column=1, row=1)
+        self._y_coord = Entry(parent, width=5)
+        self._y_coord.grid(column=1, row=2)
 
         # The text entry areas, these will have to be autofilled for some part
-        # TODO: right auto-population utility for things
+        # TODO: write auto-population utility for things
 
         # Image picker dialog for texture
         self._texture_selector = ImagePicker(parent, "Room Tex:")
-        self._texture_selector.grid(row=3, columnspan=3)
+        self._texture_selector.grid(row=3, columnspan=4)
         # New widget that allows configuration of multiple things -- to allow picking pictures for the walls
         self._wall_pics = PicConfigurator(parent, 6)
-        self._wall_pics.grid(row=0, rowspan=3, column=1, sticky=E)
+        self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
 
