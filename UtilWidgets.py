@@ -18,14 +18,16 @@ from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
 import tkFileDialog
 from PIL import Image, ImageTk
 import Debug
-from Exceptions import DuplicateListHeapItemException, DuplicateCommandException
+from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
 
 
 #TODO add in a populate method which fills dialogues from the
 #database
 
 class Event:
-
+    """
+    A stand in enumeration that encapsulates the different mouse events that can be generated
+    """
     CLICK_M1 = 1
     CLICK_M2 = 2
     CLICK_M3 = 3
@@ -34,10 +36,15 @@ class Event:
     D_CLICK_M3 = 6
 
 class SubMenu():
-
+    """
+    Defines a generic Sub menu class that may be used as part of a larger menu
+    """
     def __init__(self, parent_menu, label):
         """
-
+        Construct the SubMenu instance
+        :param parent_menu:             The menu in which this submenu will be accessed from
+        :param label:                   The label to give the submenu, this is what the user will see
+        :return:                        An instance of SubMenu
         """
         self._parent_menu = parent_menu
         self._options = {}
@@ -46,6 +53,18 @@ class SubMenu():
         self._key_underline = 0
 
     def add_option(self, label, action, type_func, shortcut):
+        """
+        Adds a menu item to the submenu
+
+        Adds a menu item to the tk representation of the menu, as well as the underlying
+        dictionary that defines the menu. This method also allows the addition of a keyboard
+        shortcut to be defined for a particular menu option
+        :param label:
+        :param action:
+        :param type_func:
+        :param shortcut:
+        :return:
+        """
         #TODO implement
         pass
 
@@ -91,38 +110,42 @@ class ImagePicker(Frame):
     Note that in the current format, the image picker is specific to the
     maze builder project
     """
-    #TODO: make the image picker widget generic
-    #TODO: Consider adding feature that moves pic to correct folder if needed
+    # TODO: make the image picker widget generic
+    # TODO: Consider adding feature that moves pic to correct folder if needed
     def __init__(self, parent, label, default="No File Selected"):
+        """
+        Construct the image picker instance
+        """
         Frame.__init__(self, parent)
         self._image_ref = None
         self._file_name = None
         self._file_path = None
         self._parent = parent
 
-        #Text label
+        # Text label
         self._label = Label(self, text=label, anchor=W)
         self._label.grid(row=0, column=0, sticky=W, padx=2)
         self._label.config(width=10)
 
-        #The label that displays the name of the selected file
+        # The label that displays the name of the selected file
         self._img_label = Label(self, text=default)
         self._img_label.config(width=15)
         self._img_label.grid(row=0, column=1, sticky=W)
 
-        #Button that enables the previewing of the loaded picture
+        # Button that enables the previewing of the loaded picture
         self._pButton = Button(self, text="Preview", command=self._display_img, padx=5)
         self._pButton.config(width=8)
         self._pButton.grid(row=0, column=3, sticky=W)
 
-        #Button that enables the loading of files
+        # Button that enables the loading of files
         self._fButton = Button(self, text="|...|", command=self._load_img_label, padx=5)
         self._fButton.config(width=4)
         self._fButton.grid(row=0, column=2)
 
-
-
     def _display_img(self):
+        """
+        Display a loaded image in a dialog
+        """
         if self._file_path is None:
             Debug.printi("No picture has been loaded to preview", Debug.Level.ERROR)
             return
@@ -131,6 +154,14 @@ class ImagePicker(Frame):
 
 
     def _open_img(self, img_name):
+        """
+        Open an image from its location on disk
+
+        Retrieves an image in ImageTk form from a given file path
+        and loads it for application use
+
+        :img_name: The path/name (?) of the image to open
+        """
         try:
             img = Image.open(img_name)
             photo = ImageTk.PhotoImage(img)
@@ -139,6 +170,9 @@ class ImagePicker(Frame):
             Debug.printi("Unable to find image " + img_name, Debug.Level.ERROR)
 
     def _launch_file_b(self):
+        """
+        Launch a file selector dialog
+        """
         types = [
             ("JPG", "*.jpg"),
             ("Bitmap", "*.bmp"),
@@ -154,10 +188,20 @@ class ImagePicker(Frame):
         return self._file_name
 
     def _load_img_label(self):
+        """
+        Changes the text in the widget label to the (adjusted) filepath of the image
+        """
         name = self._launch_file_b()
         self._img_label.configure(text=name)
 
 class StatusBar(Frame):
+    """
+    A basic definition for a statusBar style widget that can be updated
+    during runtime
+    This class has been derived from the link at the header of this file
+    """
+    # TODO: see if this actually works
+
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self._label = Label(self, bd=1, relief=SUNKEN, anchor=W)
@@ -174,7 +218,14 @@ class StatusBar(Frame):
         self.set_text("%s", "")
 
 class Dialog(Toplevel):
+    """
+    A definition for a dialog style widget
+    This class has been derived from the link at the header of this file
+    """
     def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True):
+        """
+        Construct the instance of dialog
+        """
         Toplevel.__init__(self, parent)
         self.title(title)
         self.transient(parent)
@@ -223,7 +274,7 @@ class Dialog(Toplevel):
         box = Frame(self)
         b = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
         b.pack(side=LEFT, padx=5, pady=5)
-        w=Button(box, text="Cancel", width=10, command=self.cancel)
+        w = Button(box, text="Cancel", width=10, command=self.cancel)
         w.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Return>", self.ok)
@@ -236,7 +287,9 @@ class Dialog(Toplevel):
     """
 
     def ok(self, event=None):
-
+        """
+        Callback function to be launched when the (OK) button is pressed
+        """
         if not self.validate():
             self.initial_focus.focus_set()
             return
@@ -254,18 +307,35 @@ class Dialog(Toplevel):
     """
 
     def validate(self):
+        """
+        Override: Create validation paramaters for the information gathered by the dialog
+        """
         return 1
 
     def apply(self):
+        """
+        Apply the results, information gathered by the dialog
+        """
         pass
 
 class ImageViewDialog(Dialog):
-
+    """
+    A basic dialog that displays some image
+    """
     def __init__(self, parent, f_name, photo):
+        """
+        Construct the instance of the image viewer
+
+        :f_name:    The file name of the image, to be used as the dialog title
+        :photo:     The image that is to be displayed
+        """
         self._photo = photo
         Dialog.__init__(self, parent, f_name, True)
 
     def body(self, parent):
+        """
+        Overridden, defines the construction of the meat of the ImageViewingDIalog
+        """
         img = Label(parent, image = self._photo, text="Unable to display image")
         img.pack()
 
@@ -295,24 +365,49 @@ class ListHeap(Frame):
         self._listbox.bind("<Button-2>", self._handle_r_click)
 
     def add_new(self, item, key):
+        """
+        Add new item to the list heap
+
+        Adds a new item to the list box and the datastructure that defines the heap
+
+        :param item:            The item to be added to the ListHeap
+        :param key:             The key that is to be used to identify the item, must be unique
+        :throws:                DuplicateListHeapItemException  - duplicate key attempted to add to the heap
+        :throws:                MaxItemLimitReachedException    - Attempted item addition when max sized already reached
+        """
         if key in self._items:
             raise DuplicateListHeapItemException(key)
         if len(self._items) >= self._max_limit:
-            raise
+            raise MaxItemLimitReachedException()
         self._items[key] = item
         self._listbox.insert(END, key)
 
     def remove(self, key):
+        """
+        Remove an item from the ListHeap
+        :param key:             The key of the item that is to be removed
+        """
         del self._items[key]
         self._listbox.delete(ANCHOR)
 
     def remove_all(self):
+        """
+        Removes all of the items from the ListHeap
+        """
         self._items.clear()
         self._listbox.delete(0, END)
 
     def _handle_db_click(self, event):
+        """
+        Override: define a handler for the doubleclick event on the ListHeap
+        :param event:           The tk event generated by user input
+        """
         pass
 
     def _handle_r_click(self, event):
+        """
+        Override: Define a handler for the rightclick event on the ListHeap
+        :param event:           The tk event generated by user input
+        """
         pass
 

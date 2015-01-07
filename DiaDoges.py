@@ -7,7 +7,7 @@ Developed with 2.7
 
 File: Debug.py
 
-Module contains the custom user interface dialoges
+Module contains the custom user interface dialogs
 """
 
 # Imports
@@ -153,8 +153,9 @@ class NodeDialog(Dialog):
     def body(self, parent):
         """
         Define the custom body of the dialog
-        :param parent:          The parent instance of the dialog      
+        :param parent:          The parent instance of the dialog
         """
+
         # Define the labels of all of the widgets that are to be used
         Label(parent, text="Node ID:", anchor=SW).grid(row=0, column=0, sticky=W)
         Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
@@ -174,7 +175,7 @@ class NodeDialog(Dialog):
         self._texture_selector = ImagePicker(parent, "Room Tex:")
         self._texture_selector.grid(row=3, columnspan=4)
         # New widget that allows configuration of multiple things -- to allow picking pictures for the walls
-        self._wall_pics = PicConfigurator(parent, 6)
+        self._wall_pics = PicConfigurator(parent)
         self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
 
