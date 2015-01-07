@@ -1,18 +1,50 @@
-__author__ = 'tristan_dev'
+__author__ = 'Tristan Newmann'
 
+"""
+MazeBuilder, Stroke Recovery Project, HMRI
+Author: Tristan Newmann
+Developed with 2.7
+
+File: Debug.py
+
+Module contains debugging output utility class
+"""
+
+
+# Imports
+
+
+# Enumerations and Functions
+
+
+# Classes
 
 
 class Level():
+    """
+    Defines a basic logging level enumeration
+
+    Attributes:
+        _verbose (bool): A flag indicating if the logging level is general or verbose
+    """
 
     ERROR = "ERROR"
     INFO = "INFO"
     FATAL = "FATAL"
+
     def __init__(self):
+        """
+        Constructs the "static" instance of level
+        """
         self._verbose = True        #Todo: Change to false for release
 
     def toggle(self):
+        """
+        Toggle the verbosity level
+        """
         self._verbose = not self._verbose
 
+# "Static" instance of level that is used in determining the debugging output
 d_level = Level()
 
 def printi(mssg, level):
@@ -21,7 +53,6 @@ def printi(mssg, level):
 
     :param mssg:        The message to be printed
     :param level:       The level the message is to be printed at
-    :return:            No return
     """
 
     # Will not print the debug info if the level is not verbose
@@ -31,10 +62,10 @@ def printi(mssg, level):
 
 def printe(event, level):
     """
+    Print a debug message based on a user input event
 
-    :param event:
-    :param level:
-    :return:
+    :param event:       The event that cause the message
+    :param level:       The level the message is to be printed at
     """
     # Extract all of the needed event information, could optimize, wont :P
     mssg = ""

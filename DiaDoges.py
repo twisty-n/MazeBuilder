@@ -1,9 +1,26 @@
-__author__ = 'tristan_dev'
+__author__ = 'Tristan Newmann'
 
+"""
+MazeBuilder, Stroke Recovery Project, HMRI
+Author: Tristan Newmann
+Developed with 2.7
+
+File: Debug.py
+
+Module contains the custom user interface dialoges
+"""
+
+# Imports
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW
 import Debug
+
+
+# Enumerations and Functions
+
+
+# Classes
 
 class EnviroDialog(Dialog):
     def __init__(self, parent):
