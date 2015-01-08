@@ -9,7 +9,7 @@ File: UtilWidgets.py
 Classes based on those listed in
 http://effbot.org/tkinterbook/tkinter-application-windows.htm
 
-Contains a custom, but generalised widgets library
+Contains a custom, but generalised widgets library -.-
 """
 
 from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
@@ -206,7 +206,6 @@ class StatusBar(Frame):
     during runtime
     This class has been derived from the link at the header of this file
     """
-    # TODO: see if this actually works
 
     def __init__(self, parent, text_link=None):
         """
@@ -239,6 +238,9 @@ class StatusBar(Frame):
         self.set_text_f("%s", text)
 
     def alert(self, text, level):
+        """
+        Posts text to the status bar, and colours the background based on an alert level
+        """
         self.set_text(text)
         if level is Debug.Level.INFO:
             self.change_bg("green")
@@ -405,7 +407,7 @@ class ListHeap(Frame):
         """
         Add new item to the list heap
 
-        Adds a new item to the list box and the datastructure that defines the heap
+        Adds a new item to the list box and the data structure that defines the heap
 
         :param item:            The item to be added to the ListHeap
         :param key:             The key that is to be used to identify the item, must be unique

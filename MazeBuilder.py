@@ -130,6 +130,5 @@ class MazeBuilder(Frame):
         #TODO, add in validation before export. Stored as XML
         self._status_bar = StatusBar(self._parent)
         self._status_bar.pack(side=BOTTOM, fill=X)
-        self._status_bar.alert("DANGER", Debug.Level.FATAL)
 
 
