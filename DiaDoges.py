@@ -13,7 +13,8 @@ Module contains the custom user interface dialogs
 # Imports
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator
-from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW, Button, ACTIVE
+from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW, Button, ACTIVE, END, StringVar, IntVar
+import tkFileDialog
 import Debug
 
 
@@ -199,6 +200,9 @@ class ObjectDialog(Dialog):
             "mesh"      : None,
             "scale"     : None
         }
+        self._scale_text = StringVar()
+        self._scale_text.set(str(1))
+
         Dialog.__init__(self, parent, "Object Builder")
 
     def body(self, parent):
@@ -209,9 +213,10 @@ class ObjectDialog(Dialog):
         # Define the labels of all of the sub widgets that are to be used
         Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
         Label(parent, text="X Coord:").grid(row=1, column=0, sticky=W)
-        Label(parent, text="Y Coord:").grid(row=1, column=3, sticky=W)
+        Label(parent, text="Y Coord:").grid(row=1, column=2, sticky=W)
         Label(parent, text="Mesh:").grid(row=2, column=0, sticky=W)
         Label(parent, text="Scale:").grid(row=3, column=0, sticky=W)
+        Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
 
         #Define the text entry widgets
         self._object_name = Entry(parent, width=5)
@@ -219,12 +224,28 @@ class ObjectDialog(Dialog):
         self._x_coord = Entry(parent, width=5)
         self._x_coord.grid(column=1, row=1, sticky=W)
         self._y_coord = Entry(parent, width=5)
-        self._y_coord.grid(column=4, row=1, stick=W)
-        self._mesh = Entry(parent, width=5)
-        self._mesh.insert(0, "---")
+        self._y_coord.grid(column=3, row=1, stick=W)
+        self._mesh = Entry(parent, width=15)
+        self._mesh.insert(0, "No mesh loaded")
         self._mesh.grid(column=1, row=2, columnspan=2, sticky=W)
-        Button(parent, text="Load", width=10, command=self._load_mesh, default=ACTIVE).grid(column=3, row=2, columnspan=2, sticky=W)
+        Button(parent, text="Load", width=5, command=self._load_mesh, default=ACTIVE).grid(column=3, row=2)
+        self._scale = Scale(parent, from_=1, to=100, orient=HORIZONTAL, length=140, variable=self._scale_text, showvalue=0)
+        self._scale.grid(row=3, column=2, columnspan=2, sticky=W)
 
     def _load_mesh(self):
+        """
+        Open a file dialog to load a mesh filepath
+        :return:
+        """
         Debug.printi("Load Mesh called", Debug.Level.INFO)
+        types = \
+            [
+                ("DirectX", "*.x"),
+                ("Test", "*.txt")
+            ]
+        dialog = tkFileDialog.Open(self, filetypes=types)
+        file_path = dialog.show()
 
+        self._mesh.delete(0, END)
+        self._mesh.insert(0, file_path)
+        Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
