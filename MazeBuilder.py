@@ -121,13 +121,15 @@ class MazeBuilder(Frame):
     """
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        self.parent = parent
-        self.menubar = MainMBMenuBar(self.parent)
+        self._parent = parent
+        self._menubar = MainMBMenuBar(self._parent)
         self.construct()
 
     def construct(self):
         #TODO, add in geometry management and layout management
         #TODO, add in validation before export. Stored as XML
-        pass
+        self._status_bar = StatusBar(self._parent)
+        self._status_bar.pack(side=BOTTOM, fill=X)
+        self._status_bar.alert("DANGER", Debug.Level.FATAL)
 
 
