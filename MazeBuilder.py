@@ -16,7 +16,7 @@ File: MazeBuilder.py
 from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE
 from Exceptions import DuplicateCommandException
 from UtilWidgets import StatusBar, Dialog
-from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog
+from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
 import Debug
 
@@ -85,7 +85,7 @@ class MainMBMenuBar():
 
         place_sub = SubMenu(self._root_menu, "Place")
         place_sub.add_option("Place Node", (lambda: NodeDialog(self._root)), "command")
-        place_sub.add_option("Place Object", (lambda: print("Place:Place_Object_Undefined")), "command")
+        place_sub.add_option("Place Object", (lambda: ObjectDialog(self._root)), "command")
         self.addEntry(place_sub._label, place_sub)
 
         configure_sub = SubMenu(self._root_menu, "Configure")

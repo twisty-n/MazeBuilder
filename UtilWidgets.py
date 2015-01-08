@@ -182,10 +182,16 @@ class ImagePicker(Frame):
         dialog = tkFileDialog.Open(self, filetypes = types)
         self._file_path = dialog.show()
 
-        #Now we clean the file name
-        split = self._file_path.split("/")
-        self._file_name = "Data/" + split[-1]
+        self._file_name = self._scrub_name(self._file_path)
         return self._file_name
+
+    def _scrub_name(self, file_path):
+        """
+        Override: Parse and clean the filename
+        """
+        split = self._file_path.split("/")
+        f_name = "Data/" + split[-1]
+        return f_name
 
     def _load_img_label(self):
         """

@@ -13,7 +13,7 @@ Module contains the custom user interface dialogs
 # Imports
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator
-from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW
+from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW, Button, ACTIVE
 import Debug
 
 
@@ -146,7 +146,11 @@ class NodeDialog(Dialog):
         :return:                An instance of NodeDialog
         """
         self._entries = {
-
+            "node_id"   : None,
+            "x_coord"   : None,
+            "y_coord"   : None,
+            "room_text" : None,
+            "wall_pics" : []
         }
         Dialog.__init__(self, parent, "Node Builder")
 
@@ -168,7 +172,7 @@ class NodeDialog(Dialog):
         self._y_coord = Entry(parent, width=5)
         self._y_coord.grid(column=1, row=2)
 
-        # The text entry areas, these will have to be autofilled for some part
+        # The text entry areas, these will have to be auto-filled for some part
         # TODO: write auto-population utility for things
 
         # Image picker dialog for texture
@@ -178,4 +182,49 @@ class NodeDialog(Dialog):
         self._wall_pics = PicConfigurator(parent)
         self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
+class ObjectDialog(Dialog):
+    """
+    A custom dialog that allows the user to configure placing objects in the virtual environment
+    """
+    def __init__(self, parent):
+        """
+        Construct the instance of the object dialog
+
+        :param parent:          The parent tk instance that spawns the dialog
+        """
+        self._entries = {
+            "x_coord"   : None,
+            "y_coord"   : None,
+            "name"      : None,
+            "mesh"      : None,
+            "scale"     : None
+        }
+        Dialog.__init__(self, parent, "Object Builder")
+
+    def body(self, parent):
+        """
+        Define the custom body of the dialog
+        :param parent:          The parent instance of the dialog
+        """
+        # Define the labels of all of the sub widgets that are to be used
+        Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
+        Label(parent, text="X Coord:").grid(row=1, column=0, sticky=W)
+        Label(parent, text="Y Coord:").grid(row=1, column=3, sticky=W)
+        Label(parent, text="Mesh:").grid(row=2, column=0, sticky=W)
+        Label(parent, text="Scale:").grid(row=3, column=0, sticky=W)
+
+        #Define the text entry widgets
+        self._object_name = Entry(parent, width=5)
+        self._object_name.grid(column=1, row=0, sticky=W)
+        self._x_coord = Entry(parent, width=5)
+        self._x_coord.grid(column=1, row=1, sticky=W)
+        self._y_coord = Entry(parent, width=5)
+        self._y_coord.grid(column=4, row=1, stick=W)
+        self._mesh = Entry(parent, width=5)
+        self._mesh.insert(0, "---")
+        self._mesh.grid(column=1, row=2, columnspan=2, sticky=W)
+        Button(parent, text="Load", width=10, command=self._load_mesh, default=ACTIVE).grid(column=3, row=2, columnspan=2, sticky=W)
+
+    def _load_mesh(self):
+        Debug.printi("Load Mesh called", Debug.Level.INFO)
 
