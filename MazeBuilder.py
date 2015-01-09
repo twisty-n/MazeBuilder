@@ -13,12 +13,13 @@ File: MazeBuilder.py
 
 #Imports
 
-from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE
+from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE, TOP, BOTH
 from Exceptions import DuplicateCommandException
 from UtilWidgets import StatusBar, Dialog
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
 import Debug
+import MazeCanvas
 
 
 WIN_X = 700         #Defines the window X width
@@ -36,6 +37,7 @@ def build():
     root.title("MazeBuilder")
     root.geometry(str(WIN_X)+"x"+str(WIN_Y)+"+"+str(POSITION)+"+"+str(POSITION))
     mazeBuilder = MazeBuilder(root)
+    mazeBuilder.pack(fill=BOTH, expand=1)
     return root
 
 def launch():
@@ -123,12 +125,15 @@ class MazeBuilder(Frame):
         Frame.__init__(self, parent)
         self._parent = parent
         self._menubar = MainMBMenuBar(self._parent)
+        self.pack(fill=BOTH, expand=1)
         self.construct()
 
     def construct(self):
         #TODO, add in geometry management and layout management
         #TODO, add in validation before export. Stored as XML
-        self._status_bar = StatusBar(self._parent)
+        self._drawer = MazeCanvas.MazePlannerCanvas(self)
+        self._drawer.pack(fill=BOTH, expand=1)
+        self._status_bar = StatusBar(self)
         self._status_bar.pack(side=BOTTOM, fill=X)
 
 

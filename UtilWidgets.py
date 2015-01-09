@@ -24,17 +24,6 @@ from Exceptions import DuplicateListHeapItemException, DuplicateCommandException
 #TODO add in a populate method which fills dialogues from the
 #database
 
-class Event:
-    """
-    A stand in enumeration that encapsulates the different mouse events that can be generated
-    """
-    CLICK_M1 = 1
-    CLICK_M2 = 2
-    CLICK_M3 = 3
-    D_CLICK_M1 = 4
-    D_CLICK_M2 = 5
-    D_CLICK_M3 = 6
-
 class SubMenu():
     """
     Defines a generic Sub menu class that may be used as part of a larger menu

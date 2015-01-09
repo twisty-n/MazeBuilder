@@ -13,7 +13,7 @@ Module contains custom widgets for the MazeBuilder project
 
 # Imports
 from UtilWidgets import ListHeap
-from Tkinter import Menu
+from Tkinter import Menu, Canvas
 from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedException
 import Debug
 

@@ -12,7 +12,7 @@ Module contains debugging output utility class
 
 
 # Imports
-
+import MazeCanvas
 
 # Enumerations and Functions
 
@@ -77,3 +77,12 @@ def printe(event, level):
         mssg = mssg + "Key Event || Button: " + str(event.keysym) + " ||"
     # Dispatch to the normal print method
     printi(mssg, level)
+
+def printe(event, event_type, level):
+    """
+    Print a debug message based on a user input event
+
+    :param event:       The event that cause the message
+    :param level:       The level the message is to be printed at
+    """
+    printi("Event Recorded || " + str(event_type) + " || x=" + str(event.x) + " y=" + str(event.y), level)

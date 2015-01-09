@@ -1,0 +1,4 @@
+Double click button 1 -- select something to edit
+B1 motion -- make a cooridor between two notes
+B2 open context menu
+B2 motion, drag an object around -- note that this will need to adjust any edges that exist connected to this object
