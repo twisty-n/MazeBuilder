@@ -140,7 +140,7 @@ class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
     """
-    def __init__(self, parent):
+    def __init__(self, parent, x=None, y=None):
         """
         Construct the inital node dialog
         :param parent:          The tk parent instance to spawn the node from
@@ -153,7 +153,7 @@ class NodeDialog(Dialog):
             "room_text" : None,
             "wall_pics" : []
         }
-        Dialog.__init__(self, parent, "Node Builder")
+        Dialog.__init__(self, parent, "Node Builder", True, x, y)
 
     def body(self, parent):
         """
@@ -187,7 +187,7 @@ class ObjectDialog(Dialog):
     """
     A custom dialog that allows the user to configure placing objects in the virtual environment
     """
-    def __init__(self, parent):
+    def __init__(self, parent, x=None, y=None):
         """
         Construct the instance of the object dialog
 

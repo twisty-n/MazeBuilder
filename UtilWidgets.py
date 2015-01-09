@@ -250,7 +250,7 @@ class Dialog(Toplevel):
     A definition for a dialog style widget
     This class has been derived from the link at the header of this file
     """
-    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True):
+    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None):
         """
         Construct the instance of dialog
         """
@@ -273,8 +273,12 @@ class Dialog(Toplevel):
             self.initial_focus = self
 
         self.protocol("WM_DELETE_WINDOW", self.cancel)
-        self.geometry("+%d+%d" % (parent.winfo_rootx() + 50,
+        if x is None and y is None:
+            self.geometry("+%d+%d" % (parent.winfo_rootx() + 50,
                                   parent.winfo_rooty() + 50))
+        else:
+            self.geometry("+%d+%d" % (x + 1,
+                                      y + 1))
         self.initial_focus.focus_set()
 
         if lock_focus:

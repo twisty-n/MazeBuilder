@@ -12,7 +12,6 @@ Module contains debugging output utility class
 
 
 # Imports
-import MazeCanvas
 
 # Enumerations and Functions
 
@@ -78,7 +77,7 @@ def printe(event, level):
     # Dispatch to the normal print method
     printi(mssg, level)
 
-def printe(event, event_type, level):
+def printet(event, event_type, level):
     """
     Print a debug message based on a user input event
 

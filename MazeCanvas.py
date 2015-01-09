@@ -7,12 +7,13 @@ Developed with 2.7
 
 File: Debug.py
 
-Module contains the custom user interface dialogs
+Module contains the implementation
 """
 
 # Imports
 import Debug
 from Tkinter import Canvas, Frame, BOTH
+from DiaDoges import NodeDialog
 
 
 # Enumerations and Functions
@@ -42,7 +43,7 @@ class MazePlannerCanvas(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        self._canvas = Canvas(self, bg="grey", cursor="target")
+        self._canvas = Canvas(self, bg="grey", cursor="tcross")
         self._canvas.pack(fill=BOTH, expand=1)
         self._commands = {
             Event.CLICK_M1      : self._begin_node_drag,
@@ -56,6 +57,12 @@ class MazePlannerCanvas(Frame):
         self._current_node_drag = { "x":None,
                                     "y":None  }
         self._command_cache = None
+        self._cache = {
+            "item"  : None,
+            "x"     : None,
+            "y"     : None,
+            "event" : None
+        }
         self._construct(parent)
 
     def _construct(self, parent):
@@ -70,7 +77,8 @@ class MazePlannerCanvas(Frame):
 
 
     def _handle_mouse_events(self, m_event, event):
-        Debug.printe(event, m_event, Debug.Level.INFO)
+        Debug.printet(event, m_event, Debug.Level.INFO)
+        self._cache["event"] = event
         self._commands[m_event]((event.x, event.y))
         self._command_cache = m_event
 
@@ -108,9 +116,17 @@ class MazePlannerCanvas(Frame):
 
     def _node_operation(self, coords):
         # Determine if they are double click on the canvas, or on a node
+        item = self._canvas.find_closest(coords[0], coords[1], halo=None, start=None)
+        if item is not ():
+            # Make request from object manager using the tag assigned
+            NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            # post information to object manager, or let the dialog handle it, or whatever
+            return
         # if its the canvas, plot a new node and show the editing dialog
-        # if its on a node, request information from the manager to populate the editing dialog and
+        self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
+                                outline="red", fill="black")
         # then open the dialog
+        NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
         pass
 
 

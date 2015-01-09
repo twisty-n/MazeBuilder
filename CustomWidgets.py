@@ -90,7 +90,7 @@ class PicConfigurator(ListHeap):
         item = None
         # Extract the return values
         try:
-            self._add_new(item, item_id)
+            self.add_new(item, item_id)
         except DuplicateListHeapItemException:
             Debug.printi("Unable to add duplicate picture", Debug.Level.ERROR)
             return
