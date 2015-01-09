@@ -41,7 +41,7 @@ class Event:
 
 class MazePlannerCanvas(Frame):
 
-    def __init__(self, parent):
+    def __init__(self, parent, status=None):
         Frame.__init__(self, parent)
         self._canvas = Canvas(self, bg="grey", cursor="tcross")
         self._canvas.pack(fill=BOTH, expand=1)
@@ -63,6 +63,7 @@ class MazePlannerCanvas(Frame):
             "y"     : None,
             "event" : None
         }
+        self._status = status
         self._construct(parent)
 
     def _construct(self, parent):
@@ -73,10 +74,12 @@ class MazePlannerCanvas(Frame):
         self._canvas.bind("<ButtonRelease-1>", lambda event, m_event=Event.RELEASE_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Return>", lambda event, m_event=Event.RETURN: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Double-Button-1>", lambda event, m_event=Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<Motion>", lambda event: self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y)))
 
 
 
     def _handle_mouse_events(self, m_event, event):
+        self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
         Debug.printet(event, m_event, Debug.Level.INFO)
         self._cache["event"] = event
         self._commands[m_event]((event.x, event.y))
@@ -85,21 +88,32 @@ class MazePlannerCanvas(Frame):
 
     def _begin_node_drag(self, coords):
         # Determine which node has been selected, cache this information
-        # determine the starting location, cache it
-        pass
+        item = self._canvas.find_closest(coords[0], coords[1], halo=2, start=None)
+        self._update_cache(item, coords)
 
     def _end_node_drag(self, coords):
         if self._command_cache is Event.D_CLICK_M1 or None:
             # Don't dispatch if its the result of a double click
             return
         # Obtain the final points
+        x = coords[0]
+        y = coords[1]
+
+        # Check that the final points are within a valid range
+        item = self._cache["item"]
         # Clean the cache
-        # Post the information to the node manager
-        pass
+        self._clear_cache()
+        # TODO Post the information to the node manager
 
     def _execute_drag(self, coords):
         # Update the drawing information
-        pass
+        delta_x = coords[0] - self._cache["x"]
+        delta_y = coords[1] - self._cache["y"]
+        # move the object the appropriate amount
+        self._canvas.move(self._cache["item"], delta_x, delta_y)
+        # record the new position
+        self._cache["x"] = coords[0]
+        self._cache["y"] = coords[1]
 
     def _launch_menu(self, coords):
         # Launch a context menu based on the coords of the mouse
@@ -114,17 +128,28 @@ class MazePlannerCanvas(Frame):
     def _execute_edge(self, coords):
         pass
 
+    def _update_cache(self, item, coords):
+        self._cache["item"] = item
+        self._cache["x"] = coords[0]
+        self._cache["y"] = coords[1]
+
+    def _clear_cache(self):
+        self._cache["item"] = None
+        self._cache["x"] = None
+        self._cache["y"] = None
+
     def _node_operation(self, coords):
         # Determine if they are double click on the canvas, or on a node
-        item = self._canvas.find_closest(coords[0], coords[1], halo=None, start=None)
+        item = self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
+        self._cache["item"] = item
         if item is not ():
             # Make request from object manager using the tag assigned
             NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
             # post information to object manager, or let the dialog handle it, or whatever
             return
         # if its the canvas, plot a new node and show the editing dialog
-        self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
-                                outline="red", fill="black")
+        self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
+                                outline="red", fill="black", activeoutline="black", activefill="red")
         # then open the dialog
         NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
         pass

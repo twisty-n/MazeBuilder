@@ -13,7 +13,7 @@ File: MazeBuilder.py
 
 #Imports
 
-from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE, TOP, BOTH
+from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE, TOP, BOTH, W, E, N ,S
 from Exceptions import DuplicateCommandException
 from UtilWidgets import StatusBar, Dialog
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
@@ -131,9 +131,11 @@ class MazeBuilder(Frame):
     def construct(self):
         #TODO, add in geometry management and layout management
         #TODO, add in validation before export. Stored as XML
-        self._drawer = MazeCanvas.MazePlannerCanvas(self)
+        self._update_bar = StatusBar(self)
+        self._drawer = MazeCanvas.MazePlannerCanvas(self, self._update_bar)
         self._drawer.pack(fill=BOTH, expand=1)
         self._status_bar = StatusBar(self)
-        self._status_bar.pack(side=BOTTOM, fill=X)
 
+        self._status_bar.pack(side=BOTTOM, fill=X)
+        self._update_bar.pack(side=BOTTOM, fill=X)
 
