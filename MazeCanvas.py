@@ -12,7 +12,7 @@ Module contains the implementation
 
 # Imports
 import Debug
-from Tkinter import Canvas, Frame, BOTH
+from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog
 
 
@@ -67,6 +67,7 @@ class MazePlannerCanvas(Frame):
         self._construct(parent)
 
     def _construct(self, parent):
+        self._canvas.focus_set()
         self._canvas.bind("<B1-Motion>", lambda event, m_event=Event.DRAG_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonPress-2>", lambda event, m_event=Event.CLICK_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonRelease-2>", lambda event, m_event=Event.RELEASE_M2: self._handle_mouse_events(m_event, event))
@@ -74,12 +75,16 @@ class MazePlannerCanvas(Frame):
         self._canvas.bind("<ButtonRelease-1>", lambda event, m_event=Event.RELEASE_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Return>", lambda event, m_event=Event.RETURN: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Double-Button-1>", lambda event, m_event=Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<Motion>", lambda event: self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y)))
+        self._canvas.bind("<Motion>", lambda event, m_event=None : self._handle_mot(m_event, event))
+        self._canvas.bind("<Enter>", lambda event: self._canvas.focus_set())
 
-
+    def _handle_mot(self, m_event, event):
+        self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
+        self._cache["x"] = event.x
+        self._cache["y"] = event.y
 
     def _handle_mouse_events(self, m_event, event):
-        self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
+        self._status.set_text("Mouse X:" + str(self._cache["x"]) + "\tMouse Y:" + str(self._cache["y"]))
         Debug.printet(event, m_event, Debug.Level.INFO)
         self._cache["event"] = event
         self._commands[m_event]((event.x, event.y))
@@ -88,7 +93,7 @@ class MazePlannerCanvas(Frame):
 
     def _begin_node_drag(self, coords):
         # Determine which node has been selected, cache this information
-        item = self._canvas.find_closest(coords[0], coords[1], halo=2, start=None)
+        item = self._get_current_item(coords)
         self._update_cache(item, coords)
 
     def _end_node_drag(self, coords):
@@ -98,9 +103,19 @@ class MazePlannerCanvas(Frame):
         # Obtain the final points
         x = coords[0]
         y = coords[1]
-
-        # Check that the final points are within a valid range
         item = self._cache["item"]
+        # TODO Check that the final points are within a valid range
+        """
+        if x < 0:
+            x = 0
+        if y < 0:
+            y = 0
+        if x > self._canvas.winfo_width():
+            x = self._canvas.winfo_width()-25
+        if y > self._canvas.winfo_height():
+            y = self._canvas.winfo_height()-25
+        self._canvas.move(item, x, y)
+        """
         # Clean the cache
         self._clear_cache()
         # TODO Post the information to the node manager
@@ -117,7 +132,21 @@ class MazePlannerCanvas(Frame):
 
     def _launch_menu(self, coords):
         # Launch a context menu based on the coords of the mouse
-        pass
+        item = self._get_current_item((self._cache["x"], self._cache["y"]))
+        p_menu = Menu(self._canvas)
+
+        if item is ():
+            # No node is currently selected, create the general menu
+            p_menu.add_command(label="Place Node", command=lambda: Debug.printi("Place node", Debug.Level.INFO))
+            p_menu.add_command(label="Delete All", command=lambda: Debug.printi("Delete all nodes", Debug.Level.INFO))
+        else:
+            # Create the node specific menu
+            p_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
+            p_menu.add_command(label="Edit Node", command=lambda: Debug.printi("Edit node", Debug.Level.INFO))
+            p_menu.add_command(label="Delete  Node", command=lambda: Debug.printi("Delete node", Debug.Level.INFO))
+            p_menu.add_command(label="Mark as start", command=lambda: Debug.printi("New starting node", Debug.Level.INFO))
+
+        p_menu.post(self._cache["x"], self._cache["y"])
 
     def _begin_edge(self, coords):
         pass
@@ -138,9 +167,12 @@ class MazePlannerCanvas(Frame):
         self._cache["x"] = None
         self._cache["y"] = None
 
+    def _get_current_item(self, coords):
+        return self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
+
     def _node_operation(self, coords):
         # Determine if they are double click on the canvas, or on a node
-        item = self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
+        item = self._get_current_item(coords)
         self._cache["item"] = item
         if item is not ():
             # Make request from object manager using the tag assigned
@@ -152,7 +184,6 @@ class MazePlannerCanvas(Frame):
                                 outline="red", fill="black", activeoutline="black", activefill="red")
         # then open the dialog
         NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
-        pass
 
 
 
