@@ -52,24 +52,33 @@ class MazePlannerCanvas(Frame):
             Event.RELEASE_M1    : self._end_node_drag,
             Event.RELEASE_M2    : self._end_edge,
             Event.DRAG_M1       : self._execute_drag,
+            Event.DRAG_M2       : self._execute_edge,
             Event.RETURN        : self._launch_menu,
             Event.D_CLICK_M1    : self._node_operation
         }
-        self._current_node_drag = { "x":None,
-                                    "y":None  }
+        self._edge_cache = \
+            {
+                "x_start"       : None,
+                "y_start"       : None,
+                "item_start"    : None,
+                "item_end"      : None,
+                "edge"          : None
+            }
         self._command_cache = None
-        self._cache = {
-            "item"  : None,
-            "x"     : 0,
-            "y"     : 0,
-            "event" : None
-        }
+        self._cache = \
+            {
+                "item"  : None,
+                "x"     : 0,
+                "y"     : 0,
+                "event" : None
+            }
         self._status = status
         self._construct(parent)
 
     def _construct(self, parent):
         self._canvas.focus_set()
         self._canvas.bind("<B1-Motion>", lambda event, m_event=Event.DRAG_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<B2-Motion>", lambda event, m_event=Event.DRAG_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonPress-2>", lambda event, m_event=Event.CLICK_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonRelease-2>", lambda event, m_event=Event.RELEASE_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonPress-1>", lambda event, m_event=Event.CLICK_M1: self._handle_mouse_events(m_event, event))
@@ -161,13 +170,29 @@ class MazePlannerCanvas(Frame):
         return (int(wx0), int(wy0))
 
     def _begin_edge(self, coords):
-        pass
+        # Record the starting node
+        self._edge_cache["item_start"] = self._get_current_item((self._cache["x"], self._cache["y"]))
+        self._edge_cache["x_start"] = self._cache["x"]
+        self._edge_cache["y_start"] = self._cache["y"]
 
     def _end_edge(self, coords):
+        # Record the ending node\
+        # Check if the cursor is over a node,
+        # if it is, perform normally
+        # else, cancel the edge creation by deleting the object
+        # Post the edge information to the object manager
+        # Clear the current edge from the edge drawing cache
+        self._canvas.tag_lower("edge")
+        self._clear_edge_cache()
         pass
 
     def _execute_edge(self, coords):
-        pass
+        # Update the line position
+        # We will update the line position by deleting and redrawing
+        self._canvas.delete(self._edge_cache["edge"])
+        self._edge_cache["edge"] = self._canvas.create_line( \
+            self._edge_cache["x_start"], self._edge_cache["y_start"],
+            coords[0], coords[1], tags="edge")
 
     def _update_cache(self, item, coords):
         self._cache["item"] = item
@@ -178,6 +203,15 @@ class MazePlannerCanvas(Frame):
         self._cache["item"] = None
         self._cache["x"] = coords[0]
         self._cache["y"] = coords[1]
+
+    def _clear_edge_cache(self):
+
+        self._edge_cache["x_start"]       = None,
+        self._edge_cache["y_start"]       = None,
+        self._edge_cache["item_start"]    = None,
+        self._edge_cache["item_end"]      = None,
+        self._edge_cache["edge"]          = None
+
 
     def _get_current_item(self, coords):
         Debug.printi("X:"+ str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
@@ -197,76 +231,3 @@ class MazePlannerCanvas(Frame):
                                 outline="red", fill="black", activeoutline="black", activefill="red")
         # then open the dialog
         NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
-
-
-
-"""
-data={"one":1,"two":2}
-widget.bind("<ButtonPress-1>",
-    lambda event, arg=data: self.OnMouseDown(event, arg))
-"""
-
-"""
-
-import Tkinter as tk
-
-class SampleApp(tk.Tk):
-    '''Illustrate how to drag items on a Tkinter canvas'''
-
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
-
-        # create a canvas
-        self.canvas = tk.Canvas(width=400, height=400)
-        self.canvas.pack(fill="both", expand=True)
-
-        # this data is used to keep track of an
-        # item being dragged
-        self._drag_data = {"x": 0, "y": 0, "item": None}
-
-        # create a couple movable objects
-        self._create_token((100, 100), "white")
-        self._create_token((200, 100), "black")
-
-        # add bindings for clicking, dragging and releasing over
-        # any object with the "token" tag
-        self.canvas.tag_bind("token", "<ButtonPress-1>", self.OnTokenButtonPress)
-        self.canvas.tag_bind("token", "<ButtonRelease-1>", self.OnTokenButtonRelease)
-        self.canvas.tag_bind("token", "<B1-Motion>", self.OnTokenMotion)
-
-    def _create_token(self, coord, color):
-        '''Create a token at the given coordinate in the given color'''
-        (x,y) = coord
-        self.canvas.create_oval(x-25, y-25, x+25, y+25,
-                                outline=color, fill=color, tags="token")
-
-    def OnTokenButtonPress(self, event):
-        '''Being drag of an object'''
-        # record the item and its location
-        self._drag_data["item"] = self.canvas.find_closest(event.x, event.y)[0]
-        self._drag_data["x"] = event.x
-        self._drag_data["y"] = event.y
-
-    def OnTokenButtonRelease(self, event):
-        '''End drag of an object'''
-        # reset the drag information
-        self._drag_data["item"] = None
-        self._drag_data["x"] = 0
-        self._drag_data["y"] = 0
-
-    def OnTokenMotion(self, event):
-        '''Handle dragging of an object'''
-        # compute how much this object has moved
-        delta_x = event.x - self._drag_data["x"]
-        delta_y = event.y - self._drag_data["y"]
-        # move the object the appropriate amount
-        self.canvas.move(self._drag_data["item"], delta_x, delta_y)
-        # record the new position
-        self._drag_data["x"] = event.x
-        self._drag_data["y"] = event.y
-
-if __name__ == "__main__":
-    app = SampleApp()
-    app.mainloop()
-
-"""
