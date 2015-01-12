@@ -12,6 +12,7 @@ Module contains the implementation
 
 # Imports
 import Debug
+import math
 from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog
 
@@ -59,8 +60,8 @@ class MazePlannerCanvas(Frame):
         self._command_cache = None
         self._cache = {
             "item"  : None,
-            "x"     : None,
-            "y"     : None,
+            "x"     : 0,
+            "y"     : 0,
             "event" : None
         }
         self._status = status
@@ -117,7 +118,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.move(item, x, y)
         """
         # Clean the cache
-        self._clear_cache()
+        self._clear_cache(coords)
         # TODO Post the information to the node manager
 
     def _execute_drag(self, coords):
@@ -146,7 +147,18 @@ class MazePlannerCanvas(Frame):
             p_menu.add_command(label="Delete  Node", command=lambda: Debug.printi("Delete node", Debug.Level.INFO))
             p_menu.add_command(label="Mark as start", command=lambda: Debug.printi("New starting node", Debug.Level.INFO))
 
-        p_menu.post(self._cache["x"], self._cache["y"])
+        updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
+        p_menu.post(updated_coords[0], updated_coords[1])
+
+    def _canvas_to_screen(self, coords):
+        # upper left corner of the visible region
+        x0 = self._canvas.winfo_rootx()
+        y0 = self._canvas.winfo_rooty()
+
+        # given a canvas coordinate cx/cy, convert it to window coordinates:
+        wx0 = x0 + coords[0]
+        wy0 = y0 + coords[1]
+        return (int(wx0), int(wy0))
 
     def _begin_edge(self, coords):
         pass
@@ -162,13 +174,14 @@ class MazePlannerCanvas(Frame):
         self._cache["x"] = coords[0]
         self._cache["y"] = coords[1]
 
-    def _clear_cache(self):
+    def _clear_cache(self, coords):
         self._cache["item"] = None
-        self._cache["x"] = None
-        self._cache["y"] = None
+        self._cache["x"] = coords[0]
+        self._cache["y"] = coords[1]
 
     def _get_current_item(self, coords):
-        return self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
+        Debug.printi("X:"+ str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
+        return self._canvas.find_overlapping(self._cache["x"], self._cache["y"], self._cache["x"], self._cache["y"])
 
     def _node_operation(self, coords):
         # Determine if they are double click on the canvas, or on a node
