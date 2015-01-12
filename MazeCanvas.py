@@ -60,6 +60,8 @@ class MazePlannerCanvas(Frame):
             {
                 "x_start"       : None,
                 "y_start"       : None,
+                "x_end"         : None,
+                "y_end"         : None,
                 "item_start"    : None,
                 "item_end"      : None,
                 "edge"          : None
@@ -73,7 +75,7 @@ class MazePlannerCanvas(Frame):
                 "event" : None
             }
         self._status = status
-        self._edges = {}
+        self._edge_bindings = {}
         self._construct(parent)
 
     def _construct(self, parent):
@@ -183,6 +185,34 @@ class MazePlannerCanvas(Frame):
         # record the new position
         self._cache["x"] = coords[0]
         self._cache["y"] = coords[1]
+        # TODO: make sure that any attached edges are update
+        self._update_attached_edges(self._get_current_item((coords[0], coords[1]))[0], coords)
+
+    def _update_attached_edges(self, node, coords):
+        # Go through dictionary and gather list of all attached edge bindings for a node
+        # Iterate over the list updating the edges as needed
+        start_bindings = []
+        for n in self._edge_bindings:
+            if self._edge_bindings[n].item_start is node:
+                start_bindings.append(self._edge_bindings[n])
+        end_bindings = []
+        for n in self._edge_bindings:
+            if self._edge_bindings[n].item_end is node:
+                end_bindings.append(self._edge_bindings[n])
+
+        #  Adjust the bindings with this node as the starting edge
+        for binding in start_bindings:
+            self._canvas.delete(binding.edge)
+            binding.edge = self._canvas.create_line( \
+                coords[0], coords[1],
+                binding.x_end, binding.y_end, tags="edge")
+
+        # Adjust the bindings with this node as the ending edge
+        for binding in end_bindings:
+            self._canvas.delete(binding.edge)
+            binding.edge = self._canvas.create_line( \
+                binding.x_start, binding.y_start,
+                coords[0], coords[1], tags="edge")
 
     def _launch_menu(self, coords):
         """
@@ -244,15 +274,27 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         # Record the ending node\
-        # Check if the cursor is over a node,
-        # if it is, perform normally
-        # else, cancel the edge creation by deleting the object
+        # Check if the cursor is over a node, if so continue, else abort
+
+        # TODO: FIX this up. It completely breaks everything because the edges aren't
+        # being bound correctly
+
+        curr = self._get_current_item((coords[0], coords[1]))
+        if curr[0] is self._edge_cache["edge"]:
+            self._canvas.delete(self._edge_cache["edge"])
+            self._clear_edge_cache()
+            return
+        # We assume that there is only one other things overlapping
+        curr = curr[1]
         # Post the edge information to the object manager
         # Clear the current edge from the edge drawing cache
+        # Need to use the coord values as the cache values aren't updated during a drag apparently
         self._canvas.tag_lower("edge")
-        self._edges[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)
+        self._edge_cache["x_end"] = coords[0]
+        self._edge_cache["y_end"] = coords[1]
+        self._edge_cache["item_end"] = curr
+        self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)
         self._clear_edge_cache()
-        pass
 
     def _execute_edge(self, coords):
         """
@@ -266,7 +308,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
-            coords[0], coords[1], tags="edge")
+            coords[0]-1, coords[1]-1, tags="edge")
 
     def _update_cache(self, item, coords):
         """
@@ -297,6 +339,8 @@ class MazePlannerCanvas(Frame):
         """
         self._edge_cache["x_start"]       = None,
         self._edge_cache["y_start"]       = None,
+        self._edge_cache["x_end"]         = None,
+        self._edge_cache["y_end"]         = None,
         self._edge_cache["item_start"]    = None,
         self._edge_cache["item_end"]      = None,
         self._edge_cache["edge"]          = None
@@ -309,7 +353,7 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         Debug.printi("X:"+ str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
-        return self._canvas.find_overlapping(self._cache["x"], self._cache["y"], self._cache["x"], self._cache["y"])
+        return self._canvas.find_overlapping(coords[0],coords[1], coords[0], coords[1])
 
     def _node_operation(self, coords):
         """
@@ -337,6 +381,8 @@ class EdgeBind():
     def __init__(self, dict):
         self.x_start = dict["x_start"]
         self.y_start = dict["y_start"]
+        self.x_end = dict["x_end"]
+        self.y_end = dict["y_end"]
         self.item_start = dict["item_start"]
         self.item_end = dict["item_end"]
         self.edge = dict["edge"]        # Use the tkinter canvas id as the specifier
