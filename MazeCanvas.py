@@ -192,8 +192,14 @@ class MazePlannerCanvas(Frame):
         self._update_attached_edges(self._cache["item"], coords)
 
     def _update_attached_edges(self, node, coords):
+        """
+        Updates all associated edges related to a node drag event
+
+        :param node:            The node that has been dragged
+        :param coords:          The mouse coordinates which are the new coordinates of the node
+        """
+
         # Go through dictionary and gather list of all attached edge bindings for a node
-        # Iterate over the list updating the edges as needed
         start_bindings = []
         for n in self._edge_bindings:
             if self._edge_bindings[n].item_start == node:
@@ -219,6 +225,7 @@ class MazePlannerCanvas(Frame):
             binding.x_end = coords[0]
             binding.y_end = coords[1]
 
+        # Remeber to adjust all of the edges so that they sit under the node images
         self._canvas.tag_lower("edge")
 
     def _launch_menu(self, coords):
@@ -235,7 +242,7 @@ class MazePlannerCanvas(Frame):
 
         if item is ():
             # No node is currently selected, create the general menu
-            p_menu.add_command(label="Place Node", command=lambda: Debug.printi("Place node", Debug.Level.INFO))
+            p_menu.add_command(label="Place Node", command=lambda coords: self._node_operation(coords))
             p_menu.add_command(label="Delete All", command=lambda: Debug.printi("Delete all nodes", Debug.Level.INFO))
         else:
             # Create the node specific menu
@@ -248,6 +255,14 @@ class MazePlannerCanvas(Frame):
         p_menu.tk_popup(updated_coords[0], updated_coords[1])
 
     def _valid_edge_cache(self):
+        """
+        Return true if the edge cache contains a valid edge descriptor
+
+        A valid edge descriptor is when the edge has a valid starting node, if the
+        edge does not contain a valid starting node, this means that the edge was not
+        created in the proper manner and should thus be ignored by any edge operations
+        :return:
+        """
         return self._edge_cache["item_start"] is not (None,)
 
     def _canvas_to_screen(self, coords):
@@ -390,6 +405,25 @@ class MazePlannerCanvas(Frame):
         self._node_listing[self._cache["item"]] = self._cache["item"]
         # then open the dialog
         NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+
+    def delete_all(self):
+        """
+        Delete all nodes and associated edges and objects from the canvas
+        """
+        # Iterate over each node in the node listing and delete it using delete node
+        pass
+
+    def delete_node(self, node_id):
+        """
+        Delete a node and all its associated edges and object from the canvas
+
+        :param node_id:             The tkinter id of the node to be deleted
+        """
+        # Delete from our internal representations
+        # Delete from the canvas
+        # Iterate through the edge bindings and delete all of those
+        # Inform the object manager that a node as been deleted
+        pass
 
 
 class EdgeBind():
