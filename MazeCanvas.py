@@ -183,11 +183,14 @@ class MazePlannerCanvas(Frame):
         # Update the drawing information
         delta_x = coords[0] - self._cache["x"]
         delta_y = coords[1] - self._cache["y"]
+
         # move the object the appropriate amount
         self._canvas.move(self._cache["item"], delta_x, delta_y)
+
         # record the new position
         self._cache["x"] = coords[0]
         self._cache["y"] = coords[1]
+        
         # TODO: make sure that any attached edges are update
         self._update_attached_edges(self._cache["item"], coords)
 
@@ -201,20 +204,19 @@ class MazePlannerCanvas(Frame):
 
         # Go through dictionary and gather list of all attached edge bindings for a node
         start_bindings = []
-        for n in self._edge_bindings:
-            if self._edge_bindings[n].item_start == node:
-                start_bindings.append(self._edge_bindings[n])
+        for key, binding in self._edge_bindings:
+            if binding.item_start == node:
+                start_bindings.append(binding)
+
         end_bindings = []
-        for n in self._edge_bindings:
-            if self._edge_bindings[n].item_end == node:
-                end_bindings.append(self._edge_bindings[n])
+        for key, binding in self._edge_bindings:
+            if binding.item_end == node:
+                end_bindings.append(binding)
 
         #  Adjust the bindings with this node as the starting edge
         for binding in start_bindings:
             self._canvas.delete(binding.edge)
-            binding.edge = self._canvas.create_line( \
-                coords[0], coords[1],
-                binding.x_end, binding.y_end, tags="edge")
+            binding.edge = self._canvas.create_line( coords[0], coords[1], binding.x_end, binding.y_end, tags="edge")
             binding.x_start = coords[0]
             binding.y_start = coords[1]
 
@@ -225,7 +227,7 @@ class MazePlannerCanvas(Frame):
             binding.x_end = coords[0]
             binding.y_end = coords[1]
 
-        # Remeber to adjust all of the edges so that they sit under the node images
+        # Remember to adjust all of the edges so that they sit under the node images
         self._canvas.tag_lower("edge")
 
     def _launch_menu(self, coords):
@@ -289,9 +291,11 @@ class MazePlannerCanvas(Frame):
         """
         # Record the starting node
         self._edge_cache["item_start"] = self._get_current_item((self._cache["x"], self._cache["y"]))
+
         if self._edge_cache["item_start"] is None or self._edge_cache["item_start"] not in self._node_listing:
             self._clear_edge_cache()
             return
+
         self._edge_cache["x_start"] = self._cache["x"]
         self._edge_cache["y_start"] = self._cache["y"]
 
@@ -310,6 +314,7 @@ class MazePlannerCanvas(Frame):
             self._canvas.delete(self._edge_cache["edge"])
             self._clear_edge_cache()
             return
+
         # Post the edge information to the object manager
         # Clear the current edge from the edge drawing cache
         # Need to use the coord values as the cache values aren't updated during a drag apparently
@@ -331,6 +336,7 @@ class MazePlannerCanvas(Frame):
         # We will update the line position by deleting and redrawing
         if not self._valid_edge_cache():
             return
+
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
@@ -379,6 +385,7 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         Debug.printi("X:"+ str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
+
         item =  self._canvas.find_overlapping(coords[0],coords[1], coords[0], coords[1])
         if item is ():
             return None
@@ -393,18 +400,22 @@ class MazePlannerCanvas(Frame):
         # Determine if they are double click on the canvas, or on a node
         item = self._get_current_item(coords)
         self._cache["item"] = item
+
         if item is not None and item in self._node_listing:
             # Make request from object manager using the tag assigned
             NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
             # post information to object manager, or let the dialog handle it, or whatever
             return
+
         # if its the canvas, plot a new node and show the editing dialog
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
                                 outline="red", fill="black", activeoutline="black", activefill="red")
+
         # TODO: flesh out the information that is stored here
         self._node_listing[self._cache["item"]] = self._cache["item"]
         # then open the dialog
-        NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+        true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
+        NodeDialog(self, true_coords[0]+25, true_coords[1]+25)
 
     def delete_all(self):
         """
@@ -423,9 +434,11 @@ class MazePlannerCanvas(Frame):
         # Delete from our internal representations
         if node_id not in self._node_listing:
             return
+
         del self._node_listing[node_id]
         # Delete from the canvas
         self._canvas.delete(node_id)
+
         # Iterate through the edge bindings and delete all of those
         for key, binding in self._edge_bindings:
             if binding.item_start == node_id or binding.item_end == node_id:
