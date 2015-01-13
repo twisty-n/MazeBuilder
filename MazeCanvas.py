@@ -411,7 +411,8 @@ class MazePlannerCanvas(Frame):
         Delete all nodes and associated edges and objects from the canvas
         """
         # Iterate over each node in the node listing and delete it using delete node
-        pass
+        for key, node in self._node_listing:
+            self.delete_node(key)
 
     def delete_node(self, node_id):
         """
@@ -420,9 +421,20 @@ class MazePlannerCanvas(Frame):
         :param node_id:             The tkinter id of the node to be deleted
         """
         # Delete from our internal representations
+        del self._node_listing[node_id]
         # Delete from the canvas
+        self._canvas.delete(node_id)
         # Iterate through the edge bindings and delete all of those
+        for key, binding in self._edge_bindings:
+            if binding.item_start == node_id or binding.item_end == node_id:
+                del self._edge_bindings[key]
         # Inform the object manager that a node as been deleted
+        pass
+
+    def delete_edge(self, edge_id):
+        # Go through the edge bindings and delete the appropriate edge
+        del self._edge_bindings[edge_id]
+        # Inform the object manager that an edge has been deleted
         pass
 
 
