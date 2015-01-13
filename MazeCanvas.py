@@ -257,6 +257,7 @@ class MazePlannerCanvas(Frame):
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
+        # TODO: adjust this to account for the multiple different kinds of item that can be selected, perhaps an enum?
         if item is None:
             # No node is currently selected, create the general menu
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
@@ -345,6 +346,8 @@ class MazePlannerCanvas(Frame):
         if not self._valid_edge_cache():
             return
 
+        # TODO: this sometimes throws and error when trying to make an edge that shouldn't be
+        # figure out why this is
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
@@ -434,6 +437,10 @@ class MazePlannerCanvas(Frame):
         # Iterate over each node in the node listing and delete it using delete node
         for key in self._node_listing.keys():
             self.delete_node(key)
+
+        # Delete any rouge edge bindings that may exist
+        for binding in self._edge_bindings:
+            self.delete_edge(binding)
 
     def delete_node(self, node_id):
         """
