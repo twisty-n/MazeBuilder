@@ -240,15 +240,15 @@ class MazePlannerCanvas(Frame):
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         p_menu = Menu(self._canvas)
 
-        if item is ():
+        if item is None:
             # No node is currently selected, create the general menu
-            p_menu.add_command(label="Place Node", command=lambda coords: self._node_operation(coords))
-            p_menu.add_command(label="Delete All", command=lambda: Debug.printi("Delete all nodes", Debug.Level.INFO))
+            p_menu.add_command(label="Place Node", command=lambda: self._node_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
         else:
             # Create the node specific menu
             p_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
             p_menu.add_command(label="Edit Node", command=lambda: Debug.printi("Edit node", Debug.Level.INFO))
-            p_menu.add_command(label="Delete  Node", command=lambda: Debug.printi("Delete node", Debug.Level.INFO))
+            p_menu.add_command(label="Delete  Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
             p_menu.add_command(label="Mark as start", command=lambda: Debug.printi("New starting node", Debug.Level.INFO))
 
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
@@ -411,7 +411,7 @@ class MazePlannerCanvas(Frame):
         Delete all nodes and associated edges and objects from the canvas
         """
         # Iterate over each node in the node listing and delete it using delete node
-        for key, node in self._node_listing:
+        for key in self._node_listing.keys():
             self.delete_node(key)
 
     def delete_node(self, node_id):
@@ -421,6 +421,8 @@ class MazePlannerCanvas(Frame):
         :param node_id:             The tkinter id of the node to be deleted
         """
         # Delete from our internal representations
+        if node_id not in self._node_listing:
+            return
         del self._node_listing[node_id]
         # Delete from the canvas
         self._canvas.delete(node_id)
@@ -432,8 +434,16 @@ class MazePlannerCanvas(Frame):
         pass
 
     def delete_edge(self, edge_id):
+        """
+        Delete the specified edge from the MazeCanvas
+
+        :param edge_id:             The edge to be deleted
+        :return:
+        """
         # Go through the edge bindings and delete the appropriate edge
         del self._edge_bindings[edge_id]
+        # Delete the edge from the canvas
+        self._canvas.delete(edge_id)
         # Inform the object manager that an edge has been deleted
         pass
 
