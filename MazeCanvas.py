@@ -55,7 +55,7 @@ class MazePlannerCanvas(Frame):
             Event.DRAG_M1       : self._execute_drag,
             Event.DRAG_M2       : self._execute_edge,
             Event.RETURN        : self._launch_menu,
-            Event.D_CLICK_M1    : self._node_operation,
+            Event.D_CLICK_M1    : self._selection_operation,
             Event.SPACE         : self._launch_menu
         }
         self._edge_cache = \
@@ -188,8 +188,9 @@ class MazePlannerCanvas(Frame):
         delta_x = coords[0] - self._cache["x"]
         delta_y = coords[1] - self._cache["y"]
 
-        # move the object the appropriate amount
-        self._canvas.move(self._cache["item"], delta_x, delta_y)
+        # move the object the appropriate amount as long as the drag event has not been done on the empty canvas
+        if not self._cache["item"] is None:
+            self._canvas.move(self._cache["item"], delta_x, delta_y)
 
         # record the new position
         self._cache["x"] = coords[0]
@@ -218,14 +219,14 @@ class MazePlannerCanvas(Frame):
         #  Adjust the bindings with this node as the starting edge
         for binding in start_bindings:
             self._canvas.delete(binding.edge)
-            binding.edge = self._canvas.create_line( coords[0], coords[1], binding.x_end, binding.y_end, tags="edge")
+            binding.edge = self._canvas.create_line( coords[0], coords[1], binding.x_end, binding.y_end, tags="edge", activefill = "RoyalBlue1")
             binding.x_start = coords[0]
             binding.y_start = coords[1]
 
         # Adjust the bindings with this node as the ending edge
         for binding in end_bindings:
             self._canvas.delete(binding.edge)
-            binding.edge = self._canvas.create_line( binding.x_start, binding.y_start, coords[0], coords[1], tags="edge")
+            binding.edge = self._canvas.create_line( binding.x_start, binding.y_start, coords[0], coords[1], tags="edge", activefill = "RoyalBlue1")
             binding.x_end = coords[0]
             binding.y_end = coords[1]
 
@@ -244,7 +245,7 @@ class MazePlannerCanvas(Frame):
         # due to the Python version that is being used -.- so now it has to be not optimal until I find a better
         # solution
         p_menu = Menu(self._canvas)
-        p_menu.add_command(label="Place Node", command=lambda: self._node_operation((self._cache["x"], self._cache["y"])))
+        p_menu.add_command(label="Place Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
         p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
 
         o_menu = Menu(self._canvas)
@@ -347,9 +348,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
-            coords[0]-1, coords[1]-1, tags="edge")
-
-        # TODO; make it so that the lines change colour when active
+            coords[0]-1, coords[1]-1, tags="edge", activefill = "RoyalBlue1")
 
     def _update_cache(self, item, coords):
         """
@@ -400,12 +399,14 @@ class MazePlannerCanvas(Frame):
             return None
         return item[0]
 
-    def _node_operation(self, coords):
+    def _selection_operation(self, coords):
         """
         Contextually create or edit a node
         :param coords:
         :return:
         """
+        # TODO: determine if they clicked on an edge or an object as well
+
         # Determine if they are double click on the canvas, or on a node
         item = self._get_current_item(coords)
         self._cache["item"] = item
@@ -470,6 +471,11 @@ class MazePlannerCanvas(Frame):
         pass
 
     def _mark_start_node(self, node_id):
+        """
+        Mark the passed in node as the starting node
+        :param node_id:
+        :return:
+        """
         # Print the debug information
         # Mark as the new starting node on the canvas, first check that it is a node
         if node_id in self._node_listing:
