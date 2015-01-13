@@ -10,6 +10,7 @@ File: Debug.py
 Module contains the custom user interface dialogs
 """
 
+
 # Imports
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator

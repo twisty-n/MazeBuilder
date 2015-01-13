@@ -36,6 +36,7 @@ class Event:
     RELEASE_M2      = "RELEASE_M2"
     RELEASE_M3      = "RELEASE_M3"
     RETURN          = "RETURN"
+    SPACE           = "SPACE"
 
 
 # Classes
@@ -54,7 +55,8 @@ class MazePlannerCanvas(Frame):
             Event.DRAG_M1       : self._execute_drag,
             Event.DRAG_M2       : self._execute_edge,
             Event.RETURN        : self._launch_menu,
-            Event.D_CLICK_M1    : self._node_operation
+            Event.D_CLICK_M1    : self._node_operation,
+            Event.SPACE         : self._launch_menu
         }
         self._edge_cache = \
             {
@@ -77,6 +79,7 @@ class MazePlannerCanvas(Frame):
         self._status = status
         self._edge_bindings = {}
         self._node_listing = {}
+        self._curr_start = None
         self._construct(parent)
 
     def _construct(self, parent):
@@ -94,6 +97,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.bind("<Double-Button-1>", lambda event, m_event=Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Motion>", lambda event, m_event=None : self._handle_mot(m_event, event))
         self._canvas.bind("<Enter>", lambda event: self._canvas.focus_set())
+        self._canvas.bind("<space>", lambda event, m_event=Event.SPACE: self._handle_mouse_events(m_event, event))
 
     def _handle_mot(self, m_event, event):
         """
@@ -149,11 +153,11 @@ class MazePlannerCanvas(Frame):
 
         :coords:            The coordinates associated with this event
         """
-
         # TODO add in local object manager information
         if self._command_cache is Event.D_CLICK_M1 or None:
             # Don't dispatch if its the result of a double click
             return
+
         # Obtain the final points
         x = coords[0]
         y = coords[1]
@@ -190,8 +194,7 @@ class MazePlannerCanvas(Frame):
         # record the new position
         self._cache["x"] = coords[0]
         self._cache["y"] = coords[1]
-        
-        # TODO: make sure that any attached edges are update
+
         self._update_attached_edges(self._cache["item"], coords)
 
     def _update_attached_edges(self, node, coords):
@@ -201,15 +204,14 @@ class MazePlannerCanvas(Frame):
         :param node:            The node that has been dragged
         :param coords:          The mouse coordinates which are the new coordinates of the node
         """
-
         # Go through dictionary and gather list of all attached edge bindings for a node
         start_bindings = []
-        for key, binding in self._edge_bindings:
+        for key, binding in self._edge_bindings.iteritems():
             if binding.item_start == node:
                 start_bindings.append(binding)
 
         end_bindings = []
-        for key, binding in self._edge_bindings:
+        for key, binding in self._edge_bindings.iteritems():
             if binding.item_end == node:
                 end_bindings.append(binding)
 
@@ -238,23 +240,30 @@ class MazePlannerCanvas(Frame):
         :param coords:
         :return:
         """
-        # Launch a context menu based on the coords of the mouse
-        item = self._get_current_item((self._cache["x"], self._cache["y"]))
+        # Configure the "static" menu entries -- they can't be static without seriously destroying readability
+        # due to the Python version that is being used -.- so now it has to be not optimal until I find a better
+        # solution
         p_menu = Menu(self._canvas)
+        p_menu.add_command(label="Place Node", command=lambda: self._node_operation((self._cache["x"], self._cache["y"])))
+        p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
+
+        o_menu = Menu(self._canvas)
+        o_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
+        o_menu.add_command(label="Edit Node", command=lambda: Debug.printi("Edit node", Debug.Level.INFO))
+        o_menu.add_command(label="Delete Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+        o_menu.add_command(label="Mark as start", command=lambda: self._mark_start_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+
+        item = self._get_current_item((self._cache["x"], self._cache["y"]))
+        updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
         if item is None:
             # No node is currently selected, create the general menu
-            p_menu.add_command(label="Place Node", command=lambda: self._node_operation((self._cache["x"], self._cache["y"])))
-            p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
+            p_menu.tk_popup(updated_coords[0], updated_coords[1])
         else:
             # Create the node specific menu
-            p_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
-            p_menu.add_command(label="Edit Node", command=lambda: Debug.printi("Edit node", Debug.Level.INFO))
-            p_menu.add_command(label="Delete  Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
-            p_menu.add_command(label="Mark as start", command=lambda: Debug.printi("New starting node", Debug.Level.INFO))
+            o_menu.tk_popup(updated_coords[0], updated_coords[1])
 
-        updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
-        p_menu.tk_popup(updated_coords[0], updated_coords[1])
+
 
     def _valid_edge_cache(self):
         """
@@ -305,9 +314,7 @@ class MazePlannerCanvas(Frame):
         :param coords:
         :return:
         """
-        # Record the ending node\
         # Check if the cursor is over a node, if so continue, else abort
-
         curr = self._get_current_item((coords[0], coords[1]))
         if curr is None or not self._valid_edge_cache() or curr not in self._node_listing:
             # Abort the edge creation process
@@ -341,6 +348,8 @@ class MazePlannerCanvas(Frame):
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
             coords[0]-1, coords[1]-1, tags="edge")
+
+        # TODO; make it so that the lines change colour when active
 
     def _update_cache(self, item, coords):
         """
@@ -384,9 +393,9 @@ class MazePlannerCanvas(Frame):
         :param coords:                  The current coordinates of the mouse
         :return:
         """
-        Debug.printi("X:"+ str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
+        Debug.printi("X:" + str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
 
-        item =  self._canvas.find_overlapping(coords[0],coords[1], coords[0], coords[1])
+        item = self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
         if item is ():
             return None
         return item[0]
@@ -440,9 +449,9 @@ class MazePlannerCanvas(Frame):
         self._canvas.delete(node_id)
 
         # Iterate through the edge bindings and delete all of those
-        for key, binding in self._edge_bindings:
-            if binding.item_start == node_id or binding.item_end == node_id:
-                del self._edge_bindings[key]
+        for key in self._edge_bindings.keys():
+            if self._edge_bindings[key].item_start == node_id or self._edge_bindings[key].item_end == node_id:
+                self.delete_edge(key)
         # Inform the object manager that a node as been deleted
         pass
 
@@ -458,6 +467,20 @@ class MazePlannerCanvas(Frame):
         # Delete the edge from the canvas
         self._canvas.delete(edge_id)
         # Inform the object manager that an edge has been deleted
+        pass
+
+    def _mark_start_node(self, node_id):
+        # Print the debug information
+        # Mark as the new starting node on the canvas, first check that it is a node
+        if node_id in self._node_listing:
+            Debug.printi("Node:" + str(node_id) + " has been marked as the new starting node", Debug.Level.INFO)
+            if self._curr_start is not None:
+                # Return the old starting node to its normal colour
+                self._canvas.itemconfig(self._curr_start, outline="red", fill="black", activeoutline="black", activefill="red")
+            self._curr_start = node_id
+            self._canvas.itemconfig(node_id, outline="black", fill="green", activeoutline="green", activefill="black")
+
+    # Inform the object manager that there is a new starting node
         pass
 
 
