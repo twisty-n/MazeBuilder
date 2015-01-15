@@ -122,13 +122,15 @@ class PicConfigurator(ListHeap):
         # Post a delete all notice to the manager
         self._remove_all()
 
-    class TexturePicker(ListHeap):
-        def __init__(self, parent):
-            ListHeap.__init__(self, parent)
+class TexturePicker(ListHeap):
+    def __init__(self, parent):
+        ListHeap.__init__(self, parent)
 
-        def _handle_db_click(self, event):
-            pass
+    def _handle_db_click(self, event):
+        Debug.printi("Double click || Texture Picker", Debug.Level.INFO)
+        pass
 
-        def _handle_r_click(self, event):
-            pass
+    def _handle_r_click(self, event):
+        Debug.printi("Right mouse click || Texture Picker", Debug.Level.INFO)
+        pass
 

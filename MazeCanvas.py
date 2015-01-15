@@ -474,25 +474,26 @@ class MazePlannerCanvas(Frame):
         # Determine the item ID
         item = self._get_current_item(coords)
         self._cache["item"] = item
+        true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
         if self._is_node(item):
             Debug.printi("Node Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make request from object manager using the tag assigned
-            NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10)
             # post information to object manager, or let the dialog handle it, or whatever
             return
 
         if self._is_edge(item):
             Debug.printi("Edge Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make a request from the object manager to populate the dialog
-            EdgeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            EdgeDialog(self, true_coords[0] + 10, true_coords[1] + 10)
             # Make sure that information is posted to the object manager
             return
 
         if self._is_object(item):
             Debug.printi("Object Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make a request from the object manager to populate the dialog
-            ObjectDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            ObjectDialog(self, true_coords[0] + 10, true_coords[1] + 10)
             # Make sure that information is posted to the object manager
             return
 
@@ -503,7 +504,7 @@ class MazePlannerCanvas(Frame):
         # TODO: flesh out the information that is stored in the node listing
         self._node_listing[self._cache["item"]] = self._cache["item"]
         # then open the dialog
-        true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
+
         NodeDialog(self, true_coords[0]+25, true_coords[1]+25)
 
     def delete_all(self):

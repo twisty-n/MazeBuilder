@@ -13,7 +13,7 @@ Module contains the custom user interface dialogs
 
 # Imports
 from UtilWidgets import Dialog, ImagePicker
-from CustomWidgets import PicConfigurator
+from CustomWidgets import PicConfigurator, TexturePicker
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW, Button, ACTIVE, END, StringVar, IntVar
 import tkFileDialog
 import Debug
@@ -280,8 +280,30 @@ class EdgeDialog(Dialog):
         """
         Define the body of the dialog
         """
-        Label(parent, text="Source:").grid(row=0, column=0, sticky=W)
-        Label(parent, text="Target:").grid(row=0, column=2, sticky=W)
-        Label(parent, text="Wall1:").grid(row=1, column=0, sticky=W)
-        Label(parent, text="Wall2:").grid(row=1, column=2, sticky=W)
-        # Todo Complete the dialog
+        Label(parent, text="Source:", bg="grey").grid(row=0, column=0, sticky=W)
+        Label(parent, text="Target:", bg="grey").grid(row=0, column=2, sticky=W)
+        Label(parent, text="Wall1:").grid(row=1, column=0, sticky=W+E, columnspan=2)
+        Label(parent, text="Wall2:").grid(row=1, column=2, sticky=W+E, columnspan=2)
+
+        # The edge options now
+        # TODO. fix it so that the labels are auto populated
+        self.source = Label(parent, width=9, text="INVALID", bg="grey")
+        self.target = Label(parent, width=9, text="INVALID", bg="grey")
+        self.source.grid(row=0, column=1, sticky=W)
+        self.target.grid(row=0, column=3, sticky=W)
+
+        # The wall options now
+        Label(parent, text="Height:").grid(row=2, column=0, sticky=W)
+        Label(parent, text="Height:").grid(row=2, column=2, sticky=W)
+        self.wall1_tex_select = TexturePicker(parent)
+        self.wall2_tex_select = TexturePicker(parent)
+        self.wall1_tex_select.config(width=18)
+        self.wall2_tex_select.config(width=18)
+        self.wall1_tex_select.grid(row=3, columnspan=2, column=0)
+        self.wall2_tex_select.grid(row=3, columnspan=2, column=2)
+        self.wall1_height = Entry(parent, width=9)
+        self.wall2_height = Entry(parent, width=9)
+        self.wall1_height.grid(row=2, column=1)
+        self.wall2_height.grid(row=2, column=3)
+
+
