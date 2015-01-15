@@ -339,6 +339,7 @@ class MazePlannerCanvas(Frame):
         :param coords:
         :return:
         """
+        # Todo: figure out why some of the edges are not being bound in the right way
         # Check if the cursor is over a node, if so continue, else abort
         curr = self._get_current_item((coords[0], coords[1]))
         if curr is None or not self._valid_edge_cache() or curr not in self._node_listing:

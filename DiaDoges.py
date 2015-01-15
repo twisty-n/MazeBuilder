@@ -35,11 +35,11 @@ class EnviroDialog(Dialog):
         :return:                An instance of EnviroDialog
         """
         self._entries = {
-            "floorTexVal": None,
-            "wallHeight": None,
-            "edgeWidth": None,
-            "skyTexVal": None,
-            "stateNode": None
+            "floor_texture": None,
+            "wall_height": None,
+            "edge_width": None,
+            "sky_texture": None,
+            "start_node": None
         }
         Dialog.__init__(self, parent=parent, title="EnvironmentConfiguration", populator=populator)
 
@@ -79,11 +79,11 @@ class VRConfigDialog(Dialog):
         Construct the dialog
         """
         self._entries = {
-            "frameAngle"    : None,
+            "frame_angle"    : None,
             "distortion"     : False,
             "windowed"      : False,
-            "eyeHeight"     : None,
-            "minDisToWall"  : None
+            "eye_height"     : None,
+            "minimum_dist_to_wall"  : None
 
         }
         Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator)
@@ -151,10 +151,10 @@ class NodeDialog(Dialog):
         """
         self._entries = {
             "node_id"   : None,
-            "x_coord"   : None,
-            "y_coord"   : None,
-            "room_text" : None,
-            "wall_pics" : []
+            "x_coordinate"   : None,
+            "y_coordinate"   : None,
+            "room_texture" : None,
+            "wall_pictures" : []
         }
         Dialog.__init__(self, parent, "NodeBuilder", True, x, y, populator)
 
@@ -197,7 +197,7 @@ class ObjectDialog(Dialog):
         :param parent:          The parent tk instance that spawns the dialog
         """
         self._entries = {
-            "x_coord"   : None,
+            "x_coordinate"   : None,
             "y_coord"   : None,
             "name"      : None,
             "mesh"      : None,

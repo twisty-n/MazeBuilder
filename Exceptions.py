@@ -31,11 +31,19 @@ class DuplicateListHeapItemException(Exception):
     Raised when a duplicate item is added to a ListHeap
     """
     def  __init__(self, item):
-        Exception.__init__("Item" + str(item) + "already exists in ListHeap")
+        Exception.__init__(self, "Item" + str(item) + "already exists in ListHeap")
 
 class MaxItemLimitReachedException(Exception):
     """
     Raised when an attempt to add an item to a ListHeap is made when the ListHeap is at maximum capacity
     """
     def __init__(self):
-        Exception.__init__("Maximum number of items reached for this ListHeap")
+        Exception.__init__(self, "Maximum number of items reached for this ListHeap")
+
+class ContainerFillException(Exception):
+    """
+    Raised when the incorrect dictionary has been provided to fill a given container
+    """
+    def __init__(self, container_type, provided_dict):
+        Exception.__init__(self, "Improper dictionary provided to container of type "
+                           + container_type + "|| Values provided: " + str(provided_dict))
