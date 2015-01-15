@@ -252,9 +252,16 @@ class Dialog(Toplevel):
     A definition for a dialog style widget
     This class has been derived from the link at the header of this file
     """
-    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None):
+    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None, populator=None):
         """
-        Construct the instance of dialog
+        Construct the instance of the dialog
+
+        :parent:                The parent widget that spawns the dialog
+        :title:                 The title of the dialog that will be used in the header bar
+        :lock_focus:            Bind the focus of the mouse to this window until it is dismissed
+        :x:                     The x coord to launch the dialog at
+        :y:                     The y coords to launch the dialog at
+        :populator:             THe population parameters for the dialog
         """
         Toplevel.__init__(self, parent)
         self.title(title)
@@ -267,6 +274,8 @@ class Dialog(Toplevel):
         body = Frame(self)
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
+        if populator is not None:
+            self.populate()
 
         self.buttonbox()
         self.grab_set()
@@ -297,6 +306,13 @@ class Dialog(Toplevel):
         Override: Create the dialogue body with this function
         :param parent:
         :return:
+        """
+        pass
+
+    def populate(self, populator):
+        """
+        Override: Define a population plan to fill all of the required entries for this widget
+        :param populator:               The population parameters for the widget
         """
         pass
 

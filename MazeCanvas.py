@@ -50,7 +50,9 @@ class CanvasObject:
 # Classes
 
 class MazePlannerCanvas(Frame):
-
+    """
+    The main workhorse fot the GUI
+    """
     def __init__(self, parent, status=None):
         Frame.__init__(self, parent)
         self._canvas = Canvas(self, bg="grey", cursor="tcross")

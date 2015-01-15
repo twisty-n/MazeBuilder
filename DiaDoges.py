@@ -28,7 +28,7 @@ class EnviroDialog(Dialog):
     """
     Dialog for editing the simulation environment details
     """
-    def __init__(self, parent):
+    def __init__(self, parent, populator=None):
         """
         Construct the dialog
         :param parent:          The tk element that is the parent of the dialog
@@ -41,7 +41,7 @@ class EnviroDialog(Dialog):
             "skyTexVal": None,
             "stateNode": None
         }
-        Dialog.__init__(self, parent, "EnvironmentConfiguration")
+        Dialog.__init__(self, parent=parent, title="EnvironmentConfiguration", populator=populator)
 
     def body(self, parent):
         """
@@ -65,14 +65,16 @@ class EnviroDialog(Dialog):
         self._sNode.grid(row=4, column=1, columnspan=2, sticky=W)
 
     # TODO populate the handler methods
+    def populate(self, populator):
+        # Todo: implement
+        pass
 
 
 class VRConfigDialog(Dialog):
     """
     Defines a custom dialog for editing the Virtual Reality params
     """
-
-    def __init__(self, parent):
+    def __init__(self, parent, populator=None):
         """
         Construct the dialog
         """
@@ -84,7 +86,7 @@ class VRConfigDialog(Dialog):
             "minDisToWall"  : None
 
         }
-        Dialog.__init__(self, parent, "VRConfiguration")
+        Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator)
 
     def body(self, parent):
         """
@@ -141,7 +143,7 @@ class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
     """
-    def __init__(self, parent, x=None, y=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the inital node dialog
         :param parent:          The tk parent instance to spawn the node from
@@ -154,7 +156,7 @@ class NodeDialog(Dialog):
             "room_text" : None,
             "wall_pics" : []
         }
-        Dialog.__init__(self, parent, "NodeBuilder", True, x, y)
+        Dialog.__init__(self, parent, "NodeBuilder", True, x, y, populator)
 
     def body(self, parent):
         """
@@ -188,7 +190,7 @@ class ObjectDialog(Dialog):
     """
     A custom dialog that allows the user to configure placing objects in the virtual environment
     """
-    def __init__(self, parent, x=None, y=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the instance of the object dialog
 
@@ -204,7 +206,7 @@ class ObjectDialog(Dialog):
         self._scale_text = StringVar()
         self._scale_text.set(str(1))
 
-        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y)
+        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y, populator)
 
     def body(self, parent):
         """
@@ -253,7 +255,7 @@ class ObjectDialog(Dialog):
 
 
 class EdgeDialog(Dialog):
-    def __init__(self, parent, x=None, y=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the instance of EdgeDialog
 
@@ -274,7 +276,7 @@ class EdgeDialog(Dialog):
                 }
 
             }
-        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y)
+        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y, populator)
 
     def body(self, parent):
         """
