@@ -233,14 +233,18 @@ class MazePlannerCanvas(Frame):
         #  Adjust the bindings with this node as the starting edge
         for binding in start_bindings:
             self._canvas.delete(binding.edge)
-            binding.edge = self._canvas.create_line( coords[0], coords[1], binding.x_end, binding.y_end, tags="edge", activefill = "RoyalBlue1")
+            del self._edge_bindings[binding.edge]
+            binding.edge = self._canvas.create_line(coords[0], coords[1], binding.x_end, binding.y_end, tags="edge", activefill="RoyalBlue1")
+            self._edge_bindings[binding.edge] = binding
             binding.x_start = coords[0]
             binding.y_start = coords[1]
 
         # Adjust the bindings with this node as the ending edge
         for binding in end_bindings:
             self._canvas.delete(binding.edge)
-            binding.edge = self._canvas.create_line( binding.x_start, binding.y_start, coords[0], coords[1], tags="edge", activefill = "RoyalBlue1")
+            del self._edge_bindings[binding.edge]
+            binding.edge = self._canvas.create_line(binding.x_start, binding.y_start, coords[0], coords[1], tags="edge", activefill="RoyalBlue1")
+            self._edge_bindings[binding.edge] = binding
             binding.x_end = coords[0]
             binding.y_end = coords[1]
 
