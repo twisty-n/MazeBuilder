@@ -75,7 +75,7 @@ class PicConfigurator(ListHeap):
         p_menu = Menu(self._parent)
         p_menu.add_command(label="Add Picture", command=lambda: self._add_new_wall_pic())
         p_menu.add_command(label="Delete Picture", command=lambda: self._remove_wall_pic())
-        p_menu.add_command(label="Delete All", command=lambda: self._remove_all())
+        p_menu.add_command(label="Delete All", command=lambda: self.remove_all())
         p_menu.post(event.x_root, event.y_root)
 
     def _add_new_wall_pic(self):
@@ -87,6 +87,7 @@ class PicConfigurator(ListHeap):
         node that is being edited
         """
         # Display the dialogue
+        # TODO implement
         item_id = None
         item = None
         # Extract the return values
@@ -111,12 +112,23 @@ class PicConfigurator(ListHeap):
         # Retrieve the item that was selected
         key = None
         # Post a delete notice to the manager
-        self.remove(key)
+        self._remove(key)
 
-    def _remove_all(self):
+    def remove_all(self):
         """
         Removes all of the wall pictures
         :return:
         """
         # Post a delete all notice to the manager
-        # self._remove_all() Or recurse infinitely, that will also work well no doubt
+        self._remove_all()
+
+    class TexturePicker(ListHeap):
+        def __init__(self, parent):
+            ListHeap.__init__(self, parent)
+
+        def _handle_db_click(self, event):
+            pass
+
+        def _handle_r_click(self, event):
+            pass
+

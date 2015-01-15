@@ -18,6 +18,8 @@ from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
 import tkFileDialog
 from PIL import Image, ImageTk
 import Debug
+import sys
+
 from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
 
 
@@ -284,6 +286,8 @@ class Dialog(Toplevel):
         if lock_focus:
             self.wait_window(self)
 
+    # TODO: define a way to set default values with an object
+
     """
     Construction Hooks
     """
@@ -378,7 +382,7 @@ class ListHeap(Frame):
         with a set of items in a list box
     """
 
-    def __init__(self, parent, max_limit):
+    def __init__(self, parent, max_limit=sys.maxint):
         """
 
         :param parent:          The parent tk item
@@ -414,7 +418,7 @@ class ListHeap(Frame):
         self._items[key] = item
         self._listbox.insert(END, key)
 
-    def remove(self, key):
+    def _remove(self, key):
         """
         Remove an item from the ListHeap
         :param key:             The key of the item that is to be removed
@@ -422,7 +426,7 @@ class ListHeap(Frame):
         del self._items[key]
         self._listbox.delete(ANCHOR)
 
-    def remove_all(self):
+    def _remove_all(self):
         """
         Removes all of the items from the ListHeap
         """

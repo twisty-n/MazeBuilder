@@ -41,7 +41,7 @@ class EnviroDialog(Dialog):
             "skyTexVal": None,
             "stateNode": None
         }
-        Dialog.__init__(self, parent, "Environment Configuration")
+        Dialog.__init__(self, parent, "EnvironmentConfiguration")
 
     def body(self, parent):
         """
@@ -84,7 +84,7 @@ class VRConfigDialog(Dialog):
             "minDisToWall"  : None
 
         }
-        Dialog.__init__(self, parent, "VR Configuration")
+        Dialog.__init__(self, parent, "VRConfiguration")
 
     def body(self, parent):
         """
@@ -154,7 +154,7 @@ class NodeDialog(Dialog):
             "room_text" : None,
             "wall_pics" : []
         }
-        Dialog.__init__(self, parent, "Node Builder", True, x, y)
+        Dialog.__init__(self, parent, "NodeBuilder", True, x, y)
 
     def body(self, parent):
         """
@@ -204,7 +204,7 @@ class ObjectDialog(Dialog):
         self._scale_text = StringVar()
         self._scale_text.set(str(1))
 
-        Dialog.__init__(self, parent, "Object Builder")
+        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y)
 
     def body(self, parent):
         """
@@ -250,3 +250,38 @@ class ObjectDialog(Dialog):
         self._mesh.delete(0, END)
         self._mesh.insert(0, file_path)
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
+
+
+class EdgeDialog(Dialog):
+    def __init__(self, parent, x=None, y=None):
+        """
+        Construct the instance of EdgeDialog
+
+        :param parent:          The parent widget that spawns this dialog
+        """
+        self._entries = \
+            {
+                "source" : None,
+                "target" : None,
+                "height" : None,
+                "wall1"  : {
+                    "height" : None,
+                    "texture": []
+                },
+                "wall2"  : {
+                    "height" : None,
+                    "texture": []
+                }
+
+            }
+        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y)
+
+    def body(self, parent):
+        """
+        Define the body of the dialog
+        """
+        Label(parent, text="Source:").grid(row=0, column=0, sticky=W)
+        Label(parent, text="Target:").grid(row=0, column=2, sticky=W)
+        Label(parent, text="Wall1:").grid(row=1, column=0, sticky=W)
+        Label(parent, text="Wall2:").grid(row=1, column=2, sticky=W)
+        # Todo Complete the dialog

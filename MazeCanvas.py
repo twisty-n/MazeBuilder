@@ -14,7 +14,7 @@ Module contains the implementation
 # Imports
 import Debug
 from Tkinter import Canvas, Frame, BOTH, Menu
-from DiaDoges import NodeDialog
+from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
 
 
 # Enumerations and Functions
@@ -37,6 +37,14 @@ class Event:
     RELEASE_M3      = "RELEASE_M3"
     RETURN          = "RETURN"
     SPACE           = "SPACE"
+
+class CanvasObject:
+    """
+    An enumeration capturing the types of objects that can appear on the canvas
+    """
+    NODE         = "NODE"
+    EDGE         = "EDGE"
+    OBJECT       = "OBJECT"
 
 
 # Classes
@@ -79,6 +87,7 @@ class MazePlannerCanvas(Frame):
         self._status = status
         self._edge_bindings = {}
         self._node_listing = {}
+        self._object_listing = {}
         self._curr_start = None
         self._construct(parent)
 
@@ -184,6 +193,9 @@ class MazePlannerCanvas(Frame):
 
         :param coords:          The coordinates associated with this event
         """
+        # Abort drag if the item is not a node
+        if self._cache["item"] not in self._node_listing:
+            return
         # Update the drawing information
         delta_x = coords[0] - self._cache["x"]
         delta_y = coords[1] - self._cache["y"]
@@ -245,26 +257,34 @@ class MazePlannerCanvas(Frame):
         # due to the Python version that is being used -.- so now it has to be not optimal until I find a better
         # solution
         p_menu = Menu(self._canvas)
-        p_menu.add_command(label="Place Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
-        p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
-
-        o_menu = Menu(self._canvas)
-        o_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
-        o_menu.add_command(label="Edit Node", command=lambda: Debug.printi("Edit node", Debug.Level.INFO))
-        o_menu.add_command(label="Delete Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
-        o_menu.add_command(label="Mark as start", command=lambda: self._mark_start_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
-
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
-        # TODO: adjust this to account for the multiple different kinds of item that can be selected, perhaps an enum?
         if item is None:
             # No node is currently selected, create the general menu
+            p_menu.add_command(label="Place Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
-        else:
-            # Create the node specific menu
-            o_menu.tk_popup(updated_coords[0], updated_coords[1])
+            return
 
+        if self._is_node(item):
+            # Create the node specific menu
+            p_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
+            p_menu.add_command(label="Edit Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+            p_menu.add_command(label="Mark as start", command=lambda: self._mark_start_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+            p_menu.tk_popup(updated_coords[0], updated_coords[1])
+            return
+
+        if self._is_edge(item):
+            p_menu.add_command(label="Edit Edge", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete Edge", command=lambda: self.delete_edge(self._get_current_item((self._cache["x"], self._cache["y"]))))
+            p_menu.tk_popup(updated_coords[0], updated_coords[1])
+            return
+
+        if self._is_object(item):
+            # Todo, define
+            pass
 
 
     def _valid_edge_cache(self):
@@ -303,6 +323,7 @@ class MazePlannerCanvas(Frame):
         # Record the starting node
         self._edge_cache["item_start"] = self._get_current_item((self._cache["x"], self._cache["y"]))
 
+        # Abort the operation if the item was not a valid node to be selecting
         if self._edge_cache["item_start"] is None or self._edge_cache["item_start"] not in self._node_listing:
             self._clear_edge_cache()
             return
@@ -331,7 +352,7 @@ class MazePlannerCanvas(Frame):
         self._edge_cache["x_end"] = coords[0]
         self._edge_cache["y_end"] = coords[1]
         self._edge_cache["item_end"] = curr
-        self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)
+        self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)  #Note that we use the edge ID as the key
         self._clear_edge_cache()
 
     def _execute_edge(self, coords):
@@ -396,11 +417,53 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         Debug.printi("X:" + str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
+        item = self._canvas.find_overlapping(coords[0]-1, coords[1]-1, coords[0]+1, coords[1]+1)
 
-        item = self._canvas.find_overlapping(coords[0], coords[1], coords[0], coords[1])
         if item is ():
             return None
+
         return item[0]
+
+    def _is_node(self, obj):
+        """
+        Returns true if the supplied object is a node
+        :param obj:             The object id to id
+        :return:
+        """
+        return obj in self._node_listing
+
+    def _is_edge(self, obj):
+        """
+        Returns true if the supplied object is an edge
+
+        :param obj:             The object id to id
+        :return:
+        """
+        return obj in self._edge_bindings
+
+    def _is_object(self, obj):
+        """
+        Returns true if the supplied object is an object
+
+        :param obj:             The object id to id
+        :return:
+        """
+        return obj in self._object_listing
+
+    def _get_obj_type(self, obj):
+        """
+        Returns the Object type of the supplied object
+
+        :param obj:             The object to identify
+        :return:
+        """
+        if self._is_node(obj):
+            return CanvasObject.NODE
+        if self._is_edge(obj):
+            return CanvasObject.EDGE
+        if self._is_object(obj):
+            return CanvasObject.OBJECT
+        return None
 
     def _selection_operation(self, coords):
         """
@@ -408,23 +471,36 @@ class MazePlannerCanvas(Frame):
         :param coords:
         :return:
         """
-        # TODO: determine if they clicked on an edge or an object as well
-
-        # Determine if they are double click on the canvas, or on a node
+        # Determine the item ID
         item = self._get_current_item(coords)
         self._cache["item"] = item
 
-        if item is not None and item in self._node_listing:
+        if self._is_node(item):
+            Debug.printi("Node Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make request from object manager using the tag assigned
             NodeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
             # post information to object manager, or let the dialog handle it, or whatever
             return
 
-        # if its the canvas, plot a new node and show the editing dialog
+        if self._is_edge(item):
+            Debug.printi("Edge Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
+            # Make a request from the object manager to populate the dialog
+            EdgeDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            # Make sure that information is posted to the object manager
+            return
+
+        if self._is_object(item):
+            Debug.printi("Object Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
+            # Make a request from the object manager to populate the dialog
+            ObjectDialog(self, self._cache["event"].x_root+50, self._cache["event"].y_root+50)
+            # Make sure that information is posted to the object manager
+            return
+
+        # its the canvas, plot a new node and show the editing dialog
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
                                 outline="red", fill="black", activeoutline="black", activefill="red")
 
-        # TODO: flesh out the information that is stored here
+        # TODO: flesh out the information that is stored in the node listing
         self._node_listing[self._cache["item"]] = self._cache["item"]
         # then open the dialog
         true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
@@ -441,6 +517,9 @@ class MazePlannerCanvas(Frame):
         # Delete any rouge edge bindings that may exist
         for binding in self._edge_bindings:
             self.delete_edge(binding)
+
+        # Delete any naughty objects that are left
+        self._canvas.delete("all")
 
     def delete_node(self, node_id):
         """
@@ -493,7 +572,7 @@ class MazePlannerCanvas(Frame):
             self._curr_start = node_id
             self._canvas.itemconfig(node_id, outline="black", fill="green", activeoutline="green", activefill="black")
 
-    # Inform the object manager that there is a new starting node
+        # Inform the object manager that there is a new starting node
         pass
 
 
