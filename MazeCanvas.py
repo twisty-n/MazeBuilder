@@ -234,7 +234,8 @@ class MazePlannerCanvas(Frame):
         for binding in start_bindings:
             self._canvas.delete(binding.edge)
             del self._edge_bindings[binding.edge]
-            binding.edge = self._canvas.create_line(coords[0], coords[1], binding.x_end, binding.y_end, tags="edge", activefill="RoyalBlue1")
+            binding.edge = self._canvas.create_line(coords[0], coords[1], binding.x_end,
+                                                    binding.y_end, tags="edge", activefill="RoyalBlue1", tag="edge")
             self._edge_bindings[binding.edge] = binding
             binding.x_start = coords[0]
             binding.y_start = coords[1]
@@ -243,7 +244,8 @@ class MazePlannerCanvas(Frame):
         for binding in end_bindings:
             self._canvas.delete(binding.edge)
             del self._edge_bindings[binding.edge]
-            binding.edge = self._canvas.create_line(binding.x_start, binding.y_start, coords[0], coords[1], tags="edge", activefill="RoyalBlue1")
+            binding.edge = self._canvas.create_line(binding.x_start, binding.y_start,
+                                                    coords[0], coords[1], tags="edge", activefill="RoyalBlue1", tag="edge")
             self._edge_bindings[binding.edge] = binding
             binding.x_end = coords[0]
             binding.y_end = coords[1]
@@ -379,7 +381,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
-            coords[0]-1, coords[1]-1, tags="edge", activefill = "RoyalBlue1")
+            coords[0]-1, coords[1]-1, tags="edge", activefill = "RoyalBlue1", tag="edge")
 
     def _update_cache(self, item, coords):
         """
@@ -428,6 +430,13 @@ class MazePlannerCanvas(Frame):
 
         if item is ():
             return None
+
+        # Hacky solution for now TODO make it better!
+        # Return the first node that we come across, since they seem to be returned by tkinter
+        # in reverse order to their visual positioning, we'll go through the list backwards
+        for val in item[::-1]:
+            if val in self._node_listing:
+                return val
 
         return item[0]
 
@@ -506,7 +515,7 @@ class MazePlannerCanvas(Frame):
 
         # its the canvas, plot a new node and show the editing dialog
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
-                                outline="red", fill="black", activeoutline="black", activefill="red")
+                                outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
 
         # TODO: flesh out the information that is stored in the node listing
         self._node_listing[self._cache["item"]] = self._cache["item"]
