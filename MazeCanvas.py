@@ -268,6 +268,8 @@ class MazePlannerCanvas(Frame):
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
+        # TODO: when specifiying that an object be added to a node, make it so that the node as a stipple pattern
+
         if item is None:
             # No node is currently selected, create the general menu
             p_menu.add_command(label="Place Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
@@ -302,7 +304,6 @@ class MazePlannerCanvas(Frame):
         A valid edge descriptor is when the edge has a valid starting node, if the
         edge does not contain a valid starting node, this means that the edge was not
         created in the proper manner and should thus be ignored by any edge operations
-        :return:
         """
         return self._edge_cache["item_start"] is not (None,)
 
@@ -438,6 +439,7 @@ class MazePlannerCanvas(Frame):
             if val in self._node_listing:
                 return val
 
+        # Else, just return the first item and be done with it
         return item[0]
 
     def _is_node(self, obj):

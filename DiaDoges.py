@@ -49,25 +49,39 @@ class EnviroDialog(Dialog):
         :param parent:
         :return:
         """
-        self._floorSel = ImagePicker(parent, "Floor Texture:").grid(row=0, columnspan=4)
-        self._skySel = ImagePicker(parent, "Sky Texture:").grid(row=1, columnspan=4)
+        # TODO: fix all of this up so that the references that I actually have are valid
+        self._floorSel = ImagePicker(parent, "Floor Texture:",
+                                     default=self._entries["floor_texture"])
+        self._floorSel.grid(row=0, columnspan=4)
+        self._skySel = ImagePicker(parent, "Sky Texture:", default=self._entries["sky_texture"])
+        self._skySel.grid(row=1, columnspan=4)
 
         Label(parent, text="Wall Height:", width=10, anchor=W).grid(row=2, column=0, sticky=W)
         Label(parent, text="Edge Width:", width=10, anchor=W).grid(row=3, column=0, sticky=W)
 
         self._wallScale = Scale(parent, from_=10, to=1000, orient=HORIZONTAL)
+        if self._entries["wall_height"] is not None:
+            self._wallScale.set(self._entries["wall_height"])
         self._wallScale.grid(row=2, column=1, columnspan=2, sticky=W)
+
         self._edgeScale = Scale(parent, from_=10, to=1000, orient=HORIZONTAL)
+        if self._entries["edge_width"] is not None:
+            self._edgeScale.set(self._entries["edge_width"])
         self._edgeScale.grid(row=3, column=1, columnspan=2, sticky=W)
 
         Label(parent, text="Starting Node:", anchor=W).grid(row=4, column=0, sticky=W)
-        self._sNode = Entry(parent, width=12)
+        self._sNode = Entry(parent, width=12, text=self._entries["start_node"])
         self._sNode.grid(row=4, column=1, columnspan=2, sticky=W)
 
     # TODO populate the handler methods
     def populate(self, populator):
-        # Todo: implement
-        pass
+        # I am against them just sharing a reference to a dict, as this is not robust
+        # And this approach will not be taken with the other population schemes
+        self._entries["floor_texture"] = populator["floor_texture"]
+        self._entries["wall_height"] = populator["wall_height"]
+        self._entries["edge_width"] = populator["edge_width"]
+        self._entries["sky_texture"] = populator["sky_texture"]
+        self._entries["start_node"] = populator["start_node"]
 
 
 class VRConfigDialog(Dialog):

@@ -272,11 +272,10 @@ class Dialog(Toplevel):
         self.parent = parent
         self.result = None
         body = Frame(self)
+        if populator is not None:
+            self.populate(populator)
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
-        if populator is not None:
-            self.populate()
-
         self.buttonbox()
         self.grab_set()
 
