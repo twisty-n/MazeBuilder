@@ -305,7 +305,7 @@ class MazePlannerCanvas(Frame):
         edge does not contain a valid starting node, this means that the edge was not
         created in the proper manner and should thus be ignored by any edge operations
         """
-        return self._edge_cache["item_start"] is not (None,)
+        return (self._edge_cache["item_start"] is (None,) or self._edge_cache["item_start"] is None)
 
     def _canvas_to_screen(self, coords):
         """
@@ -389,8 +389,6 @@ class MazePlannerCanvas(Frame):
         if not self._valid_edge_cache():
             return
 
-        # TODO: this sometimes throws and error when trying to make an edge that shouldn't be
-        # figure out why this is
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
