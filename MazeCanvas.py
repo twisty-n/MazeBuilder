@@ -346,13 +346,17 @@ class MazePlannerCanvas(Frame):
         :param coords:
         :return:
         """
-        # Todo: figure out why some of the edges are not being bound in the right way
         # Check if the cursor is over a node, if so continue, else abort
         curr = self._get_current_item((coords[0], coords[1]))
         if curr is None or not self._valid_edge_cache() or curr not in self._node_listing:
             # Abort the edge creation process
             self._canvas.delete(self._edge_cache["edge"])
             self._clear_edge_cache()
+            return
+
+        # Check if this edge already exists in the program
+        if self._check_duplicate_edges(self._edge_cache["item_start"], curr):
+            self.delete_edge(self._edge_cache["edge"])
             return
 
         # Post the edge information to the object manager
@@ -364,6 +368,14 @@ class MazePlannerCanvas(Frame):
         self._edge_cache["item_end"] = curr
         self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)  #Note that we use the edge ID as the key
         self._clear_edge_cache()
+        self._clear_cache(coords)
+
+    def _check_duplicate_edges(self, start_node, end_node):
+        for binding in self._edge_bindings.itervalues():
+            if ( start_node == binding.item_start and end_node == binding.item_end )\
+            or ( start_node == binding.item_end and end_node == binding.item_start):
+                return True
+        return False
 
     def _execute_edge(self, coords):
         """
@@ -569,7 +581,11 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         # Go through the edge bindings and delete the appropriate edge
-        del self._edge_bindings[edge_id]
+        try:
+            # try to delete the edge binding if it exists
+            del self._edge_bindings[edge_id]
+        except KeyError:
+            pass
         # Delete the edge from the canvas
         self._canvas.delete(edge_id)
         # Inform the object manager that an edge has been deleted
