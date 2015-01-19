@@ -23,6 +23,7 @@ class ContainerDescriptor:
     EDGE_CONTAINER          = "Edge_Container"
     WALL_CONTAINER          = "Wall_Container"
     WALL_TEXTURE_CONTAINER  = "Wall_Texture_Container"
+    NODE_PICTURE_CONTAINER  = "Node_Picture_Container"
 
 
 
@@ -296,7 +297,7 @@ class NodePictureContainer(Container):
         if "name" not in key_val \
                 or "visible" not in key_val \
                 or "texture" not in key_val:
-            raise ContainerFillException(ContainerDescriptor.WALL_TEXTURE_CONTAINER, key_val)
+            raise ContainerFillException(ContainerDescriptor.NODE_PICTURE_CONTAINER, key_val)
 
         self.name = key_val["name"]
         self.visible = key_val["visible"]
