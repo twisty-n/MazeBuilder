@@ -14,7 +14,7 @@ Contains a custom, but generalised widgets library -.-
 
 from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
     ACTIVE, Button, LEFT, E, Canvas, Listbox, SINGLE, END, \
-    ANCHOR, Menu, StringVar
+    ANCHOR, Menu, StringVar, TclError
 import tkFileDialog
 from PIL import Image, ImageTk
 import Debug
@@ -277,7 +277,14 @@ class Dialog(Toplevel):
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
         self.buttonbox()
-        self.grab_set()
+        while True:
+            try:
+                self.grab_set()
+            except TclError:
+                continue
+            else:
+                break
+
 
         if not self.initial_focus:
             self.initial_focus = self

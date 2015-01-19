@@ -77,11 +77,10 @@ class EnviroDialog(Dialog):
     def populate(self, populator):
         # I am against them just sharing a reference to a dict, as this is not robust
         # And this approach will not be taken with the other population schemes
-        self._entries["floor_texture"] = populator["floor_texture"]
-        self._entries["wall_height"] = populator["wall_height"]
-        self._entries["edge_width"] = populator["edge_width"]
-        self._entries["sky_texture"] = populator["sky_texture"]
-        self._entries["start_node"] = populator["start_node"]
+        self._entries["floor_texture"]  = populator.floor_texture
+        self._entries["edge_width"]     = populator.edge_width
+        self._entries["sky_texture"]    = populator.sky_texture
+        self._entries["start_node"]     = populator.start_node
 
 
 class VRConfigDialog(Dialog):
@@ -153,6 +152,14 @@ class VRConfigDialog(Dialog):
         self._entries["windowed"] = not val
         Debug.printi("Windowing toggled to " + (str(not val)), Debug.Level.INFO)
 
+    def populate(self, populator):
+        self._entries["frame_angle"]            = populator.frame_angle
+        self._entries["distortion"]             = populator.distortion
+        self._entries["windowed"]               = populator.windowed
+        self._entries["eye_height"]             = populator.eye_height
+        self._entries["minimum_dist_to_wall"]   = populator.minimum_dist_to_wall
+
+
 class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
@@ -200,6 +207,13 @@ class NodeDialog(Dialog):
         self._wall_pics = PicConfigurator(parent)
         self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
+    def populate(self, populator):
+        self._entries["node_id"]        = populator.node_id
+        self._entries["x_coordinate"]   = populator.x_coordinate
+        self._entries["y_coordinate"]   = populator.y_coordinate
+        self._entries["room_texture"]   = populator.room_texture
+        self._entries["wall_pictures"]  = populator.wall_pictures
+
 class ObjectDialog(Dialog):
     """
     A custom dialog that allows the user to configure placing objects in the virtual environment
@@ -212,7 +226,7 @@ class ObjectDialog(Dialog):
         """
         self._entries = {
             "x_coordinate"   : None,
-            "y_coord"   : None,
+            "y_coordinate"   : None,
             "name"      : None,
             "mesh"      : None,
             "scale"     : None
@@ -267,6 +281,13 @@ class ObjectDialog(Dialog):
         self._mesh.insert(0, file_path)
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
 
+    def populate(self, populator):
+        self._entries["x_coordinate"]   = populator.x_coordinate
+        self._entries["y_coordinate"]   = populator.y_coordinate
+        self._entries["name"]           = populator.name
+        self._entries["mesh"]           = populator.mesh
+        self._entries["scale"]          = populator.scale
+
 
 class EdgeDialog(Dialog):
     def __init__(self, parent, x=None, y=None, populator=None):
@@ -282,11 +303,11 @@ class EdgeDialog(Dialog):
                 "height" : None,
                 "wall1"  : {
                     "height" : None,
-                    "texture": []
+                    "textures": []
                 },
                 "wall2"  : {
                     "height" : None,
-                    "texture": []
+                    "textures": []
                 }
 
             }
@@ -322,4 +343,52 @@ class EdgeDialog(Dialog):
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 
+    def populate(self, populator):
+        self._entries["source"]             = populator.source
+        self._entries["target"]             = populator.target
+        self._entries["height"]             = populator.height
+        self._entries["wall1"]["height"]    = populator.wall1.height
+        self._entries["wall2"]["height"]    = populator.wall2.height
 
+        # Note that we will store the textures in WallTextureContainers in the dialog
+        # instead of in the standard raw format, this should make it easier to use if
+        # even we are making is a little nasty :/
+        self._entries["wall1"]["textures"]  = populator.wall1.textures
+        self._entries["wall2"]["textures"]  = populator.wall2.textures
+
+    class NodePictureDialog(Dialog):
+        def __init__(self, parent, x=None, y=None, populator=None):
+            # By default we will set the texture as visible
+            self._entries = {
+                "name"      : None,
+                "visible"   : None,
+                "texture"   : None
+            }
+            self._visi_var = IntVar(value=1)
+            Dialog.__init__(self, parent, "PictureBuilder", True, x, y, populator)
+
+        def body(self, parent):
+            Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
+            Label(parent, text="Visible:").grid(row=1, column=0, sticky=W)
+            self._texture = ImagePicker(parent, "Texture:")
+            self._texture.grid(row=3, columnspan=4)
+
+            self._name = Entry(parent, width=10, text=self._entries["name"])
+            self._name.grid(row=0, column=1)
+
+            if self._entries["visible"] is False:
+                self._visi_var.set(0)
+            else:
+                self._visi_var.set(1)
+
+            self._visible = Checkbutton(parent, command=self._toggle_distortion, var=self._visi_var)
+            self._visible.grid(row=2, column=3)
+
+        def _toggle_visibility(self):
+            Debug.printi("Visibility changed to " + str(bool(self._visi_var)))
+
+
+        def populate(self, populator):
+            self._entries["name"]       =  populator.name
+            self._entries["visible"]    =  populator.visible
+            self._entries["texture"]    =  populator.texture
