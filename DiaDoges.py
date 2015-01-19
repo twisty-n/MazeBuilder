@@ -99,6 +99,8 @@ class VRConfigDialog(Dialog):
             "minimum_dist_to_wall"  : None
 
         }
+        self._dist_var = IntVar()
+        self._win_var = IntVar()
         Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator)
 
     def body(self, parent):
@@ -117,21 +119,30 @@ class VRConfigDialog(Dialog):
 
         # Define the sub-widgets that the labels are referring to
         self._frameAngle = Scale(parent, from_=-20, to=20, orient=HORIZONTAL)
-        self._frameAngle.set(-5)
+        if self._entries["frame_angle"] is not None:
+            self._frameAngle.set(self._entries["frame_angle"])
+        else:
+            self._frameAngle.set(-5)
         self._frameAngle.grid(row=0, column=1, padx=3)
 
         self._eyeHeight = Scale(parent, from_=0, to=500, orient=HORIZONTAL)
-        self._eyeHeight.set(50)
+        if self._entries["eye_height"] is not None:
+            self._eyeHeight.set( self._entries["eye_height"] )
+        else:
+            self._eyeHeight.set(50)
         self._eyeHeight.grid(row=1, column=1, padx=3)
 
         self._minDistToWall = Scale(parent, from_=1, to=300, orient=HORIZONTAL)
-        self._minDistToWall.set(20)
+        if self._entries["minimum_dist_to_wall"] is not None:
+            self._eyeHeight.set( self._entries["minimum_dist_to_wall"] )
+        else:
+            self._minDistToWall.set(20)
         self._minDistToWall.grid(row=2, column=1, padx=3)
 
-        self._distortion = Checkbutton(parent, text="Enable", command=self._toggle_distortion)
+        self._distortion = Checkbutton(parent, text="Enable", command=self._toggle_distortion, var=self._dist_var)
         self._distortion.grid(row=3, column=1, padx=3)
 
-        self._windowed = Checkbutton(parent, text="Enable", command=self._toggle_windowed)
+        self._windowed = Checkbutton(parent, text="Enable", command=self._toggle_windowed, var=self._win_var)
         self._windowed.grid(row=4, column=1, padx=3)
 
     def _toggle_distortion(self):
@@ -158,7 +169,8 @@ class VRConfigDialog(Dialog):
         self._entries["windowed"]               = populator.windowed
         self._entries["eye_height"]             = populator.eye_height
         self._entries["minimum_dist_to_wall"]   = populator.minimum_dist_to_wall
-
+        self._dist_var = 1 if populator.distortion is True else 0
+        self._win_var = 1 if populator.windowed is True else 0
 
 class NodeDialog(Dialog):
     """
@@ -190,21 +202,18 @@ class NodeDialog(Dialog):
         Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
         Label(parent, text="y-Coord:", anchor=SW).grid(row=2, column=0, sticky=W)
 
-        self._node_id = Entry(parent, width=5)
+        self._node_id = Entry(parent, width=5, text=self._entries["node_id"])
         self._node_id.grid(column=1, row=0)
-        self._x_coord = Entry(parent, width=5)
+        self._x_coord = Entry(parent, width=5, text=self._entries["x_coordinate"])
         self._x_coord.grid(column=1, row=1)
-        self._y_coord = Entry(parent, width=5)
+        self._y_coord = Entry(parent, width=5, text=self._entries["y_coordinate"])
         self._y_coord.grid(column=1, row=2)
 
-        # The text entry areas, these will have to be auto-filled for some part
-        # TODO: write auto-population utility for things
-
         # Image picker dialog for texture
-        self._texture_selector = ImagePicker(parent, "Room Tex:")
+        self._texture_selector = ImagePicker(parent, "Room Tex:", self._entries["room_texture"])
         self._texture_selector.grid(row=3, columnspan=4)
         # New widget that allows configuration of multiple things -- to allow picking pictures for the walls
-        self._wall_pics = PicConfigurator(parent)
+        self._wall_pics = PicConfigurator(parent, self._entries["wall_pictures"])
         self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
     def populate(self, populator):
@@ -250,17 +259,23 @@ class ObjectDialog(Dialog):
         Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
 
         #Define the text entry widgets
-        self._object_name = Entry(parent, width=5)
+        self._object_name = Entry(parent, width=5, text=self._entries["name"])
         self._object_name.grid(column=1, row=0, sticky=W)
-        self._x_coord = Entry(parent, width=5)
+        self._x_coord = Entry(parent, width=5, text=self._entries["x_coordinate"])
         self._x_coord.grid(column=1, row=1, sticky=W)
-        self._y_coord = Entry(parent, width=5)
+        self._y_coord = Entry(parent, width=5, text=self._entries["y_coordinate"])
         self._y_coord.grid(column=3, row=1, stick=W)
-        self._mesh = Entry(parent, width=15)
-        self._mesh.insert(0, "No mesh loaded")
+        self._mesh = Entry(parent, width=15, text=self._entries["mesh"])
+
+        if self._entries["mesh"] is None:
+            self._mesh.insert(0, "No mesh loaded")
         self._mesh.grid(column=1, row=2, columnspan=2, sticky=W)
         Button(parent, text="Load", width=5, command=self._load_mesh, default=ACTIVE).grid(column=3, row=2)
+
         self._scale = Scale(parent, from_=1, to=100, orient=HORIZONTAL, length=140, variable=self._scale_text, showvalue=0)
+        if self._entries["scale"] is not None:
+            self._scale.set(self._entries["scale"])
+            self._scale_text.set(str(self._entries["scale"]))
         self._scale.grid(row=3, column=2, columnspan=2, sticky=W)
 
     def _load_mesh(self):
@@ -323,7 +338,6 @@ class EdgeDialog(Dialog):
         Label(parent, text="Wall2:").grid(row=1, column=2, sticky=W+E, columnspan=2)
 
         # The edge options now
-        # TODO. fix it so that the labels are auto populated
         self.source = Label(parent, width=9, text="INVALID", bg="grey")
         self.target = Label(parent, width=9, text="INVALID", bg="grey")
         self.source.grid(row=0, column=1, sticky=W)
@@ -332,14 +346,14 @@ class EdgeDialog(Dialog):
         # The wall options now
         Label(parent, text="Height:").grid(row=2, column=0, sticky=W)
         Label(parent, text="Height:").grid(row=2, column=2, sticky=W)
-        self.wall1_tex_select = TexturePicker(parent)
-        self.wall2_tex_select = TexturePicker(parent)
+        self.wall1_tex_select = TexturePicker(parent, self._entries["wall1"]["textures"])
+        self.wall2_tex_select = TexturePicker(parent, self._entries["wall2"]["textures"])
         self.wall1_tex_select.config(width=18)
         self.wall2_tex_select.config(width=18)
         self.wall1_tex_select.grid(row=3, columnspan=2, column=0)
         self.wall2_tex_select.grid(row=3, columnspan=2, column=2)
-        self.wall1_height = Entry(parent, width=9)
-        self.wall2_height = Entry(parent, width=9)
+        self.wall2_height = Entry(parent, width=9, text=self._entries["wall1"]["height"])
+        self.wall1_height = Entry(parent, width=9, text=self._entries["wall2"]["height"])
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 
@@ -355,40 +369,3 @@ class EdgeDialog(Dialog):
         # even we are making is a little nasty :/
         self._entries["wall1"]["textures"]  = populator.wall1.textures
         self._entries["wall2"]["textures"]  = populator.wall2.textures
-
-    class NodePictureDialog(Dialog):
-        def __init__(self, parent, x=None, y=None, populator=None):
-            # By default we will set the texture as visible
-            self._entries = {
-                "name"      : None,
-                "visible"   : None,
-                "texture"   : None
-            }
-            self._visi_var = IntVar(value=1)
-            Dialog.__init__(self, parent, "PictureBuilder", True, x, y, populator)
-
-        def body(self, parent):
-            Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
-            Label(parent, text="Visible:").grid(row=1, column=0, sticky=W)
-            self._texture = ImagePicker(parent, "Texture:")
-            self._texture.grid(row=3, columnspan=4)
-
-            self._name = Entry(parent, width=10, text=self._entries["name"])
-            self._name.grid(row=0, column=1)
-
-            if self._entries["visible"] is False:
-                self._visi_var.set(0)
-            else:
-                self._visi_var.set(1)
-
-            self._visible = Checkbutton(parent, command=self._toggle_distortion, var=self._visi_var)
-            self._visible.grid(row=2, column=3)
-
-        def _toggle_visibility(self):
-            Debug.printi("Visibility changed to " + str(bool(self._visi_var)))
-
-
-        def populate(self, populator):
-            self._entries["name"]       =  populator.name
-            self._entries["visible"]    =  populator.visible
-            self._entries["texture"]    =  populator.texture

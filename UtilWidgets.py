@@ -301,7 +301,6 @@ class Dialog(Toplevel):
         if lock_focus:
             self.wait_window(self)
 
-    # TODO: define a way to set default values with an object
 
     """
     Construction Hooks
@@ -404,7 +403,7 @@ class ListHeap(Frame):
         with a set of items in a list box
     """
 
-    def __init__(self, parent, max_limit=sys.maxint):
+    def __init__(self, parent, populator, max_limit=sys.maxint):
         """
 
         :param parent:          The parent tk item
@@ -421,6 +420,17 @@ class ListHeap(Frame):
         # Bind mouse events
         self._listbox.bind("<Double-Button-1>", self._handle_db_click)
         self._listbox.bind("<Button-2>", self._handle_r_click)
+
+        # Populate the widget with custom params if they are available
+        if populator is not None:
+            self.populate(populator)
+
+    def populate(self, populator):
+        """
+        Override to define the population paramaters for this widget
+        This allows default values to be provided
+        """
+        pass
 
     def add_new(self, item, key):
         """

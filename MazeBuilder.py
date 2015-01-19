@@ -98,6 +98,8 @@ class MainMBMenuBar():
         tools_sub = SubMenu(self._root_menu, "Tools")
         tools_sub.add_option("Debug", (lambda: Debug.d_level.toggle()), "checkbutton")
         tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "checkbutton")
+        # TODO: Write a control parser that reads in control configs
+        tools_sub.add_option("Configure Controls", (lambda: print("Tools:Configure Controls")), "command")
         self.addEntry(tools_sub._label, tools_sub)
 
     def addEntry(self, label, submenu):
@@ -131,10 +133,12 @@ class MazeBuilder(Frame):
     def construct(self):
         #TODO, add in geometry management and layout management
         #TODO, add in validation before export. Stored as XML
-        self._update_bar = StatusBar(self)
+        status = Frame(self)
+        self._update_bar = StatusBar(status)
         self._drawer = MazeCanvas.MazePlannerCanvas(self, self._update_bar)
         self._drawer.pack(fill=BOTH, expand=1)
-        self._status_bar = StatusBar(self)
+        self._status_bar = StatusBar(status)
+        status.pack(side=BOTTOM, fill=X)
 
         self._status_bar.pack(side=BOTTOM, fill=X)
         self._update_bar.pack(side=BOTTOM, fill=X)
