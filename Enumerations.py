@@ -57,3 +57,5 @@ class EditableObject:
 
     ENVIRONMENT         = "ENVIRONMENT"
     VR_CONFIG           = "VR_CONFIG"
+=======
+>>>>>>> 1d551f30ca7926ca356951ac63d25e107f1fd387
