@@ -1,3 +1,5 @@
+import Debug
+
 __author__ = 'Tristan Newmann'
 
 """
@@ -12,9 +14,9 @@ Module contains the implementation
 """
 
 # Imports
-import Debug
 from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
+from EditableObject import EditableObject
 
 
 # Enumerations and Functions
@@ -37,15 +39,6 @@ class Event:
     RELEASE_M3      = "RELEASE_M3"
     RETURN          = "RETURN"
     SPACE           = "SPACE"
-
-class CanvasObject:
-    """
-    An enumeration capturing the types of objects that can appear on the canvas
-    """
-    NODE         = "NODE"
-    EDGE         = "EDGE"
-    OBJECT       = "OBJECT"
-
 
 # Classes
 
@@ -390,8 +383,6 @@ class MazePlannerCanvas(Frame):
         if not self._valid_edge_cache():
             return
 
-        # TODO: this sometimes throws and error when trying to make an edge that shouldn't be
-        # figure out why this is
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
@@ -489,11 +480,11 @@ class MazePlannerCanvas(Frame):
         :return:
         """
         if self._is_node(obj):
-            return CanvasObject.NODE
+            return EditableObject.NODE
         if self._is_edge(obj):
-            return CanvasObject.EDGE
+            return EditableObject.EDGE
         if self._is_object(obj):
-            return CanvasObject.OBJECT
+            return EditableObject.OBJECT
         return None
 
     def _selection_operation(self, coords):
@@ -532,10 +523,9 @@ class MazePlannerCanvas(Frame):
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
                                 outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
 
-        # TODO: flesh out the information that is stored in the node listing
         self._node_listing[self._cache["item"]] = self._cache["item"]
-        # then open the dialog
 
+        # then open the dialog
         NodeDialog(self, true_coords[0]+25, true_coords[1]+25)
 
     def delete_all(self):

@@ -1,3 +1,5 @@
+import Debug
+
 __author__ = 'tristan_dev'
 
 """
@@ -17,14 +19,9 @@ from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
     ANCHOR, Menu, StringVar, TclError
 import tkFileDialog
 from PIL import Image, ImageTk
-import Debug
 import sys
 
 from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
-
-
-#TODO add in a populate method which fills dialogues from the
-#database
 
 class SubMenu():
     """

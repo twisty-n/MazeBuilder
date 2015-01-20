@@ -1,3 +1,5 @@
+import Debug
+
 __author__ = 'Tristan Newmann'
 
 """
@@ -15,7 +17,6 @@ Module contains custom widgets for the MazeBuilder project
 from UtilWidgets import ListHeap, Dialog, ImagePicker
 from Tkinter import Menu, Canvas, IntVar, Label, Entry, Checkbutton, W, ACTIVE
 from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedException
-import Debug
 
 
 # Enumerations and Functions

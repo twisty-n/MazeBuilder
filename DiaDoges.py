@@ -1,3 +1,5 @@
+import Debug
+
 __author__ = 'Tristan Newmann'
 
 """
@@ -14,9 +16,8 @@ Module contains the custom user interface dialogs
 # Imports
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator, TexturePicker
-from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, S, SW, Button, ACTIVE, END, StringVar, IntVar
+from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, SW, Button, ACTIVE, END, StringVar, IntVar
 import tkFileDialog
-import Debug
 
 
 # Enumerations and Functions

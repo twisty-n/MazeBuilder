@@ -1,5 +1,7 @@
 #Special import
 from __future__ import print_function
+import MazeCanvas
+import Debug
 
 __author__ = 'tristan_dev'
 
@@ -13,13 +15,10 @@ File: MazeBuilder.py
 
 #Imports
 
-from Tkinter import Frame, Tk, Menu, Image, BOTTOM, X, SW, SE, TOP, BOTH, W, E, N ,S
-from Exceptions import DuplicateCommandException
-from UtilWidgets import StatusBar, Dialog
+from Tkinter import Frame, Tk, Menu, BOTTOM, X, BOTH
+from UtilWidgets import StatusBar
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
-import Debug
-import MazeCanvas
 
 
 WIN_X = 700         #Defines the window X width

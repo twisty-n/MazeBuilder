@@ -1,3 +1,5 @@
+import MazeBuilder
+
 __author__ = 'tristan_dev'
 
 """
@@ -7,8 +9,6 @@ Developed with 2.7
 
 File: main.py
 """
-
-import MazeBuilder
 
 if __name__ == "__main__":
     MazeBuilder.launch()
