@@ -46,6 +46,7 @@ class MazePlannerCanvas(Frame):
         self._manager = manager
         self._canvas = Canvas(self, bg="grey", cursor="tcross")
         self._canvas.pack(fill=BOTH, expand=1)
+        # TODO: redefine the control mappings so that they can be specified by the user
         self._commands = {
             Input_Event.CLICK_M1      : self._begin_node_drag,
             Input_Event.CLICK_M2      : self._begin_edge,
@@ -54,7 +55,7 @@ class MazePlannerCanvas(Frame):
             Input_Event.DRAG_M1       : self._execute_drag,
             Input_Event.DRAG_M2       : self._execute_edge,
             Input_Event.RETURN        : self._launch_menu,
-            Input_Event.D_CLICK_M1    : self._selection_operation,
+            Input_Event.D_CLICK_M1    : self.create_new_node,
             Input_Event.SPACE         : self._launch_menu
         }
         self._edge_cache = \
@@ -86,7 +87,6 @@ class MazePlannerCanvas(Frame):
         """
         Construct all of the event bindings and callbacks for mouse events
         """
-        # TODO: redefine the control bindings
         self._canvas.focus_set()
         self._canvas.bind("<B1-Motion>", lambda event, m_event=Input_Event.DRAG_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<B2-Motion>", lambda event, m_event=Input_Event.DRAG_M2: self._handle_mouse_events(m_event, event))
@@ -264,7 +264,7 @@ class MazePlannerCanvas(Frame):
 
         if item is None:
             # No node is currently selected, create the general menu
-            p_menu.add_command(label="Place Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Place Node", command=lambda: self.create_new_node((self._cache["x"], self._cache["y"])))
             p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
@@ -521,22 +521,31 @@ class MazePlannerCanvas(Frame):
             # Make sure that information is posted to the object manager
             return
 
-        # its the canvas, plot a new node and show the editing dialog
+    def create_new_node(self, coords):
+        """
+        Creates a new node on the Canvas and adds it to the datastore
+        :param coords:
+        :return:
+        """
+        # Create the node on Canvas
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
-                                outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
+                                                            outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
 
+        # Get the coordinates to launch the dialog
+        true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
         self._node_listing[self._cache["item"]] = self._cache["item"]
 
         # then open the dialog
-        new_node = NodeDialog(self, true_coords[0]+25, true_coords[1]+25,
+        new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
                               populator=Containers.NodeContainer(
-                                {
-                                    "node_id"       : self._cache["item"],
-                                    "x_coordinate"  : self._cache["x"],
-                                    "y_coordinate"  : self._cache["y"],
-                                    "room_texture"  : None,
-                                    "wall_pictures" : None
-                                }))
+                                  {
+                                      "node_id": self._cache["item"],
+                                      "x_coordinate": self._cache["x"],
+                                      "y_coordinate": self._cache["y"],
+                                      "room_texture": None,
+                                      "wall_pictures": None
+                                  }))
+        # Inform the datastore
         self._manager.inform(DataStore.EVENT.NODE_CREATE, new_node._entries, self._cache["item"])
 
     def delete_all(self):
