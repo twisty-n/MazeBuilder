@@ -9,45 +9,19 @@ File: DataStore.py
 """
 
 # Imports
-
-import Containers
-from EditableObject import EditableObject
-
-# Enumerations and Functions
-
-class Event:
-
-    # Node Creation
-    NODE_CREATE = "Node Creation"
-    # Node Edit
-    NODE_EDIT = "Node Edit"
-    # Node Delete
-    NODE_DELETE = "Node Delete"
-
-    # Object creation
-    OBJECT_CREATE = "Object Creation"
-    # Object edit
-    OBJECT_EDIT = "Object Edit"
-    # Object deletion
-    OBJECT_DELETE = "Object Delete"
-
-    # Edge Creation
-    EDGE_CREATE = "Edge Create"
-    # Edge Edit
-    EDGE_EDIT = "Edge Edit"
-    # Edge Deletion
-    EDGE_DELETE = "Edge Delete"
-
-    # Environment Edit
-    ENVIRONMENT_EDIT = "Environment Edit"
-    # VR Edit
-    VR_EDIT = "VR Edit"
+from Containers import Container
+import Debug
+from Exceptions import InvalidDataException
+from Enumerations import Event, EditableObject
 
 # Classes
 
 # TODO: Extend with Observer pattern extensions
 
 class DataStore:
+
+    EVENT = Event
+    DATATYPE = EditableObject
 
     def __init__(self):
         self._node_store = {}                   # Will hold hashmap of Containers
@@ -81,16 +55,68 @@ class DataStore:
                 EditableObject.ENVIRONMENT  :   self._environment_store,
                 EditableObject.VR_CONFIG    :   self._vr_store
             }
+        self._descriptor_map = \
+            {
+                Event.NODE_CREATE       : Container.DESCRIPTOR.NODE_CONTAINER,
+                Event.NODE_EDIT         : Container.DESCRIPTOR.NODE_CONTAINER,
+                Event.EDGE_CREATE       : Container.DESCRIPTOR.EDGE_CONTAINER,
+                Event.EDGE_EDIT         : Container.DESCRIPTOR.EDGE_CONTAINER,
+                Event.OBJECT_CREATE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
+                Event.OBJECT_DELETE     : Container.DESCRIPTOR.OBJECT_CONTAINER
+            }
         self._validator = DataValidator()
         pass
 
     def attempt_validation(self, event, data):
+        """
+        Call before passing data to the datastore through inform
+
+        If the validation fails, it will throw an exception. To prevent this
+        first attempt to validate the data through the this method, or the
+        data validator
+
+        :param event:           The event corresponding to the data to validate
+        :param data:            The data to evaluate
+        :return:
+        """
         return self._validator.validate(event, data)
 
-    def inform(self, event, data):
-        pass
+    def inform(self, event, data=None, data_id=None):
+        """
+        Inform the DataStore that a new event has happen, and provide and event type and data binding
 
-    def request(self, datatype, data_id):
+        This method invokes an event manager to update the details of the datastore based on events that
+        are defined. It expects a VALID data dictionary that corresponds to the event that has been provided
+
+        :param event:           The event that has occured
+        :param data:            The valid data binding that is related to the event, in dictionary form
+        :param data_id:         The id of the data element that is to be used for identification
+        :return:
+        """
+        # If the event is an object deletion, try to perform it
+        if event == Event.EDGE_DELETE   \
+        or event == Event.NODE_DELETE   \
+        or event == Event.OBJECT_DELETE:
+            try:
+                del self._dispatch[event][data_id]
+            except KeyError:
+                Debug.printi("Deletion of data item failed, "
+                             "key not in datastore. Key:" + data_id + " Event:" + event, Debug.Level.ERROR)
+                KeyError("Deletion of data item failed, "
+                         "key not in datastore. Key:" + data_id + " Event:" + event)
+
+        # Else, its a creation or an edit, first validate
+        if self.attempt_validation(event, data) is False:
+            raise InvalidDataException(event, data)
+
+        # We overwrite the container in the case of an edit at this point
+        # TODO: make it so that containers are updated in place
+        if event == Event.ENVIRONMENT_EDIT or event == Event.VR_EDIT:
+            # TODO: implement
+            pass
+        self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
+
+    def request(self, datatype, data_id=None):
         """
         Return a data container containing all of the available informaiton
         about the object with the provided ID

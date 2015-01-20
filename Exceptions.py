@@ -47,3 +47,10 @@ class ContainerFillException(Exception):
     def __init__(self, container_type, provided_dict):
         Exception.__init__(self, "Improper dictionary provided to container of type "
                            + container_type + "|| Values provided: " + str(provided_dict))
+
+class InvalidDataException(Exception):
+    """
+    Raised when data provided is invalid
+    """
+    def __init__(self, event, data):
+        Exception.__init__("Invalid data provided for event" + event + "\tData: " + data)

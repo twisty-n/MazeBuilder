@@ -16,50 +16,46 @@ Module contains the implementation
 # Imports
 from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
-from EditableObject import EditableObject
+from Enumerations import Input_Event, EditableObject
+from DataStore import DataStore, DataValidator
+import Containers
 
 
 # Enumerations and Functions
 
-class Event:
-    """
-    A stand in enumeration that encapsulates the different main events
-    """
-    CLICK_M1        = "CLICK_M1"
-    CLICK_M2        = "CLICK_M2"
-    CLICK_M3        = "CLICK_M3"
-    D_CLICK_M1      = "D_CLICK_M1"
-    D_CLICK_M2      = "D_CLICK_M2"
-    D_CLICK_M3      = "D_CLICK_M3"
-    DRAG_M1         = "DRAG_M1"
-    DRAG_M2         = "DRAG_M2"
-    DRAG_M3         = "DRAG_M3"
-    RELEASE_M1      = "RELEASE_M1"
-    RELEASE_M2      = "RELEASE_M2"
-    RELEASE_M3      = "RELEASE_M3"
-    RETURN          = "RETURN"
-    SPACE           = "SPACE"
+
 
 # Classes
 
 class MazePlannerCanvas(Frame):
     """
-    The main workhorse fot the GUI
+    MazePlannerCanvas contains the main frontend workhorse functionality of the entire
+    application.
+    it allows the user to graphically place nodes and define the edges between them
     """
-    def __init__(self, parent, status=None):
+    def __init__(self, parent, status=None, manager=DataStore()):
+        """
+        Contstruct an instance of the MazePlannerCanvas
+
+        :param parent:              The parent widget that the mazePlannerCanvas will sit in
+        :param status:              The statusbar that will recieve mouse updates
+        :type manager: DataStore
+        :return:
+        """
         Frame.__init__(self, parent)
+        self._manager = manager
         self._canvas = Canvas(self, bg="grey", cursor="tcross")
         self._canvas.pack(fill=BOTH, expand=1)
         self._commands = {
-            Event.CLICK_M1      : self._begin_node_drag,
-            Event.CLICK_M2      : self._begin_edge,
-            Event.RELEASE_M1    : self._end_node_drag,
-            Event.RELEASE_M2    : self._end_edge,
-            Event.DRAG_M1       : self._execute_drag,
-            Event.DRAG_M2       : self._execute_edge,
-            Event.RETURN        : self._launch_menu,
-            Event.D_CLICK_M1    : self._selection_operation,
-            Event.SPACE         : self._launch_menu
+            Input_Event.CLICK_M1      : self._begin_node_drag,
+            Input_Event.CLICK_M2      : self._begin_edge,
+            Input_Event.RELEASE_M1    : self._end_node_drag,
+            Input_Event.RELEASE_M2    : self._end_edge,
+            Input_Event.DRAG_M1       : self._execute_drag,
+            Input_Event.DRAG_M2       : self._execute_edge,
+            Input_Event.RETURN        : self._launch_menu,
+            Input_Event.D_CLICK_M1    : self._selection_operation,
+            Input_Event.SPACE         : self._launch_menu
         }
         self._edge_cache = \
             {
@@ -90,18 +86,19 @@ class MazePlannerCanvas(Frame):
         """
         Construct all of the event bindings and callbacks for mouse events
         """
+        # TODO: redefine the control bindings
         self._canvas.focus_set()
-        self._canvas.bind("<B1-Motion>", lambda event, m_event=Event.DRAG_M1: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<B2-Motion>", lambda event, m_event=Event.DRAG_M2: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<ButtonPress-2>", lambda event, m_event=Event.CLICK_M2: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<ButtonRelease-2>", lambda event, m_event=Event.RELEASE_M2: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<ButtonPress-1>", lambda event, m_event=Event.CLICK_M1: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<ButtonRelease-1>", lambda event, m_event=Event.RELEASE_M1: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<Return>", lambda event, m_event=Event.RETURN: self._handle_mouse_events(m_event, event))
-        self._canvas.bind("<Double-Button-1>", lambda event, m_event=Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<B1-Motion>", lambda event, m_event=Input_Event.DRAG_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<B2-Motion>", lambda event, m_event=Input_Event.DRAG_M2: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonPress-2>", lambda event, m_event=Input_Event.CLICK_M2: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonRelease-2>", lambda event, m_event=Input_Event.RELEASE_M2: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonPress-1>", lambda event, m_event=Input_Event.CLICK_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonRelease-1>", lambda event, m_event=Input_Event.RELEASE_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<Return>", lambda event, m_event=Input_Event.RETURN: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<Double-Button-1>", lambda event, m_event=Input_Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Motion>", lambda event, m_event=None : self._handle_mot(m_event, event))
         self._canvas.bind("<Enter>", lambda event: self._canvas.focus_set())
-        self._canvas.bind("<space>", lambda event, m_event=Event.SPACE: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<space>", lambda event, m_event=Input_Event.SPACE: self._handle_mouse_events(m_event, event))
 
     def _handle_mot(self, m_event, event):
         """
@@ -157,9 +154,7 @@ class MazePlannerCanvas(Frame):
 
         :coords:            The coordinates associated with this event
         """
-        # TODO add in local object manager information
-        if self._command_cache is Event.D_CLICK_M1 or None:
-            # Don't dispatch if its the result of a double click
+        if self._cache["item"] is None:
             return
 
         # Obtain the final points
@@ -181,6 +176,10 @@ class MazePlannerCanvas(Frame):
         # Clean the cache
         self._clear_cache(coords)
         # TODO Post the information to the node manager
+        #container = self._manager.request(DataStore.DATATYPE.NODE, item)
+        #container.x_coordinate = x
+        #container.y_coordinate = y
+        #self._manager.inform(DataStore.EVENT.NODE_EDIT, container)
 
     def _execute_drag(self, coords):
         """
@@ -288,6 +287,8 @@ class MazePlannerCanvas(Frame):
         if self._is_object(item):
             # Todo, define
             pass
+
+        self._clear_cache(coords)
 
 
     def _valid_edge_cache(self):
@@ -501,7 +502,8 @@ class MazePlannerCanvas(Frame):
         if self._is_node(item):
             Debug.printi("Node Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make request from object manager using the tag assigned
-            NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10)
+            populator = self._manager.request(DataStore.DATATYPE.NODE, item)
+            NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
             # post information to object manager, or let the dialog handle it, or whatever
             return
 
@@ -526,7 +528,16 @@ class MazePlannerCanvas(Frame):
         self._node_listing[self._cache["item"]] = self._cache["item"]
 
         # then open the dialog
-        NodeDialog(self, true_coords[0]+25, true_coords[1]+25)
+        new_node = NodeDialog(self, true_coords[0]+25, true_coords[1]+25,
+                              populator=Containers.NodeContainer(
+                                {
+                                    "node_id"       : self._cache["item"],
+                                    "x_coordinate"  : self._cache["x"],
+                                    "y_coordinate"  : self._cache["y"],
+                                    "room_texture"  : None,
+                                    "wall_pictures" : None
+                                }))
+        self._manager.inform(DataStore.EVENT.NODE_CREATE, new_node._entries, self._cache["item"])
 
     def delete_all(self):
         """

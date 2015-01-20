@@ -203,12 +203,9 @@ class NodeDialog(Dialog):
         Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
         Label(parent, text="y-Coord:", anchor=SW).grid(row=2, column=0, sticky=W)
 
-        self._node_id = Entry(parent, width=5, text=self._entries["node_id"])
-        self._node_id.grid(column=1, row=0)
-        self._x_coord = Entry(parent, width=5, text=self._entries["x_coordinate"])
-        self._x_coord.grid(column=1, row=1)
-        self._y_coord = Entry(parent, width=5, text=self._entries["y_coordinate"])
-        self._y_coord.grid(column=1, row=2)
+        self._node_id = Label(parent, text=self._entries["node_id"], anchor=SW).grid(row=0, column=1, sticky=W)
+        self._x_coord = Label(parent, text=self._entries["x_coordinate"], anchor=SW).grid(row=1, column=1, sticky=W)
+        self._y_coord = Label(parent, text=self._entries["y_coordinate"], anchor=SW).grid(row=2, column=1, sticky=W)
 
         # Image picker dialog for texture
         self._texture_selector = ImagePicker(parent, "Room Tex:", self._entries["room_texture"])

@@ -12,24 +12,13 @@ Module contains the data containers that will be passed around the application
 
 # Imports
 from Exceptions import ContainerFillException
-
-# Enumerations and Functions
-
-class ContainerDescriptor:
-    ENVIRONMENT_CONTAINER   = "Environment_Container"
-    VR_CONTAINER            = "VR_Container"
-    NODE_CONTAINER          = "Node_Container"
-    OBJECT_CONTAINER        = "Object_Container"
-    EDGE_CONTAINER          = "Edge_Container"
-    WALL_CONTAINER          = "Wall_Container"
-    WALL_TEXTURE_CONTAINER  = "Wall_Texture_Container"
-    NODE_PICTURE_CONTAINER  = "Node_Picture_Container"
-
-
-
+from Enumerations import ContainerDescriptor
 # Classes
 
 class Container:
+
+    DESCRIPTOR = ContainerDescriptor
+
     def __init__(self, key_val=None):
         if key_val is not None:
             self.fill_container(key_val)
@@ -50,9 +39,20 @@ class Container:
         pass
 
     @staticmethod
-    def manufacture_container():
-        # TODO, define better what we want the container to be able to do
-        pass
+    def manufacture_container(descriptor, key_val=None):
+        dispatch = \
+            {
+                ContainerDescriptor.NODE_CONTAINER          :       NodeContainer,
+                ContainerDescriptor.EDGE_CONTAINER          :       EdgeContainer,
+                ContainerDescriptor.OBJECT_CONTAINER        :       ObjectContainer,
+                ContainerDescriptor.ENVIRONMENT_CONTAINER   :       EnvironmentContainer,
+                ContainerDescriptor.VR_CONTAINER            :       VRContainer,
+                ContainerDescriptor.WALL_CONTAINER          :       WallContainer,
+                ContainerDescriptor.WALL_TEXTURE_CONTAINER  :       WallTextureContainer,
+                ContainerDescriptor.NODE_PICTURE_CONTAINER  :       NodePictureContainer
+            }
+        return dispatch[descriptor](key_val)
+
 
 class EnvironmentContainer(Container):
     def __init__(self, key_val=None):
