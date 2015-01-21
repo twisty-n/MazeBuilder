@@ -176,10 +176,10 @@ class MazePlannerCanvas(Frame):
         # Clean the cache
         self._clear_cache(coords)
         # TODO Post the information to the node manager
-        #container = self._manager.request(DataStore.DATATYPE.NODE, item)
-        #container.x_coordinate = x
-        #container.y_coordinate = y
-        #self._manager.inform(DataStore.EVENT.NODE_EDIT, container)
+        container = self._manager.request(DataStore.DATATYPE.NODE, item)
+        container.x_coordinate = x
+        container.y_coordinate = y
+        self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container())
 
     def _execute_drag(self, coords):
         """
@@ -354,14 +354,24 @@ class MazePlannerCanvas(Frame):
             self.delete_edge(self._edge_cache["edge"])
             return
 
-        # Post the edge information to the object manager
-        # Clear the current edge from the edge drawing cache
-        # Need to use the coord values as the cache values aren't updated during a drag apparently
         self._canvas.tag_lower("edge")
-        self._edge_cache["x_end"] = coords[0]
-        self._edge_cache["y_end"] = coords[1]
         self._edge_cache["item_end"] = curr
-        self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)  #Note that we use the edge ID as the key
+
+        # Note that we use the edge ID as the key
+        self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)
+
+        # Inform the manager
+        self._manager.inform(
+            DataStore.EVENT.EDGE_CREATE,
+                {
+                    "source"    :   self._edge_cache["item_start"],
+                    "target"    :   self._edge_cache["item_end"],
+                    "height"    :   None,
+                    "wall1"     :   None,
+                    "wall2"     :   None,
+                },
+            self._edge_cache["edge"])
+
         self._clear_edge_cache()
         self._clear_cache(coords)
 
@@ -503,15 +513,19 @@ class MazePlannerCanvas(Frame):
             Debug.printi("Node Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make request from object manager using the tag assigned
             populator = self._manager.request(DataStore.DATATYPE.NODE, item)
-            NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
+            updated_node = NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
             # post information to object manager, or let the dialog handle it, or whatever
+            self._manager.inform(DataStore.EVENT.NODE_EDIT, updated_node._entries, item)
             return
 
         if self._is_edge(item):
             Debug.printi("Edge Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make a request from the object manager to populate the dialog
-            EdgeDialog(self, true_coords[0] + 10, true_coords[1] + 10)
+            populator = self._manager.request(DataStore.DATATYPE.EDGE, item)
+            updated_edge = EdgeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
             # Make sure that information is posted to the object manager
+            self._manager.inform(DataStore.EVENT.EDGE_EDIT, updated_edge._entries, item)
+
             return
 
         if self._is_object(item):
@@ -519,6 +533,7 @@ class MazePlannerCanvas(Frame):
             # Make a request from the object manager to populate the dialog
             ObjectDialog(self, true_coords[0] + 10, true_coords[1] + 10)
             # Make sure that information is posted to the object manager
+
             return
 
     def create_new_node(self, coords):

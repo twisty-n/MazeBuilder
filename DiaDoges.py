@@ -336,8 +336,8 @@ class EdgeDialog(Dialog):
         Label(parent, text="Wall2:").grid(row=1, column=2, sticky=W+E, columnspan=2)
 
         # The edge options now
-        self.source = Label(parent, width=9, text="INVALID", bg="grey")
-        self.target = Label(parent, width=9, text="INVALID", bg="grey")
+        self.source = Label(parent, width=9, text=self._entries["source"], bg="grey")
+        self.target = Label(parent, width=9, text=self._entries["target"], bg="grey")
         self.source.grid(row=0, column=1, sticky=W)
         self.target.grid(row=0, column=3, sticky=W)
 
@@ -359,11 +359,13 @@ class EdgeDialog(Dialog):
         self._entries["source"]             = populator.source
         self._entries["target"]             = populator.target
         self._entries["height"]             = populator.height
-        self._entries["wall1"]["height"]    = populator.wall1.height
-        self._entries["wall2"]["height"]    = populator.wall2.height
+        if populator.wall1 is not None:
+            self._entries["wall1"]["height"]    = populator.wall1.height
+            self._entries["wall1"]["textures"] = populator.wall1.textures
+        if populator.wall2 is not None:
+            self._entries["wall2"]["height"]    = populator.wall2.height
+            self._entries["wall2"]["textures"] = populator.wall2.textures
 
         # Note that we will store the textures in WallTextureContainers in the dialog
         # instead of in the standard raw format, this should make it easier to use if
         # even we are making is a little nasty :/
-        self._entries["wall1"]["textures"]  = populator.wall1.textures
-        self._entries["wall2"]["textures"]  = populator.wall2.textures

@@ -100,20 +100,24 @@ class DataStore:
             try:
                 del self._dispatch[event][data_id]
             except KeyError:
-                Debug.printi("Deletion of data item failed, "
-                             "key not in datastore. Key:" + data_id + " Event:" + event, Debug.Level.ERROR)
-                KeyError("Deletion of data item failed, "
-                         "key not in datastore. Key:" + data_id + " Event:" + event)
+                error_msg = "Deletion of data item failed, "
+                "key not in datastore. Key:" + data_id + " Event:" + event
+                Debug.printi(error_msg, Debug.Level.ERROR)
+                KeyError(error_msg)
 
         # Else, its a creation or an edit, first validate
         if self.attempt_validation(event, data) is False:
             raise InvalidDataException(event, data)
 
-        # We overwrite the container in the case of an edit at this point
-        # TODO: make it so that containers are updated in place
         if event == Event.ENVIRONMENT_EDIT or event == Event.VR_EDIT:
             # TODO: implement
             pass
+        # We overwrite the container in the case of an edit at this point
+        # TODO: make it so that containers are updated in place
+
+        if event == Event.DELETE_ALL:
+            self._delete_all_vals()
+
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
 
     def request(self, datatype, data_id=None):
@@ -134,6 +138,11 @@ class DataStore:
             return self._heap_map[datatype]
 
         return self._heap_map[datatype][data_id]
+
+    def _delete_all_vals(self):
+        self._edge_store.clear()
+        self._object_store.clear()
+        self._node_store.clear()
 
 
 class DataValidator:

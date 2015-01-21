@@ -3,20 +3,22 @@ __author__ = 'tristan_dev'
 
 class Event:
 
-    NODE_CREATE = "Node Creation"
-    NODE_EDIT = "Node Edit"
-    NODE_DELETE = "Node Delete"
+    NODE_CREATE         = "Node Creation"
+    NODE_EDIT           = "Node Edit"
+    NODE_DELETE         = "Node Delete"
 
-    OBJECT_CREATE = "Object Creation"
-    OBJECT_EDIT = "Object Edit"
-    OBJECT_DELETE = "Object Delete"
+    OBJECT_CREATE       = "Object Creation"
+    OBJECT_EDIT         = "Object Edit"
+    OBJECT_DELETE       = "Object Delete"
 
-    EDGE_CREATE = "Edge Create"
-    EDGE_EDIT = "Edge Edit"
-    EDGE_DELETE = "Edge Delete"
+    EDGE_CREATE         = "Edge Create"
+    EDGE_EDIT           = "Edge Edit"
+    EDGE_DELETE         = "Edge Delete"
 
-    ENVIRONMENT_EDIT = "Environment Edit"
-    VR_EDIT = "VR Edit"
+    ENVIRONMENT_EDIT    = "Environment Edit"
+    VR_EDIT             = "VR Edit"
+
+    DELETE_ALL          = "Delete All"
 
 class Input_Event:
     """

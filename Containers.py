@@ -40,6 +40,7 @@ class Container:
 
     @staticmethod
     def manufacture_container(descriptor, key_val=None):
+        # TODO: move this to be a static variable
         dispatch = \
             {
                 ContainerDescriptor.NODE_CONTAINER          :       NodeContainer,
@@ -207,11 +208,11 @@ class EdgeContainer(Container):
     def fill_container(self, key_val):
 
         # Test to see that all of the expected values have been supplied
-        if "source" not in key_val \
-                or "target" not in key_val \
-                or "height" not in key_val \
-                or "wall1" not in key_val \
-                or "wall2" not in key_val:
+        if "source" not in key_val.keys() \
+                or "target" not in key_val.keys() \
+                or "height" not in key_val.keys() \
+                or "wall1" not in key_val.keys() \
+                or "wall2" not in key_val.keys():
             raise ContainerFillException(ContainerDescriptor.EDGE_CONTAINER, key_val)
 
         self.source = key_val["source"]
