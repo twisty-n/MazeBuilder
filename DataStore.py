@@ -105,6 +105,12 @@ class DataStore:
                 Debug.printi(error_msg, Debug.Level.ERROR)
                 KeyError(error_msg)
 
+        # To expand functionality we will first perform some type evaluations to make
+        # certain that the type that we are using is correct
+        if isinstance(data, Container):
+            # if the data is a container type, extract the dict to use
+            data = data.empty_container()
+
         # Else, its a creation or an edit, first validate
         if self.attempt_validation(event, data) is False:
             raise InvalidDataException(event, data)

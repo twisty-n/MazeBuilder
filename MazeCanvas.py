@@ -359,7 +359,8 @@ class MazePlannerCanvas(Frame):
 
         # Note that we use the edge ID as the key
         self._edge_bindings[self._edge_cache["edge"]] = EdgeBind(self._edge_cache)
-
+        self._edge_bindings[self._edge_cache["edge"]].x_end = coords[0]
+        self._edge_bindings[self._edge_cache["edge"]].y_end = coords[1]
         # Inform the manager
         self._manager.inform(
             DataStore.EVENT.EDGE_CREATE,
