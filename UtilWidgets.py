@@ -20,6 +20,7 @@ from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
 import tkFileDialog
 from PIL import Image, ImageTk
 import shutil, os, sys
+from DataStore import DataStore
 
 from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
 
@@ -117,7 +118,8 @@ class ImagePicker(Frame):
         self._parent = parent
 
         self._auto_move = auto_move
-        self._folder = "/" + move_fold + "/"
+        if auto_move is True:
+            self._folder = "/" + move_fold + "/"
 
         # Text label
         self._label = Label(self, text=label, anchor=W)
@@ -206,7 +208,10 @@ class ImagePicker(Frame):
         Override: Parse and clean the filename
         """
         split = self._file_path.split("/")
-        f_name = self._folder[1:] + split[-1]
+        if self._auto_move is True:
+            f_name = self._folder[1:] + split[-1]
+        else:
+            f_name = split[-1]
         return f_name
 
     def _load_img_label(self):
@@ -280,7 +285,7 @@ class Dialog(Toplevel):
     A definition for a dialog style widget
     This class has been derived from the link at the header of this file
     """
-    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None, manager=None):
+    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None, populator=None, manager=None):
         """
         Construct the instance of the dialog
 
@@ -290,18 +295,19 @@ class Dialog(Toplevel):
         :x:                     The x coord to launch the dialog at
         :y:                     The y coords to launch the dialog at
         :populator:             THe population parameters for the dialog
+        :type manager: DataStore
         """
         Toplevel.__init__(self, parent)
         self.title(title)
         self.transient(parent)
-
+        self._manager = manager
         if title:
             self._title = title
         self.parent = parent
         self.result = None
         body = Frame(self)
-        if manager is not None:
-            self.populate(manager)
+        if populator is not None:
+            self.populate(populator)
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
         self.buttonbox()

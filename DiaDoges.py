@@ -18,7 +18,7 @@ from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator, TexturePicker
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, SW, Button, ACTIVE, END, StringVar, IntVar
 import tkFileDialog
-
+from DataStore import DataStore, DataValidator
 
 # Enumerations and Functions
 
@@ -29,7 +29,7 @@ class EnviroDialog(Dialog):
     """
     Dialog for editing the simulation environment details
     """
-    def __init__(self, parent, manager=None):
+    def __init__(self, parent, populator=None, manager=None):
         """
         Construct the dialog
         :param parent:          The tk element that is the parent of the dialog
@@ -42,7 +42,7 @@ class EnviroDialog(Dialog):
             "sky_texture": None,
             "start_node": None
         }
-        Dialog.__init__(parent=parent, title="EnvironmentConfiguration", manager=manager)
+        Dialog.__init__(self, parent=parent, title="EnvironmentConfiguration", populator=populator, manager=manager)
 
     def body(self, parent):
         """
@@ -54,7 +54,7 @@ class EnviroDialog(Dialog):
         self._floorSel = ImagePicker(parent, "Floor Texture:",
                                      default=self._entries["floor_texture"])
         self._floorSel.grid(row=0, columnspan=4)
-        self._skySel = ImagePicker(parent, "Sky Texture:", default=self._entries["sky_texture"])
+        self._skySel = ImagePicker(parent, "Sky Texture:", default=self._entries["sky_texture"], auto_move=True, move_fold="Data")
         self._skySel.grid(row=1, columnspan=4)
 
         Label(parent, text="Wall Height:", width=10, anchor=W).grid(row=2, column=0, sticky=W)
@@ -71,31 +71,34 @@ class EnviroDialog(Dialog):
         self._edgeScale.grid(row=3, column=1, columnspan=2, sticky=W)
 
         Label(parent, text="Starting Node:", anchor=W).grid(row=4, column=0, sticky=W)
-        self._sNode = Entry(parent, width=12, text=self._entries["start_node"])
-        self._sNode.grid(row=4, column=1, columnspan=2, sticky=W)
+        Label(parent, text=self._entries["start_node"], anchor=W).grid(row=4, column=1, sticky=W)
 
     # TODO populate the handler methods
     def populate(self, manager):
+
         self._entries["floor_texture"]  = manager.floor_texture
         self._entries["edge_width"]     = manager.edge_width
         self._entries["sky_texture"]    = manager.sky_texture
         self._entries["start_node"]     = manager.start_node
+        self._entries["edge_width"]     = manager.edge_width
+        self._entries["wall_height"]    = manager.wall_height
 
     def validate(self):
-        pass
+        return DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
 
     def apply(self):
         self._entries["floor_texture"] = self._floorSel.get()
         self._entries["edge_width"] = self._edgeScale.get()
         self._entries["sky_texture"] = self._skySel.get()
-        self._entries["start_node"] = self._sNode.get()
+        self._entries["wall_height"] = self._wallScale.get()
+        self._manager.inform(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
 
 
 class VRConfigDialog(Dialog):
     """
     Defines a custom dialog for editing the Virtual Reality params
     """
-    def __init__(self, parent, manager=None):
+    def __init__(self, parent, populator=None, manager=None):
         """
         Construct the dialog
         """
@@ -107,9 +110,9 @@ class VRConfigDialog(Dialog):
             "minimum_dist_to_wall"  : None
 
         }
-        self._dist_var = IntVar()
-        self._win_var = IntVar()
-        Dialog.__init__(parent=parent, title="VRConfiguration", manager=manager)
+        self._win_var = None
+        self._distortion_var = None
+        Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator, manager=manager)
 
     def body(self, parent):
         """
@@ -142,15 +145,15 @@ class VRConfigDialog(Dialog):
 
         self._minDistToWall = Scale(parent, from_=1, to=300, orient=HORIZONTAL)
         if self._entries["minimum_dist_to_wall"] is not None:
-            self._eyeHeight.set( self._entries["minimum_dist_to_wall"] )
+            self._minDistToWall.set( self._entries["minimum_dist_to_wall"] )
         else:
             self._minDistToWall.set(20)
         self._minDistToWall.grid(row=2, column=1, padx=3)
 
-        self._distortion = Checkbutton(parent, text="Enable", command=self._toggle_distortion, var=self._dist_var)
+        self._distortion = Checkbutton(parent, variable=self._distortion_var, offvalue=0, onvalue=1, text="Enable", command=self._toggle_distortion)
         self._distortion.grid(row=3, column=1, padx=3)
 
-        self._windowed = Checkbutton(parent, text="Enable", command=self._toggle_windowed, var=self._win_var)
+        self._windowed = Checkbutton(parent, variable=self._win_var, offvalue=0, onvalue=1, text="Enable", command=self._toggle_windowed)
         self._windowed.grid(row=4, column=1, padx=3)
 
     def _toggle_distortion(self):
@@ -177,14 +180,24 @@ class VRConfigDialog(Dialog):
         self._entries["windowed"]               = manager.windowed
         self._entries["eye_height"]             = manager.eye_height
         self._entries["minimum_dist_to_wall"]   = manager.minimum_dist_to_wall
-        self._dist_var = 1 if manager.distortion is True else 0
-        self._win_var = 1 if manager.windowed is True else 0
+        self._win_var = 0 if manager.windowed is False else 1
+        self._distortion_var = 0 if manager.distortion is False else 1
+
+    def validate(self):
+        return DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+
+    def apply(self):
+        self._entries["frame_angle"] = self._frameAngle.get()
+        self._entries["eye_height"] = self._eyeHeight.get()
+        self._entries["minimum_dist_to_wall"] = self._minDistToWall.get()
+
+        self._manager.inform(DataStore.EVENT.VR_EDIT, self._entries)
 
 class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
     """
-    def __init__(self, parent, x=None, y=None, manager=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the inital node dialog
         :param parent:          The tk parent instance to spawn the node from
@@ -197,7 +210,7 @@ class NodeDialog(Dialog):
             "room_texture" : None,
             "wall_pictures" : []
         }
-        Dialog.__init__(self, parent, "NodeBuilder", True, x, y)
+        Dialog.__init__(self, parent, "NodeBuilder", True, x, y, populator)
 
     def body(self, parent):
         """
@@ -239,7 +252,7 @@ class ObjectDialog(Dialog):
     """
     A custom dialog that allows the user to configure placing objects in the virtual environment
     """
-    def __init__(self, parent, x=None, y=None, manager=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the instance of the object dialog
 
@@ -255,7 +268,7 @@ class ObjectDialog(Dialog):
         self._scale_text = StringVar()
         self._scale_text.set(str(1))
 
-        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y)
+        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y, populator)
 
     def body(self, parent):
         """
@@ -317,7 +330,7 @@ class ObjectDialog(Dialog):
 
 
 class EdgeDialog(Dialog):
-    def __init__(self, parent, x=None, y=None, manager=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         """
         Construct the instance of EdgeDialog
 
@@ -338,7 +351,7 @@ class EdgeDialog(Dialog):
                 }
 
             }
-        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y)
+        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y, populator)
 
     def body(self, parent):
         """

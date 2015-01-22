@@ -514,7 +514,7 @@ class MazePlannerCanvas(Frame):
             Debug.printi("Node Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make request from object manager using the tag assigned
             populator = self._manager.request(DataStore.DATATYPE.NODE, item)
-            updated_node = NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10, manager=populator)
+            updated_node = NodeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
             # post information to object manager, or let the dialog handle it, or whatever
             self._manager.inform(DataStore.EVENT.NODE_EDIT, updated_node._entries, item)
             return
@@ -523,7 +523,7 @@ class MazePlannerCanvas(Frame):
             Debug.printi("Edge Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
             # Make a request from the object manager to populate the dialog
             populator = self._manager.request(DataStore.DATATYPE.EDGE, item)
-            updated_edge = EdgeDialog(self, true_coords[0] + 10, true_coords[1] + 10, manager=populator)
+            updated_edge = EdgeDialog(self, true_coords[0] + 10, true_coords[1] + 10, populator=populator)
             # Make sure that information is posted to the object manager
             self._manager.inform(DataStore.EVENT.EDGE_EDIT, updated_edge._entries, item)
 
@@ -553,7 +553,7 @@ class MazePlannerCanvas(Frame):
 
         # then open the dialog
         new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
-                              manager=Containers.NodeContainer(
+                              populator=Containers.NodeContainer(
                                   {
                                       "node_id": self._cache["item"],
                                       "x_coordinate": self._cache["x"],

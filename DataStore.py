@@ -6,10 +6,12 @@ Author: Tristan Newmann
 Developed with 2.7
 
 File: DataStore.py
+
+# Note that we are using 42 as the magic number that represents EVERYTHING
 """
 
 # Imports
-from Containers import Container
+from Containers import Container, EnvironmentContainer, VRContainer
 import Debug
 from Exceptions import InvalidDataException
 from Enumerations import Event, EditableObject
@@ -24,11 +26,11 @@ class DataStore:
     DATATYPE = EditableObject
 
     def __init__(self):
-        self._node_store = {}                   # Will hold hashmap of Containers
-        self._edge_store = {}                   # Will hold hashmap of Containers
-        self._object_store = {}                 # Will hold hashmap of Containers
-        self._environment_store = None          # Will hold the raw container
-        self._vr_store = None                   # Will hold the raw container
+        self._node_store = {}                               # Will hold hashmap of Containers
+        self._edge_store = {}                               # Will hold hashmap of Containers
+        self._object_store = {}                             # Will hold hashmap of Containers
+        self._environment_store = {}                        # Will hold the raw container
+        self._vr_store = {}                                 # Will hold the raw container
         self._dispatch = \
             {
                 Event.NODE_CREATE       :   self._node_store,
@@ -62,7 +64,9 @@ class DataStore:
                 Event.EDGE_CREATE       : Container.DESCRIPTOR.EDGE_CONTAINER,
                 Event.EDGE_EDIT         : Container.DESCRIPTOR.EDGE_CONTAINER,
                 Event.OBJECT_CREATE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
-                Event.OBJECT_DELETE     : Container.DESCRIPTOR.OBJECT_CONTAINER
+                Event.OBJECT_DELETE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
+                Event.ENVIRONMENT_EDIT  : Container.DESCRIPTOR.ENVIRONMENT_CONTAINER,
+                Event.VR_EDIT           : Container.DESCRIPTOR.VR_CONTAINER
             }
         self._validator = DataValidator()
         pass
@@ -81,7 +85,7 @@ class DataStore:
         """
         return self._validator.validate(event, data)
 
-    def inform(self, event, data=None, data_id=None):
+    def inform(self, event, data=None, data_id="42"):
         """
         Inform the DataStore that a new event has happen, and provide and event type and data binding
 
@@ -115,9 +119,6 @@ class DataStore:
         if self.attempt_validation(event, data) is False:
             raise InvalidDataException(event, data)
 
-        if event == Event.ENVIRONMENT_EDIT or event == Event.VR_EDIT:
-            # TODO: implement
-            pass
         # We overwrite the container in the case of an edit at this point
         # TODO: make it so that containers are updated in place
 
@@ -126,7 +127,7 @@ class DataStore:
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
 
-    def request(self, datatype, data_id=None):
+    def request(self, datatype, data_id=42):
         """
         Return a data container containing all of the available informaiton
         about the object with the provided ID
@@ -139,11 +140,10 @@ class DataStore:
         :param data_id:         The id of the data
         :return:                A data container matching the corresponding datatype
         """
-        if data_id is None:
-            # Tpo return the environment or vr_config container
-            return self._heap_map[datatype]
-
-        return self._heap_map[datatype][data_id]
+        try:
+            return self._heap_map[datatype][data_id]
+        except KeyError:
+            Debug.printi("Data not in the datastore DataType:" + datatype + " Data ID: " + str(data_id), Debug.Level.ERROR)
 
     def _delete_all_vals(self):
         self._edge_store.clear()
@@ -156,6 +156,7 @@ class DataValidator:
     def __init__(self):
         pass
 
-    def validate(self, event, data):
+    @staticmethod
+    def validate(event, data):
         # TODO:  actual validation of the data
         return True

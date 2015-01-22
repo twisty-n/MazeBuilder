@@ -87,8 +87,12 @@ class MainMBMenuBar():
         self.addEntry(file_sub._label, file_sub)
 
         configure_sub = SubMenu(self._root_menu, "Configure")
-        configure_sub.add_option("Environment", (lambda: EnviroDialog(self._root)), "command")
-        configure_sub.add_option("VR Settings", (lambda: VRConfigDialog(self._root)), "command")
+        configure_sub.add_option("Environment", (lambda: EnviroDialog(self._root,
+                                                                        manager=self._manager,
+                                                                        populator=self._manager.request(DataStore.DATATYPE.ENVIRONMENT))), "command")
+        configure_sub.add_option("VR Settings", (lambda: VRConfigDialog(self._root,
+                                                                        manager=self._manager,
+                                                                        populator=self._manager.request(DataStore.DATATYPE.VR_CONFIG))), "command")
         self.addEntry(configure_sub._label, configure_sub)
 
         tools_sub = SubMenu(self._root_menu, "Tools")
@@ -122,9 +126,9 @@ class MazeBuilder(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self._parent = parent
-        self._menubar = MainMBMenuBar(self._parent)
-        self.pack(fill=BOTH, expand=1)
         self.manager = DataStore()
+        self._menubar = MainMBMenuBar(self._parent, manager=self.manager)
+        self.pack(fill=BOTH, expand=1)
         self.construct()
 
     def construct(self):

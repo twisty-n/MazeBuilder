@@ -26,7 +26,7 @@ from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedExcept
 
 
 class NodePictureDialog(Dialog):
-    def __init__(self, parent, x=None, y=None, manager=None):
+    def __init__(self, parent, x=None, y=None, populator=None):
         # By default we will set the texture as visible
         self._entries = {
             "name"      : None,
