@@ -174,11 +174,25 @@ class PicConfigurator(ListHeap):
         # Post a delete all notice to the manager
         self._remove_all()
 
+    def get(self):
+        """
+        Return the information that has been gathered by this widget
+        :return: [List] of WallPictureContainers
+        """
+        pass
+
 class TexturePicker(ListHeap):
     def __init__(self, parent, populator):
         ListHeap.__init__(self, parent, populator)
 
     def populate(self, populator):
+        pass
+
+    def get(self):
+        """
+        Returns the information that has been gathered by the widget
+        :return:    [List] Of NodePicture containers
+        """
         pass
 
     def _handle_db_click(self, event):

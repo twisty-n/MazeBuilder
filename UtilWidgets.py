@@ -19,7 +19,7 @@ from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
     ANCHOR, Menu, StringVar, TclError
 import tkFileDialog
 from PIL import Image, ImageTk
-import sys
+import shutil, os, sys
 
 from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
 
@@ -100,15 +100,24 @@ class ImagePicker(Frame):
     """
     # TODO: make the image picker widget generic
     # TODO: Consider adding feature that moves pic to correct folder if needed
-    def __init__(self, parent, label, default="No File Selected"):
+    def __init__(self, parent, label, default="No File Selected", auto_move=False, move_fold=None):
         """
         Construct the image picker instance
+
+        :param default:     Use to set the image path and inital data loaded
+        :param auto_move:   If this is set to true, the image picker will automatically
+                            move the image into a defined relative folder in the same
+                            relative location
         """
         Frame.__init__(self, parent)
         self._image_ref = None
-        self._file_name = None
-        self._file_path = None
+        if not default == "No File Selected":
+            self._file_name = default
+            self._file_path = default
         self._parent = parent
+
+        self._auto_move = auto_move
+        self._folder = "/" + move_fold + "/"
 
         # Text label
         self._label = Label(self, text=label, anchor=W)
@@ -138,7 +147,7 @@ class ImagePicker(Frame):
             Debug.printi("No picture has been loaded to preview", Debug.Level.ERROR)
             return
         photo = self._open_img(self._file_path)
-        view = ImageViewDialog(self._parent, self._file_name, photo)
+        ImageViewDialog(self._parent, self._file_name, photo)
 
 
     def _open_img(self, img_name):
@@ -171,14 +180,33 @@ class ImagePicker(Frame):
         self._file_path = dialog.show()
 
         self._file_name = self._scrub_name(self._file_path)
+        self._move_img()
         return self._file_name
+
+    def _move_img(self):
+        if self._auto_move is False:
+            return
+        # Else, move the image to the given folder that is in the same dir as this module
+        try:
+            src = self._file_path
+            dest = os.path.dirname(os.path.realpath(__file__)) +"/" + self._file_name
+            shutil.copy(src, dest)
+            Debug.printi("Moving file " + self._file_path + " to location "
+                         + os.path.dirname(os.path.realpath(__file__))
+                         + self._file_name, Debug.Level.INFO)
+        # eg. src and dest are the same file
+        except shutil.Error as e:
+            print('Error: %s' % e + " " +dest)
+        # eg. source or destination doesn't exist
+        except IOError as e:
+            print('Error: %s' % e.strerror +" "+ dest)
 
     def _scrub_name(self, file_path):
         """
         Override: Parse and clean the filename
         """
         split = self._file_path.split("/")
-        f_name = "Data/" + split[-1]
+        f_name = self._folder[1:] + split[-1]
         return f_name
 
     def _load_img_label(self):
@@ -187,6 +215,9 @@ class ImagePicker(Frame):
         """
         name = self._launch_file_b()
         self._img_label.configure(text=name)
+
+    def get(self):
+        return self._file_name
 
 class StatusBar(Frame):
     """

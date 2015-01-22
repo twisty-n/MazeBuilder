@@ -208,7 +208,7 @@ class NodeDialog(Dialog):
         self._y_coord = Label(parent, text=self._entries["y_coordinate"], anchor=SW).grid(row=2, column=1, sticky=W)
 
         # Image picker dialog for texture
-        self._texture_selector = ImagePicker(parent, "Room Tex:", self._entries["room_texture"])
+        self._texture_selector = ImagePicker(parent, "Room Tex:", self._entries["room_texture"], auto_move=True, move_fold="Data")
         self._texture_selector.grid(row=3, columnspan=4)
         # New widget that allows configuration of multiple things -- to allow picking pictures for the walls
         self._wall_pics = PicConfigurator(parent, self._entries["wall_pictures"])
@@ -220,6 +220,13 @@ class NodeDialog(Dialog):
         self._entries["y_coordinate"]   = populator.y_coordinate
         self._entries["room_texture"]   = populator.room_texture
         self._entries["wall_pictures"]  = populator.wall_pictures
+
+    def validate(self):
+        return True
+
+    def apply(self):
+        self._entries["room_texture"] = self._texture_selector.get()
+        self._entries["wall_pictures"] = self._wall_pics.get()
 
 class ObjectDialog(Dialog):
     """
@@ -350,8 +357,8 @@ class EdgeDialog(Dialog):
         self.wall2_tex_select.config(width=18)
         self.wall1_tex_select.grid(row=3, columnspan=2, column=0)
         self.wall2_tex_select.grid(row=3, columnspan=2, column=2)
-        self.wall2_height = Entry(parent, width=9, text=self._entries["wall1"]["height"])
-        self.wall1_height = Entry(parent, width=9, text=self._entries["wall2"]["height"])
+        self.wall1_height = Entry(parent, width=9, text=self._entries["wall1"]["height"])
+        self.wall2_height = Entry(parent, width=9, text=self._entries["wall2"]["height"])
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 
@@ -362,10 +369,19 @@ class EdgeDialog(Dialog):
         if populator.wall1 is not None:
             self._entries["wall1"]["height"]    = populator.wall1.height
             self._entries["wall1"]["textures"] = populator.wall1.textures
+        # Note that we will store the textures in WallTextureContainers in the dialog
+        # instead of in the standard raw format, this should make it easier to use if
+        # even we are making is a little nasty :/
         if populator.wall2 is not None:
             self._entries["wall2"]["height"]    = populator.wall2.height
             self._entries["wall2"]["textures"] = populator.wall2.textures
 
-        # Note that we will store the textures in WallTextureContainers in the dialog
-        # instead of in the standard raw format, this should make it easier to use if
-        # even we are making is a little nasty :/
+    def apply(self):
+        self._entries["wall1"]["height"] = self.wall1_height.get()
+        self._entries["wall2"]["height"] = self.wall2_height.get()
+        self._entries["wall1"]["textures"] = self.wall1_tex_select.get()
+        self._entries["wall2"]["textures"] = self.wall2_tex_select.get()
+
+    def validate(self):
+        return True
+
