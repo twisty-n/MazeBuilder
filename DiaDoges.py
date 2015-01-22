@@ -29,7 +29,7 @@ class EnviroDialog(Dialog):
     """
     Dialog for editing the simulation environment details
     """
-    def __init__(self, parent, populator=None):
+    def __init__(self, parent, manager=None):
         """
         Construct the dialog
         :param parent:          The tk element that is the parent of the dialog
@@ -42,7 +42,7 @@ class EnviroDialog(Dialog):
             "sky_texture": None,
             "start_node": None
         }
-        Dialog.__init__(self, parent=parent, title="EnvironmentConfiguration", populator=populator)
+        Dialog.__init__(parent=parent, title="EnvironmentConfiguration", manager=manager)
 
     def body(self, parent):
         """
@@ -75,20 +75,27 @@ class EnviroDialog(Dialog):
         self._sNode.grid(row=4, column=1, columnspan=2, sticky=W)
 
     # TODO populate the handler methods
-    def populate(self, populator):
-        # I am against them just sharing a reference to a dict, as this is not robust
-        # And this approach will not be taken with the other population schemes
-        self._entries["floor_texture"]  = populator.floor_texture
-        self._entries["edge_width"]     = populator.edge_width
-        self._entries["sky_texture"]    = populator.sky_texture
-        self._entries["start_node"]     = populator.start_node
+    def populate(self, manager):
+        self._entries["floor_texture"]  = manager.floor_texture
+        self._entries["edge_width"]     = manager.edge_width
+        self._entries["sky_texture"]    = manager.sky_texture
+        self._entries["start_node"]     = manager.start_node
+
+    def validate(self):
+        pass
+
+    def apply(self):
+        self._entries["floor_texture"] = self._floorSel.get()
+        self._entries["edge_width"] = self._edgeScale.get()
+        self._entries["sky_texture"] = self._skySel.get()
+        self._entries["start_node"] = self._sNode.get()
 
 
 class VRConfigDialog(Dialog):
     """
     Defines a custom dialog for editing the Virtual Reality params
     """
-    def __init__(self, parent, populator=None):
+    def __init__(self, parent, manager=None):
         """
         Construct the dialog
         """
@@ -102,7 +109,7 @@ class VRConfigDialog(Dialog):
         }
         self._dist_var = IntVar()
         self._win_var = IntVar()
-        Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator)
+        Dialog.__init__(parent=parent, title="VRConfiguration", manager=manager)
 
     def body(self, parent):
         """
@@ -164,20 +171,20 @@ class VRConfigDialog(Dialog):
         self._entries["windowed"] = not val
         Debug.printi("Windowing toggled to " + (str(not val)), Debug.Level.INFO)
 
-    def populate(self, populator):
-        self._entries["frame_angle"]            = populator.frame_angle
-        self._entries["distortion"]             = populator.distortion
-        self._entries["windowed"]               = populator.windowed
-        self._entries["eye_height"]             = populator.eye_height
-        self._entries["minimum_dist_to_wall"]   = populator.minimum_dist_to_wall
-        self._dist_var = 1 if populator.distortion is True else 0
-        self._win_var = 1 if populator.windowed is True else 0
+    def populate(self, manager):
+        self._entries["frame_angle"]            = manager.frame_angle
+        self._entries["distortion"]             = manager.distortion
+        self._entries["windowed"]               = manager.windowed
+        self._entries["eye_height"]             = manager.eye_height
+        self._entries["minimum_dist_to_wall"]   = manager.minimum_dist_to_wall
+        self._dist_var = 1 if manager.distortion is True else 0
+        self._win_var = 1 if manager.windowed is True else 0
 
 class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
     """
-    def __init__(self, parent, x=None, y=None, populator=None):
+    def __init__(self, parent, x=None, y=None, manager=None):
         """
         Construct the inital node dialog
         :param parent:          The tk parent instance to spawn the node from
@@ -190,7 +197,7 @@ class NodeDialog(Dialog):
             "room_texture" : None,
             "wall_pictures" : []
         }
-        Dialog.__init__(self, parent, "NodeBuilder", True, x, y, populator)
+        Dialog.__init__(self, parent, "NodeBuilder", True, x, y)
 
     def body(self, parent):
         """
@@ -214,12 +221,12 @@ class NodeDialog(Dialog):
         self._wall_pics = PicConfigurator(parent, self._entries["wall_pictures"])
         self._wall_pics.grid(row=0, rowspan=3, column=2, sticky=E)
 
-    def populate(self, populator):
-        self._entries["node_id"]        = populator.node_id
-        self._entries["x_coordinate"]   = populator.x_coordinate
-        self._entries["y_coordinate"]   = populator.y_coordinate
-        self._entries["room_texture"]   = populator.room_texture
-        self._entries["wall_pictures"]  = populator.wall_pictures
+    def populate(self, manager):
+        self._entries["node_id"]        = manager.node_id
+        self._entries["x_coordinate"]   = manager.x_coordinate
+        self._entries["y_coordinate"]   = manager.y_coordinate
+        self._entries["room_texture"]   = manager.room_texture
+        self._entries["wall_pictures"]  = manager.wall_pictures
 
     def validate(self):
         return True
@@ -232,7 +239,7 @@ class ObjectDialog(Dialog):
     """
     A custom dialog that allows the user to configure placing objects in the virtual environment
     """
-    def __init__(self, parent, x=None, y=None, populator=None):
+    def __init__(self, parent, x=None, y=None, manager=None):
         """
         Construct the instance of the object dialog
 
@@ -248,7 +255,7 @@ class ObjectDialog(Dialog):
         self._scale_text = StringVar()
         self._scale_text.set(str(1))
 
-        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y, populator)
+        Dialog.__init__(self, parent, "ObjectBuilder", True, x, y)
 
     def body(self, parent):
         """
@@ -301,16 +308,16 @@ class ObjectDialog(Dialog):
         self._mesh.insert(0, file_path)
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
 
-    def populate(self, populator):
-        self._entries["x_coordinate"]   = populator.x_coordinate
-        self._entries["y_coordinate"]   = populator.y_coordinate
-        self._entries["name"]           = populator.name
-        self._entries["mesh"]           = populator.mesh
-        self._entries["scale"]          = populator.scale
+    def populate(self, manager):
+        self._entries["x_coordinate"]   = manager.x_coordinate
+        self._entries["y_coordinate"]   = manager.y_coordinate
+        self._entries["name"]           = manager.name
+        self._entries["mesh"]           = manager.mesh
+        self._entries["scale"]          = manager.scale
 
 
 class EdgeDialog(Dialog):
-    def __init__(self, parent, x=None, y=None, populator=None):
+    def __init__(self, parent, x=None, y=None, manager=None):
         """
         Construct the instance of EdgeDialog
 
@@ -331,7 +338,7 @@ class EdgeDialog(Dialog):
                 }
 
             }
-        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y, populator)
+        Dialog.__init__(self, parent, "EdgeBuilder", True, x, y)
 
     def body(self, parent):
         """
@@ -362,19 +369,19 @@ class EdgeDialog(Dialog):
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 
-    def populate(self, populator):
-        self._entries["source"]             = populator.source
-        self._entries["target"]             = populator.target
-        self._entries["height"]             = populator.height
-        if populator.wall1 is not None:
-            self._entries["wall1"]["height"]    = populator.wall1.height
-            self._entries["wall1"]["textures"] = populator.wall1.textures
+    def populate(self, manager):
+        self._entries["source"]             = manager.source
+        self._entries["target"]             = manager.target
+        self._entries["height"]             = manager.height
+        if manager.wall1 is not None:
+            self._entries["wall1"]["height"]    = manager.wall1.height
+            self._entries["wall1"]["textures"] = manager.wall1.textures
         # Note that we will store the textures in WallTextureContainers in the dialog
         # instead of in the standard raw format, this should make it easier to use if
         # even we are making is a little nasty :/
-        if populator.wall2 is not None:
-            self._entries["wall2"]["height"]    = populator.wall2.height
-            self._entries["wall2"]["textures"] = populator.wall2.textures
+        if manager.wall2 is not None:
+            self._entries["wall2"]["height"]    = manager.wall2.height
+            self._entries["wall2"]["textures"] = manager.wall2.textures
 
     def apply(self):
         self._entries["wall1"]["height"] = self.wall1_height.get()

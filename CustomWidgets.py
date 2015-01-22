@@ -26,7 +26,7 @@ from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedExcept
 
 
 class NodePictureDialog(Dialog):
-    def __init__(self, parent, x=None, y=None, populator=None):
+    def __init__(self, parent, x=None, y=None, manager=None):
         # By default we will set the texture as visible
         self._entries = {
             "name"      : None,
@@ -34,7 +34,7 @@ class NodePictureDialog(Dialog):
             "texture"   : None
         }
         self._visi_var = IntVar(value=1)
-        Dialog.__init__(self, parent, "PictureBuilder", True, x, y, populator)
+        Dialog.__init__(self, parent, "PictureBuilder", True, x, y)
 
     def body(self, parent):
         Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
@@ -57,10 +57,10 @@ class NodePictureDialog(Dialog):
         Debug.printi("Visibility changed to " + str(bool(self._visi_var)), Debug.Level.INFO)
         self._entries["visible"] = True
 
-    def populate(self, populator):
-        self._entries["name"]       =  populator.name
-        self._entries["visible"]    =  populator.visible
-        self._entries["texture"]    =  populator.texture
+    def populate(self, manager):
+        self._entries["name"]       =  manager.name
+        self._entries["visible"]    =  manager.visible
+        self._entries["texture"]    =  manager.texture
 
     def apply(self):
         self._entries["name"] = self._name.get()

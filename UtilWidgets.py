@@ -280,7 +280,7 @@ class Dialog(Toplevel):
     A definition for a dialog style widget
     This class has been derived from the link at the header of this file
     """
-    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None, populator=None):
+    def __init__(self, parent, title="MazeBuilder Dialog", lock_focus=True, x=None, y=None, manager=None):
         """
         Construct the instance of the dialog
 
@@ -300,8 +300,8 @@ class Dialog(Toplevel):
         self.parent = parent
         self.result = None
         body = Frame(self)
-        if populator is not None:
-            self.populate(populator)
+        if manager is not None:
+            self.populate(manager)
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
         self.buttonbox()
@@ -342,10 +342,10 @@ class Dialog(Toplevel):
         """
         pass
 
-    def populate(self, populator):
+    def populate(self, manager):
         """
         Override: Define a population plan to fill all of the required entries for this widget
-        :param populator:               The population parameters for the widget
+        :param manager:               The population parameters for the widget
         """
         pass
 

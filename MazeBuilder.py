@@ -19,6 +19,7 @@ from Tkinter import Frame, Tk, Menu, BOTTOM, X, BOTH
 from UtilWidgets import StatusBar
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
+from DataStore import DataStore
 
 
 WIN_X = 700         #Defines the window X width
@@ -58,14 +59,15 @@ class MainMBMenuBar():
         _root(Tk):          The root of the application to hook the menus into
         _root_menu(Menu):   The main menubar of the application
     """
-    def __init__(self, root):
+    def __init__(self, root, manager=None):
         """
         Initializes all of the requisite class members to their initial state
         """
         self._root = root
-        self._root_menu = Menu(self._root)
         self._entries = {}
+        self._root_menu = Menu(self._root)
         root.config(menu=self._root_menu)
+        self._manager = manager
         self.construct()
 
     def construct(self):
@@ -83,11 +85,6 @@ class MainMBMenuBar():
         file_sub.add_option("Export Environment", (lambda: print("File: Load_Environment Undefined")), "command")
         file_sub.add_option("Quit", quit, "command")
         self.addEntry(file_sub._label, file_sub)
-
-        place_sub = SubMenu(self._root_menu, "Place")
-        place_sub.add_option("Place Node", (lambda: NodeDialog(self._root)), "command")
-        place_sub.add_option("Place Object", (lambda: ObjectDialog(self._root)), "command")
-        self.addEntry(place_sub._label, place_sub)
 
         configure_sub = SubMenu(self._root_menu, "Configure")
         configure_sub.add_option("Environment", (lambda: EnviroDialog(self._root)), "command")
@@ -127,14 +124,13 @@ class MazeBuilder(Frame):
         self._parent = parent
         self._menubar = MainMBMenuBar(self._parent)
         self.pack(fill=BOTH, expand=1)
+        self.manager = DataStore()
         self.construct()
 
     def construct(self):
-        #TODO, add in geometry management and layout management
-        #TODO, add in validation before export. Stored as XML
         status = Frame(self)
         self._update_bar = StatusBar(status)
-        self._drawer = MazeCanvas.MazePlannerCanvas(self, self._update_bar)
+        self._drawer = MazeCanvas.MazePlannerCanvas(self, self._update_bar, manager=self.manager)
         self._drawer.pack(fill=BOTH, expand=1)
         self._status_bar = StatusBar(status)
         status.pack(side=BOTTOM, fill=X)
