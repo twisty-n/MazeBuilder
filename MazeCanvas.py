@@ -582,6 +582,7 @@ class MazePlannerCanvas(Frame):
 
         # Delete any naughty objects that are left
         self._canvas.delete("all")
+        self._manager.inform(DataStore.EVENT.DELETE_ALL)
 
     def delete_node(self, node_id):
         """
@@ -602,7 +603,7 @@ class MazePlannerCanvas(Frame):
             if self._edge_bindings[key].item_start == node_id or self._edge_bindings[key].item_end == node_id:
                 self.delete_edge(key)
         # Inform the object manager that a node as been deleted
-        pass
+        self._manager.inform(DataStore.EVENT.NODE_DELETE, data_id=node_id)
 
     def delete_edge(self, edge_id):
         """
@@ -620,7 +621,7 @@ class MazePlannerCanvas(Frame):
         # Delete the edge from the canvas
         self._canvas.delete(edge_id)
         # Inform the object manager that an edge has been deleted
-        pass
+        self._manager.inform(DataStore.EVENT.EDGE_DELETE, data_id=edge_id)
 
     def _mark_start_node(self, node_id):
         """

@@ -102,11 +102,16 @@ class DataStore:
         or event == Event.OBJECT_DELETE:
             try:
                 del self._dispatch[event][data_id]
+                return
             except KeyError:
                 error_msg = "Deletion of data item failed, "
                 "key not in datastore. Key:" + data_id + " Event:" + event
                 Debug.printi(error_msg, Debug.Level.ERROR)
                 KeyError(error_msg)
+
+        if event == Event.DELETE_ALL:
+            self._delete_all_vals()
+            return
 
         # To expand functionality we will first perform some type evaluations to make
         # certain that the type that we are using is correct
@@ -120,9 +125,6 @@ class DataStore:
 
         # We overwrite the container in the case of an edit at this point
         # TODO: make it so that containers are updated in place
-
-        if event == Event.DELETE_ALL:
-            self._delete_all_vals()
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
 
