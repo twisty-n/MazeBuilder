@@ -639,6 +639,9 @@ class MazePlannerCanvas(Frame):
             self._canvas.itemconfig(node_id, outline="black", fill="green", activeoutline="green", activefill="black")
 
         # Inform the object manager that there is a new starting node
+        environment_container = self._manager.request(DataStore.DATATYPE.ENVIRONMENT)
+        environment_container.start_node = node_id
+        self._manager.inform(DataStore.EVENT.ENVIRONMENT_EDIT, environment_container)
         pass
 
 
