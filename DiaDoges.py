@@ -387,14 +387,14 @@ class EdgeDialog(Dialog):
         self._entries["target"]             = manager.target
         self._entries["height"]             = manager.height
         if manager.wall1 is not None:
-            self._entries["wall1"]["height"]    = manager.wall1.height
-            self._entries["wall1"]["textures"] = manager.wall1.textures
+            self._entries["wall1"]["height"]    = manager.wall1["height"]
+            self._entries["wall1"]["textures"] = manager.wall1["textures"]
         # Note that we will store the textures in WallTextureContainers in the dialog
         # instead of in the standard raw format, this should make it easier to use if
         # even we are making is a little nasty :/
         if manager.wall2 is not None:
-            self._entries["wall2"]["height"]    = manager.wall2.height
-            self._entries["wall2"]["textures"] = manager.wall2.textures
+            self._entries["wall2"]["height"]    = manager.wall2["height"]
+            self._entries["wall2"]["textures"] = manager.wall2["textures"]
 
     def apply(self):
         self._entries["wall1"]["height"] = self.wall1_height.get()

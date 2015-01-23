@@ -226,9 +226,11 @@ class MazePlannerCanvas(Frame):
         for binding in start_bindings:
             self._canvas.delete(binding.edge)
             del self._edge_bindings[binding.edge]
+            old_edge = binding.edge
             binding.edge = self._canvas.create_line(coords[0], coords[1], binding.x_end,
                                                     binding.y_end, tags="edge", activefill="RoyalBlue1", tag="edge")
             self._edge_bindings[binding.edge] = binding
+            self._manager.update_key(DataStore.EVENT.EDGE_EDIT, binding.edge, old_edge)
             binding.x_start = coords[0]
             binding.y_start = coords[1]
 
@@ -236,9 +238,11 @@ class MazePlannerCanvas(Frame):
         for binding in end_bindings:
             self._canvas.delete(binding.edge)
             del self._edge_bindings[binding.edge]
+            old_edge = binding.edge
             binding.edge = self._canvas.create_line(binding.x_start, binding.y_start,
                                                     coords[0], coords[1], tags="edge", activefill="RoyalBlue1", tag="edge")
             self._edge_bindings[binding.edge] = binding
+            self._manager.update_key(DataStore.EVENT.EDGE_EDIT, binding.edge, old_edge)
             binding.x_end = coords[0]
             binding.y_end = coords[1]
 

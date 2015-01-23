@@ -48,7 +48,6 @@ class DataStore:
                 Event.ENVIRONMENT_EDIT  :   self._environment_store,
                 Event.VR_EDIT           :   self._vr_store
             }
-
         self._heap_map = \
             {
                 EditableObject.NODE     :   self._node_store,
@@ -149,6 +148,20 @@ class DataStore:
         self._edge_store.clear()
         self._object_store.clear()
         self._node_store.clear()
+
+    def update_key(self, event, new_key, old_key):
+        """
+        Update the ID of an edge binding
+
+        The event that is provided must be an EDGE_EDIT
+        :param event:       The event that the data is bound to
+        :param new_key:     The new key to be given to the edge data
+        :param old_key:     The old key that is associated with that edge data
+        :return:
+        """
+        if event is not self.EVENT.EDGE_EDIT:
+            return
+        self._edge_store[new_key] = self._edge_store.pop(old_key)
 
 
 class DataValidator:
