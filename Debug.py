@@ -46,7 +46,7 @@ class Level():
 # "Static" instance of level that is used in determining the debugging output
 d_level = Level()
 
-def printi(mssg, level):
+def printi(mssg, level=Level.INFO):
     """
     Print a debug message based on the current verbosity filter
 
@@ -59,7 +59,7 @@ def printi(mssg, level):
         return
     print(level + ": " + mssg)
 
-def printe(event, level):
+def printe(event, level=Level.INFO):
     """
     Print a debug message based on a user input event
 
@@ -77,7 +77,7 @@ def printe(event, level):
     # Dispatch to the normal print method
     printi(mssg, level)
 
-def printet(event, event_type, level):
+def printet(event, event_type, level=Level.INFO):
     """
     Print a debug message based on a user input event
 

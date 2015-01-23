@@ -1,6 +1,6 @@
 __author__ = 'tristan_dev'
 
-
+# Using "Enum" style contructs to give stuff more semantic meaning
 class Event:
 
     NODE_CREATE         = "Node Creation"
@@ -59,3 +59,16 @@ class EditableObject:
 
     ENVIRONMENT         = "ENVIRONMENT"
     VR_CONFIG           = "VR_CONFIG"
+
+class ControlSpecifier:
+
+    DRAG_NODE   = "DRAG_NODE"
+    CREATE_NODE = "CREATE_NODE"
+    CREATE_EDGE = "CREATE_EDGE"
+    MENU        = "MENU"
+
+class ExecutionStage:
+
+    START   = "START"           # Indicates the start of some user action
+    EXECUTE = "EXECUTE"         # Indicates that a user action is currently executing
+    END     = "END"             # Indicates the end of a user action
