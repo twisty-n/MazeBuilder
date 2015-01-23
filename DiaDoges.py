@@ -161,20 +161,22 @@ class VRConfigDialog(Dialog):
         Toggle the distortion flag
         :return:
         """
-        self._distortion_var.set( lambda: 0 if self._distortion_var.get() == 1 else 1)
+        self._distortion_var.set(0 if self._distortion_var.get() == 1 else 1)
         val = self._entries["distortion"]
         self._entries["distortion"] = not val
         Debug.printi("Distortion toggled to " + (str(not val)), Debug.Level.INFO)
+        self._distortion.toggle()
 
     def _toggle_windowed(self):
         """
         Toggle the windowed flag
         :return:
         """
-        self._win_var.set( lambda: 0 if self._win_var.get() == 1 else 1)
+        self._win_var.set(0 if self._win_var.get() == 1 else 1)
         val = self._entries["windowed"]
         self._entries["windowed"] = not val
         Debug.printi("Windowing toggled to " + (str(not val)), Debug.Level.INFO)
+        self._windowed.toggle()
 
     def populate(self, manager):
         self._entries["frame_angle"]            = manager.frame_angle
