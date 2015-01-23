@@ -110,8 +110,8 @@ class VRConfigDialog(Dialog):
             "minimum_dist_to_wall"  : None
 
         }
-        self._win_var = None
-        self._distortion_var = None
+        self._win_var = IntVar(0)
+        self._distortion_var = IntVar(0)
         Dialog.__init__(self, parent=parent, title="VRConfiguration", populator=populator, manager=manager)
 
     def body(self, parent):
@@ -161,6 +161,7 @@ class VRConfigDialog(Dialog):
         Toggle the distortion flag
         :return:
         """
+        self._distortion_var.set( lambda: 0 if self._distortion_var.get() == 1 else 1)
         val = self._entries["distortion"]
         self._entries["distortion"] = not val
         Debug.printi("Distortion toggled to " + (str(not val)), Debug.Level.INFO)
@@ -170,6 +171,7 @@ class VRConfigDialog(Dialog):
         Toggle the windowed flag
         :return:
         """
+        self._win_var.set( lambda: 0 if self._win_var.get() == 1 else 1)
         val = self._entries["windowed"]
         self._entries["windowed"] = not val
         Debug.printi("Windowing toggled to " + (str(not val)), Debug.Level.INFO)
@@ -180,8 +182,8 @@ class VRConfigDialog(Dialog):
         self._entries["windowed"]               = manager.windowed
         self._entries["eye_height"]             = manager.eye_height
         self._entries["minimum_dist_to_wall"]   = manager.minimum_dist_to_wall
-        self._win_var = 0 if manager.windowed is False else 1
-        self._distortion_var = 0 if manager.distortion is False else 1
+        self._win_var.set( 0 if manager.windowed is False else 1 )
+        self._distortion_var.set( 0 if manager.distortion is False else 1 )
 
     def validate(self):
         return DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)

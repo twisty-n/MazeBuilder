@@ -126,7 +126,7 @@ class DataStore:
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
 
-    def request(self, datatype, data_id=42):
+    def request(self, datatype, data_id="42"):
         """
         Return a data container containing all of the available informaiton
         about the object with the provided ID
