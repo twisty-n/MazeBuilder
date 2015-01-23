@@ -38,7 +38,7 @@ class MazePlannerCanvas(Frame):
         Contstruct an instance of the MazePlannerCanvas
 
         :param parent:              The parent widget that the mazePlannerCanvas will sit in
-        :param status:              The statusbar that will recieve mouse updates
+        :param status:              The statusbar that will receive mouse updates
         :type manager: DataStore
         :return:
         """
@@ -90,12 +90,17 @@ class MazePlannerCanvas(Frame):
         self._canvas.focus_set()
         self._canvas.bind("<B1-Motion>", lambda event, m_event=Input_Event.DRAG_M1: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<B2-Motion>", lambda event, m_event=Input_Event.DRAG_M2: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<B3-Motion>", lambda event, m_event=Input_Event.DRAG_M3: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonPress-2>", lambda event, m_event=Input_Event.CLICK_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonRelease-2>", lambda event, m_event=Input_Event.RELEASE_M2: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonPress-1>", lambda event, m_event=Input_Event.CLICK_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonPress-3>", lambda event, m_event=Input_Event.CLICK_M3: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<ButtonRelease-1>", lambda event, m_event=Input_Event.RELEASE_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<ButtonRelease-3>", lambda event, m_event=Input_Event.RELEASE_M3: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Return>", lambda event, m_event=Input_Event.RETURN: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Double-Button-1>", lambda event, m_event=Input_Event.D_CLICK_M1: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<Double-Button-2>", lambda event, m_event=Input_Event.D_CLICK_M2: self._handle_mouse_events(m_event, event))
+        self._canvas.bind("<Double-Button-3>", lambda event, m_event=Input_Event.D_CLICK_M3: self._handle_mouse_events(m_event, event))
         self._canvas.bind("<Motion>", lambda event, m_event=None : self._handle_mot(m_event, event))
         self._canvas.bind("<Enter>", lambda event: self._canvas.focus_set())
         self._canvas.bind("<space>", lambda event, m_event=Input_Event.SPACE: self._handle_mouse_events(m_event, event))
@@ -127,7 +132,10 @@ class MazePlannerCanvas(Frame):
         self._status.set_text("Mouse X:" + str(self._cache["x"]) + "\tMouse Y:" + str(self._cache["y"]))
         Debug.printet(event, m_event, Debug.Level.INFO)
         self._cache["event"] = event
-        self._commands[m_event]((event.x, event.y))
+        try:
+            self._commands[m_event]((event.x, event.y))
+        except KeyError:
+            Debug.printi("Warning, no control mapped to " + m_event, Debug.Level.ERROR)
         self._command_cache = m_event
 
 
