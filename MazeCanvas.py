@@ -18,6 +18,7 @@ from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
 from Enumerations import Input_Event, EditableObject, ControlSpecifier, ExecutionStage
 from DataStore import DataStore, DataValidator
+from Control import load_controls
 import Containers
 
 
@@ -46,7 +47,6 @@ class MazePlannerCanvas(Frame):
         self._manager = manager
         self._canvas = Canvas(self, bg="grey", cursor="tcross")
         self._canvas.pack(fill=BOTH, expand=1)
-        # TODO: redefine the control mappings so that they can be specified by the user
         self._commands = {
             (ControlSpecifier.DRAG_NODE,    ExecutionStage.START)       : self._begin_node_drag,
             (ControlSpecifier.CREATE_EDGE,  ExecutionStage.START)       : self._begin_edge,
@@ -57,6 +57,7 @@ class MazePlannerCanvas(Frame):
             (ControlSpecifier.MENU,         ExecutionStage.EXECUTE)     : self._launch_menu,
             (ControlSpecifier.CREATE_NODE,  ExecutionStage.EXECUTE)     : self.create_new_node,
         }
+        self._commands = load_controls(self._commands)
         self._edge_cache = \
             {
                 "x_start"       : None,
@@ -168,7 +169,16 @@ class MazePlannerCanvas(Frame):
         x = coords[0]
         y = coords[1]
         item = self._cache["item"]
-        # TODO Check that the final points are within a valid range
+        self._validate_node_position(coords)
+        # Clean the cache
+        self._clear_cache(coords)
+
+        container = self._manager.request(DataStore.DATATYPE.NODE, item)
+        container.x_coordinate = x
+        container.y_coordinate = y
+        self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container())
+
+    def _validate_node_position(self, coords):
         """
         if x < 0:
             x = 0
@@ -180,13 +190,7 @@ class MazePlannerCanvas(Frame):
             y = self._canvas.winfo_height()-25
         self._canvas.move(item, x, y)
         """
-        # Clean the cache
-        self._clear_cache(coords)
-        # TODO Post the information to the node manager
-        container = self._manager.request(DataStore.DATATYPE.NODE, item)
-        container.x_coordinate = x
-        container.y_coordinate = y
-        self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container())
+        pass
 
     def _execute_drag(self, coords):
         """
