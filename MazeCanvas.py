@@ -301,9 +301,38 @@ class MazePlannerCanvas(Frame):
 
         if self._is_object(item):
             # Todo, define
+            # Launch the node menu as well as an an added option for selecting stuff to edit an object
             pass
 
         self._clear_cache(coords)
+
+    def _mark_object(self, coords):
+
+        # TODO: Ensure that the node does nt already have an item in it
+
+        # Retrieve the item
+        item = self._get_current_item(coords)
+
+        if item in self._object_listing:
+            Debug.printi("This room already has an object in it", Debug.Level.ERROR)
+            return
+        # Retrieve its coordinates
+        item_coordinates = self._canvas.coods(item)
+        # Launch the object maker dialog
+        obj_coords = (item_coordinates[2] - item_coordinates[0]) / (item_coordinates[3] - item_coordinates[1])
+        obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
+            "x_coordinate"  :   obj_coords[0],
+            "y_coordinate"  :   obj_coords[1],
+            "name"          :   None,
+            "mesh"          :   None,
+            "scale"         :   None
+        }))
+        # Save informatoin to the manager
+        self._manager.inform(DataStore.EVENT.OBJECT_CREATE, obj._entries, item)
+        self._object_listing[item] = item
+        # Mark the node as having an object
+        # TODO: mark that node perhaps make the filling blue or somethings
+        pass
 
 
     def _valid_edge_cache(self):
@@ -654,7 +683,6 @@ class MazePlannerCanvas(Frame):
         environment_container = self._manager.request(DataStore.DATATYPE.ENVIRONMENT)
         environment_container.start_node = node_id
         self._manager.inform(DataStore.EVENT.ENVIRONMENT_EDIT, environment_container)
-        pass
 
 
 class EdgeBind():
