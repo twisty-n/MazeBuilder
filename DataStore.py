@@ -68,7 +68,6 @@ class DataStore:
                 Event.VR_EDIT           : Container.DESCRIPTOR.VR_CONTAINER
             }
         self._validator = DataValidator()
-        pass
 
     def attempt_validation(self, event, data):
         """

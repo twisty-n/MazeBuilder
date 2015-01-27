@@ -275,8 +275,6 @@ class MazePlannerCanvas(Frame):
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
 
-        # TODO: when specifiying that an object be added to a node, make it so that the node as a stipple pattern
-
         if item is None:
             # No node is currently selected, create the general menu
             p_menu.add_command(label="Place Node", command=lambda: self.create_new_node((self._cache["x"], self._cache["y"])))
@@ -293,10 +291,9 @@ class MazePlannerCanvas(Frame):
 
             if self._is_object(item):
                 # Launch the node menu as well as an an added option for selecting stuff to edit an object
-                p_menu.add_command(label="Edit Object", command=lambda: Debug.printi("Edit Object", Debug.Level.INFO))
-                p_menu.add_command(label="Delete Object", command=lambda: Debug.printi("Delete Object", Debug.Level.INFO))
-                pass
-
+                p_menu.add_command(label="Edit Object", command=lambda: self._edit_object(coords))
+                p_menu.add_command(label="Delete Object", command=lambda: self._delete_object(self._get_current_item((self._cache["x"], self._cache["y"]))))
+                p_menu.delete(0)
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
 
@@ -308,8 +305,29 @@ class MazePlannerCanvas(Frame):
 
         self._clear_cache(coords)
 
-    def _mark_object(self, coords):
+    def _edit_object(self, coords):
+        item = self._get_current_item(coords)
+        if item not in self._object_listing:
+            Debug.printi("Not a valid object to edit", Debug.Level.ERROR)
+            return
+        obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=self._manager.request(DataStore.DATATYPE.OBJECT, item))
+        Debug.printi("Editing object " + str(item), Debug.Level.INFO)
+        self._manager.inform(DataStore.EVENT.OBJECT_EDIT, obj._entries, item)
 
+    def _delete_object(self, item):
+        if item not in self._object_listing:
+            Debug.printi("Object does not exist to delete", Debug.Level.ERROR)
+            return
+        del self._object_listing[item]
+        self._manager.inform(DataStore.EVENT.OBJECT_DELETE, data_id=item)
+        self._canvas.itemconfig(item, outline="red", fill="black", activeoutline="black", activefill="red")
+
+    def _mark_object(self, coords):
+        """
+        Mark a node as containing an object
+        :param coords:
+        :return:
+        """
         # Retrieve the item
         item = self._get_current_item(coords)
 
@@ -325,8 +343,8 @@ class MazePlannerCanvas(Frame):
         # Launch the object maker dialog
         obj_coords = (((item_coordinates[2] - item_coordinates[0]) / 2), ((item_coordinates[3] - item_coordinates[1])/2))
         obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
-            "x_coordinate"  :   obj_coords[0],
-            "y_coordinate"  :   obj_coords[1],
+            "x_coordinate"  :   coords[0],
+            "y_coordinate"  :   coords[1],
             "name"          :   None,
             "mesh"          :   None,
             "scale"         :   None
@@ -334,9 +352,8 @@ class MazePlannerCanvas(Frame):
         # Save informatoin to the manager
         self._manager.inform(DataStore.EVENT.OBJECT_CREATE, obj._entries, item)
         self._object_listing[item] = item
-        # Mark the node as having an object
-        # TODO: mark that node perhaps make the filling blue or somethings
         self._canvas.itemconfig(item, fill="blue")
+        Debug.printi("Object created in node " + str(item), Debug.Level.INFO)
         pass
 
 
@@ -579,11 +596,7 @@ class MazePlannerCanvas(Frame):
             return
 
         if self._is_object(item):
-            Debug.printi("Object Selected : " + str(item) + " | Launching Editor", Debug.Level.INFO)
-            # Make a request from the object manager to populate the dialog
-            ObjectDialog(self, true_coords[0] + 10, true_coords[1] + 10)
-            # Make sure that information is posted to the object manager
-
+            self._edit_object(coords)
             return
 
     def create_new_node(self, coords):
@@ -648,7 +661,10 @@ class MazePlannerCanvas(Frame):
             if self._edge_bindings[key].item_start == node_id or self._edge_bindings[key].item_end == node_id:
                 self.delete_edge(key)
         # Inform the object manager that a node as been deleted
+        self._delete_object(node_id)
         self._manager.inform(DataStore.EVENT.NODE_DELETE, data_id=node_id)
+
+
 
     def delete_edge(self, edge_id):
         """

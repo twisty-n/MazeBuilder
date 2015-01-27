@@ -288,11 +288,13 @@ class ObjectDialog(Dialog):
         Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
 
         #Define the text entry widgets
-        self._object_name = Entry(parent, width=5, text=self._entries["name"])
+        self._object_name = Entry(parent, width=5)
+        if self._entries["name"] is not None:
+            self._object_name.insert(0, self._entries["name"])
         self._object_name.grid(column=1, row=0, sticky=W)
-        self._x_coord = Entry(parent, width=5, text=self._entries["x_coordinate"])
+        self._x_coord = Label(parent, text=self._entries["x_coordinate"])
         self._x_coord.grid(column=1, row=1, sticky=W)
-        self._y_coord = Entry(parent, width=5, text=self._entries["y_coordinate"])
+        self._y_coord = Label(parent, text=self._entries["y_coordinate"])
         self._y_coord.grid(column=3, row=1, stick=W)
         self._mesh = Entry(parent, width=15, text=self._entries["mesh"])
 
@@ -306,6 +308,14 @@ class ObjectDialog(Dialog):
             self._scale.set(self._entries["scale"])
             self._scale_text.set(str(self._entries["scale"]))
         self._scale.grid(row=3, column=2, columnspan=2, sticky=W)
+
+    def validate(self):
+        return True
+
+    def apply(self):
+        self._entries["name"] = self._object_name.get()
+        self._entries["scale"] = self._scale.get()
+        self._entries["mesh"] = self._mesh.get()
 
     def _load_mesh(self):
         """
