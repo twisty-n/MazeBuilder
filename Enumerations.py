@@ -69,6 +69,6 @@ class ControlSpecifier:
 
 class ExecutionStage:
 
-    START   = "START"           # Indicates the start of some user action
-    EXECUTE = "EXECUTE"         # Indicates that a user action is currently executing
-    END     = "END"             # Indicates the end of a user action
+    START   = "_START"           # Indicates the start of some user action
+    EXECUTE = "_EXECUTE"         # Indicates that a user action is currently executing
+    END     = "_END"             # Indicates the end of a user action

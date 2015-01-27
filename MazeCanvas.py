@@ -16,7 +16,7 @@ Module contains the implementation
 # Imports
 from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
-from Enumerations import Input_Event, EditableObject
+from Enumerations import Input_Event, EditableObject, ControlSpecifier, ExecutionStage
 from DataStore import DataStore, DataValidator
 import Containers
 
@@ -48,15 +48,14 @@ class MazePlannerCanvas(Frame):
         self._canvas.pack(fill=BOTH, expand=1)
         # TODO: redefine the control mappings so that they can be specified by the user
         self._commands = {
-            Input_Event.CLICK_M1      : self._begin_node_drag,
-            Input_Event.CLICK_M2      : self._begin_edge,
-            Input_Event.RELEASE_M1    : self._end_node_drag,
-            Input_Event.RELEASE_M2    : self._end_edge,
-            Input_Event.DRAG_M1       : self._execute_drag,
-            Input_Event.DRAG_M2       : self._execute_edge,
-            Input_Event.RETURN        : self._launch_menu,
-            Input_Event.D_CLICK_M1    : self.create_new_node,
-            Input_Event.SPACE         : self._launch_menu
+            (ControlSpecifier.DRAG_NODE,    ExecutionStage.START)       : self._begin_node_drag,
+            (ControlSpecifier.CREATE_EDGE,  ExecutionStage.START)       : self._begin_edge,
+            (ControlSpecifier.DRAG_NODE,    ExecutionStage.END)         : self._end_node_drag,
+            (ControlSpecifier.CREATE_EDGE,  ExecutionStage.END)         : self._end_edge,
+            (ControlSpecifier.DRAG_NODE,    ExecutionStage.EXECUTE)     : self._execute_drag,
+            (ControlSpecifier.CREATE_EDGE,  ExecutionStage.EXECUTE)     : self._execute_edge,
+            (ControlSpecifier.MENU,         ExecutionStage.EXECUTE)     : self._launch_menu,
+            (ControlSpecifier.CREATE_NODE,  ExecutionStage.EXECUTE)     : self.create_new_node,
         }
         self._edge_cache = \
             {
