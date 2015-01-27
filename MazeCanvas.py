@@ -286,10 +286,17 @@ class MazePlannerCanvas(Frame):
 
         if self._is_node(item):
             # Create the node specific menu
-            p_menu.add_command(label="Place Object", command=lambda: Debug.printi("Place object", Debug.Level.INFO))
+            p_menu.add_command(label="Place Object", command=lambda: self._mark_object((self._cache["x"], self._cache["y"])))
             p_menu.add_command(label="Edit Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
             p_menu.add_command(label="Delete Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
             p_menu.add_command(label="Mark as start", command=lambda: self._mark_start_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+
+            if self._is_object(item):
+                # Launch the node menu as well as an an added option for selecting stuff to edit an object
+                p_menu.add_command(label="Edit Object", command=lambda: Debug.printi("Edit Object", Debug.Level.INFO))
+                p_menu.add_command(label="Delete Object", command=lambda: Debug.printi("Delete Object", Debug.Level.INFO))
+                pass
+
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
 
@@ -299,27 +306,24 @@ class MazePlannerCanvas(Frame):
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
 
-        if self._is_object(item):
-            # Todo, define
-            # Launch the node menu as well as an an added option for selecting stuff to edit an object
-            pass
-
         self._clear_cache(coords)
 
     def _mark_object(self, coords):
 
-        # TODO: Ensure that the node does nt already have an item in it
-
         # Retrieve the item
         item = self._get_current_item(coords)
+
+        if item not in self._node_listing:
+            Debug.printi("Invalid object placement selection", Debug.Level.ERROR)
+            return
 
         if item in self._object_listing:
             Debug.printi("This room already has an object in it", Debug.Level.ERROR)
             return
         # Retrieve its coordinates
-        item_coordinates = self._canvas.coods(item)
+        item_coordinates = self._canvas.coords(item)
         # Launch the object maker dialog
-        obj_coords = (item_coordinates[2] - item_coordinates[0]) / (item_coordinates[3] - item_coordinates[1])
+        obj_coords = (((item_coordinates[2] - item_coordinates[0]) / 2), ((item_coordinates[3] - item_coordinates[1])/2))
         obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
             "x_coordinate"  :   obj_coords[0],
             "y_coordinate"  :   obj_coords[1],
@@ -332,6 +336,7 @@ class MazePlannerCanvas(Frame):
         self._object_listing[item] = item
         # Mark the node as having an object
         # TODO: mark that node perhaps make the filling blue or somethings
+        self._canvas.itemconfig(item, fill="blue")
         pass
 
 
