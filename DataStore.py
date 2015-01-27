@@ -63,6 +63,7 @@ class DataStore:
                 Event.EDGE_CREATE       : Container.DESCRIPTOR.EDGE_CONTAINER,
                 Event.EDGE_EDIT         : Container.DESCRIPTOR.EDGE_CONTAINER,
                 Event.OBJECT_CREATE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
+                Event.OBJECT_EDIT     : Container.DESCRIPTOR.OBJECT_CONTAINER,
                 Event.OBJECT_DELETE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
                 Event.ENVIRONMENT_EDIT  : Container.DESCRIPTOR.ENVIRONMENT_CONTAINER,
                 Event.VR_EDIT           : Container.DESCRIPTOR.VR_CONTAINER

@@ -297,9 +297,10 @@ class ObjectDialog(Dialog):
         self._y_coord = Label(parent, text=self._entries["y_coordinate"])
         self._y_coord.grid(column=3, row=1, stick=W)
         self._mesh = Entry(parent, width=15, text=self._entries["mesh"])
-
         if self._entries["mesh"] is None:
             self._mesh.insert(0, "No mesh loaded")
+        else:
+            self._mesh.insert(0, self._entries["mesh"])
         self._mesh.grid(column=1, row=2, columnspan=2, sticky=W)
         Button(parent, text="Load", width=5, command=self._load_mesh, default=ACTIVE).grid(column=3, row=2)
 
