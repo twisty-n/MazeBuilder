@@ -34,7 +34,7 @@ class NodePictureDialog(Dialog):
             "texture"   : None
         }
         self._visi_var = IntVar(value=1)
-        Dialog.__init__(self, parent, "PictureBuilder", True, x, y)
+        Dialog.__init__(self, parent, "PictureBuilder", True, x, y, populator)
 
     def body(self, parent):
         Label(parent, text="Name:").grid(row=0, column=0, sticky=W)

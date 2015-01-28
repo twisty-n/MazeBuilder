@@ -392,8 +392,12 @@ class EdgeDialog(Dialog):
         self.wall2_tex_select.config(width=18)
         self.wall1_tex_select.grid(row=3, columnspan=2, column=0)
         self.wall2_tex_select.grid(row=3, columnspan=2, column=2)
-        self.wall1_height = Entry(parent, width=9, text=self._entries["wall1"]["height"])
-        self.wall2_height = Entry(parent, width=9, text=self._entries["wall2"]["height"])
+        self.wall1_height = Entry(parent, width=9)
+        if self._entries["wall1"]["height"] is not None:
+            self.wall1_height.insert(0, self._entries["wall1"]["height"])
+        self.wall2_height = Entry(parent, width=9)
+        if self._entries["wall2"]["height"] is not None:
+            self.wall2_height = self._entries["wall2"]["height"]
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 

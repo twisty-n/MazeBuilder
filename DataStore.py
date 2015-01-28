@@ -15,17 +15,22 @@ from Containers import Container, EnvironmentContainer, VRContainer
 import Debug
 from Exceptions import InvalidDataException
 from Enumerations import Event, EditableObject
+from ObserverPattern import Subject
 
 # Classes
 
 # TODO: Extend with Observer pattern extensions
 
-class DataStore:
+class DataStore(Subject):
 
     EVENT = Event
     DATATYPE = EditableObject
 
     def __init__(self):
+        self._cache = {
+            "EVENT" : None,
+            "ID"    : None
+        }
         self._node_store = {}                               # Will hold hashmap of Containers
         self._edge_store = {}                               # Will hold hashmap of Containers
         self._object_store = {}                             # Will hold hashmap of Containers
@@ -69,6 +74,7 @@ class DataStore:
                 Event.VR_EDIT           : Container.DESCRIPTOR.VR_CONTAINER
             }
         self._validator = DataValidator()
+        Subject.__init__(self)
 
     def attempt_validation(self, event, data):
         """
@@ -105,7 +111,7 @@ class DataStore:
                 return
             except KeyError:
                 error_msg = "Deletion of data item failed, "
-                "key not in datastore. Key:" + data_id + " Event:" + event
+                "key not in datastore. Key:" + str(data_id) + " Event:" + event
                 Debug.printi(error_msg, Debug.Level.ERROR)
                 KeyError(error_msg)
 
@@ -127,6 +133,9 @@ class DataStore:
         # TODO: make it so that containers are updated in place
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
+        self.update_state()
+        self._cache["EVENT"]    = event
+        self._cache["ID"]       = data_id
 
     def request(self, datatype, data_id="42"):
         """

@@ -214,6 +214,13 @@ class MazePlannerCanvas(Frame):
         self._cache["y"] = coords[1]
 
         self._update_attached_edges(self._cache["item"], coords)
+        self._update_attached_objects(self._cache["item"], coords)
+
+    def _update_attached_objects(self, item, coords):
+        container = self._manager.request(DataStore.DATATYPE.OBJECT, item)
+        container.x_coordinate = coords[0]
+        container.y_coordinate = coords[1]
+        self._manager.inform(DataStore.EVENT.OBJECT_EDIT, container.empty_container(), item)
 
     def _update_attached_edges(self, node, coords):
         """

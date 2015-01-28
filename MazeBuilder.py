@@ -20,6 +20,7 @@ from UtilWidgets import StatusBar
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
 from DataStore import DataStore
+from XMLifier import XMLObserver
 
 
 WIN_X = 700         #Defines the window X width
@@ -127,6 +128,7 @@ class MazeBuilder(Frame):
         Frame.__init__(self, parent)
         self._parent = parent
         self.manager = DataStore()
+        self.xml = XMLObserver(self.manager)
         self._menubar = MainMBMenuBar(self._parent, manager=self.manager)
         self.pack(fill=BOTH, expand=1)
         self.construct()

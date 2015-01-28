@@ -112,9 +112,8 @@ class ImagePicker(Frame):
         """
         Frame.__init__(self, parent)
         self._image_ref = None
-        if not default == "No File Selected":
-            self._file_name = default
-            self._file_path = default
+        self._file_name = default if not default == "No File Selected" else None
+        self._file_path = self._file_name
         self._parent = parent
 
         self._auto_move = auto_move
