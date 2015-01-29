@@ -19,8 +19,6 @@ from ObserverPattern import Subject
 
 # Classes
 
-# TODO: Extend with Observer pattern extensions
-
 class DataStore(Subject):
 
     EVENT = Event

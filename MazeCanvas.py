@@ -687,6 +687,7 @@ class MazePlannerCanvas(Frame):
             # try to delete the edge binding if it exists
             del self._edge_bindings[edge_id]
         except KeyError:
+            # Terrible I know, but I dont have the time to find the root cause
             pass
         # Delete the edge from the canvas
         self._canvas.delete(edge_id)

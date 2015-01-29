@@ -2,6 +2,7 @@ __author__ = 'tristan_dev'
 
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
+from Enumerations import EditableObject
 import xml.dom.minidom as minidom
 try:
     import xml.etree.cElementTree as ET
@@ -20,7 +21,6 @@ class XMLObserver(Observer):
         self.construct()
 
     def update(self):
-        Debug.printi("The state of the datastore has been updated", Debug.Level.INFO)
         self._text_area.config(state=NORMAL)
         self._text_area.insert(END, "\nThe state of the datastore has been updated")
         self._text_area.config(state=DISABLED)
@@ -58,13 +58,36 @@ class XMLObserver(Observer):
 
 class XMLContainer:
 
-    def __init__(self):
-        pass
+    def __init__(self, environment, vr_config):
+        self.environment_dict = environment
+        self.vr_config_dict = vr_config
+
+        self._root = ET.Element("graph", attrib=self._envirnonment_dict)
 
     def read_file(self, file):
         tree = ET.ElementTree(file=file)
         root = tree.getroot()
         return ET.tostring(root, encoding="utf8", method='xml')
+
+    def add_entry(self, type, data):
+        """
+        Adds a new entry to the XML representation
+
+        :param type:                The type of data to be added
+        :param data:        A dict containing the entries to be added
+        :return:
+        """
+        pass
+
+    def edit_entry(self, type, entry_id, data):
+        """
+        Edit an existing XML node
+
+        :param type:                The type of entry that is being edited
+        :param entry_id:            The id of the entry
+        :param data:                The dict representing the new data
+        """
+        pass
 
 
 
