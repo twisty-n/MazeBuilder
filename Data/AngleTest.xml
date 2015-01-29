@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+	Environment Specification
+		Name: 			AngleTest.xml
+		Description:		VOID
+		Number of Nodes:	4
+		Number of Edges:	3
+		Purpose:		Test the configurations
+
+-->
+
+
+<!--
+	Attribute Descriptions:
+		frameAngle (int): 	Compensation for the monitor bezels, best left at -5
+		distortion(bool):	Enable or disable spatial distortion
+		windowed(bool):		Enable or disable full-screen mode for the environment	
+		Eye(int):		Specifies the position of the animal above the ground
+		minDistToWall(int):	Specifies how close an animal is allowed to get to the wall.
+					Also specifies at what range the whisker air will kick in <?> check this
+		displays(int, set):	Leave at the default values, specifies the screens that will be used
+		Takeoffafter(int):	Specfies the times at which the screens will go black, set to -1 for never		
+-->
+<graph frameAngle="-5" distortion="false" windowed="false" displays="3,4,1,2,5,6" eye="10" minDistToWall="10" takeOffAfter="20" >
+
+  	
+  	<floorTexture val="chess.png" />	<!-- texture for ground floor 				-->
+	<wallHeight val="500"/>			<!-- the default height of the walls in the environment -->
+  	<edgeWidth val="100"/>			<!-- the size of the edges of the square rooms 		-->
+  	<skySphereTexture val="blue_yellow.png"/>	<!-- the texture to use for the sky sphere 		-->
+  	<startNode id="n0"/>			<!-- the VR starts on this node 			-->
+
+<!-- 
+	Nodes specify rooms in the simulation. Nodes are connected with edges, in a graph design
+
+	Attribute Descriptions:
+		id(string):		Unique identifier for the room
+		x(int):			the cartesian x coordinate of the room
+		y(int):			the cartesian y coordinate of the room
+		texture(string):	the file name of the texture to be used for the walls of the room
+		accessible(bool):	Flag indicating whether or not the room is accessible to the animal subject
+-->
+  
+  	<node id="n0" x="0"     y="0"    texture="Styropor.jpg" accessible="true"/>
+  	<node id="n1" x="0"     y="500"  texture="Styropor.jpg" accessible="true"/>
+  	<node id="n2" x="25"    y="550"  texture="Styropor.jpg" accessible="true"/>
+  	<node id="n3" x="50"   y="600"  texture="Styropor.jpg" accessible="true"/>
+  	<node id="n4" x="75"   y="650"  texture="Styropor.jpg" accessible="true"/>
+  	<node id="n5" x="100"   y="700" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n6" x="125"   y="750" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n7" x="150"   y="800" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n8" x="125"   y="850" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n9" x="100"   y="900" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n10" x="75"   y="950" texture="Styropor.jpg" accessible="true"/>
+  	<node id="n11" x="25"   y="1000" texture="Styropor.jpg" accessible="true"/>
+  	
+
+<!--
+	Edges specify coridors or paths between rooms. Ergo, edges in the graph.
+	
+	Attribute Descriptions:
+		source(node.id):	the room at the start of the cooridor
+		target(node.id):	the room at the end of the cooridor
+
+	Wall1/2 specify the wall information for the cooridors
+	
+	Atttribute descriptions:
+		path(string):		the path to the texture to use for the wall
+		tileX(int):		the amount of times to repeat the texture horizontally
+		tileY(int):		the amount of times to repeat the texture vertically
+-->
+  	<edge source="n0" target="n1">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall2>
+  	</edge>
+
+  	<edge source="n1" target="n2">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	<edge source="n2" target="n3">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	<edge source="n3" target="n4">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	<edge source="n4" target="n5">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n5" target="n6">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n6" target="n7">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n7" target="n8">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n8" target="n9">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n9" target="n10">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+  	  	<edge source="n10" target="n11">
+    		<Wall1>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+    		</Wall1>
+
+    		<Wall2>
+      			<Texture path="gray_gray.png" tileX="3" tileY="1" />
+	    	</Wall2>
+  	</edge>
+	
+	
+
+</graph>

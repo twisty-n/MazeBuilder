@@ -217,6 +217,8 @@ class MazePlannerCanvas(Frame):
         self._update_attached_objects(self._cache["item"], coords)
 
     def _update_attached_objects(self, item, coords):
+        if item not in self._object_listing:
+            return
         container = self._manager.request(DataStore.DATATYPE.OBJECT, item)
         container.x_coordinate = coords[0]
         container.y_coordinate = coords[1]

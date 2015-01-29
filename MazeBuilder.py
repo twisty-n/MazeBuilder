@@ -60,7 +60,7 @@ class MainMBMenuBar():
         _root(Tk):          The root of the application to hook the menus into
         _root_menu(Menu):   The main menubar of the application
     """
-    def __init__(self, root, manager=None):
+    def __init__(self, root, manager=None, xml = None):
         """
         Initializes all of the requisite class members to their initial state
         """
@@ -69,6 +69,7 @@ class MainMBMenuBar():
         self._root_menu = Menu(self._root)
         root.config(menu=self._root_menu)
         self._manager = manager
+        self._xml = xml
         self.construct()
 
     def construct(self):
@@ -98,7 +99,7 @@ class MainMBMenuBar():
 
         tools_sub = SubMenu(self._root_menu, "Tools")
         tools_sub.add_option("Debug", (lambda: Debug.d_level.toggle()), "checkbutton")
-        tools_sub.add_option("View XML", (lambda: print("Tools:View_XML Undefined")), "checkbutton")
+        tools_sub.add_option("View XML", (lambda: self._xml.view_xml_pane()), "checkbutton")
         # TODO: Write a control parser that reads in control configs
         tools_sub.add_option("Configure Controls", (lambda: print("Tools:Configure Controls")), "command")
         self.addEntry(tools_sub._label, tools_sub)
@@ -129,7 +130,7 @@ class MazeBuilder(Frame):
         self._parent = parent
         self.manager = DataStore()
         self.xml = XMLObserver(self.manager)
-        self._menubar = MainMBMenuBar(self._parent, manager=self.manager)
+        self._menubar = MainMBMenuBar(self._parent, manager=self.manager, xml=self.xml)
         self.pack(fill=BOTH, expand=1)
         self.construct()
 

@@ -34,8 +34,12 @@ class DataStore(Subject):
         self._node_store = {}                               # Will hold hashmap of Containers
         self._edge_store = {}                               # Will hold hashmap of Containers
         self._object_store = {}                             # Will hold hashmap of Containers
-        self._environment_store = {}                        # Will hold the raw container
-        self._vr_store = {}                                 # Will hold the raw container
+        self._environment_store = {
+            "42"  :   EnvironmentContainer()
+        }                        # Will hold the raw container
+        self._vr_store = {
+            "42"  :   VRContainer()
+        }                                 # Will hold the raw container
         self._dispatch = \
             {
                 Event.NODE_CREATE       :   self._node_store,
