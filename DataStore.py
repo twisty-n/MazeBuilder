@@ -27,7 +27,8 @@ class DataStore(Subject):
     def __init__(self):
         self._cache = {
             "EVENT" : None,
-            "ID"    : None
+            "ID"    : None,
+            "DATA"  : None
         }
         self._node_store = {}                               # Will hold hashmap of Containers
         self._edge_store = {}                               # Will hold hashmap of Containers
@@ -135,9 +136,14 @@ class DataStore(Subject):
         # TODO: make it so that containers are updated in place
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
+        self._update_cache(event, data_id, data)
         self.update_state()
+
+
+    def _update_cache(self, event, data_id, data):
         self._cache["EVENT"]    = event
         self._cache["ID"]       = data_id
+        self._cache["DATA"]     = data
 
     def request(self, datatype, data_id="42"):
         """
@@ -175,6 +181,9 @@ class DataStore(Subject):
         if event is not self.EVENT.EDGE_EDIT:
             return
         self._edge_store[new_key] = self._edge_store.pop(old_key)
+
+    def request_data(self, type, id):
+        return self.request(type, id)
 
 
 class DataValidator:

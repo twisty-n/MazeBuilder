@@ -26,7 +26,7 @@
 <graph frameAngle="-5" distortion="false" windowed="false" displays="3,4,1,2,5,6" eye="10" minDistToWall="10" takeOffAfter="20" >
 
   	
-  	<floorTexture val="chess.png" />	<!-- texture for ground floor 				-->
+  	<floorTextue val="chess.png" />	<!-- texture for ground floor 				-->
 	<wallHeight val="500"/>			<!-- the default height of the walls in the environment -->
   	<edgeWidth val="100"/>			<!-- the size of the edges of the square rooms 		-->
   	<skySphereTexture val="blue_yellow.png"/>	<!-- the texture to use for the sky sphere 		-->

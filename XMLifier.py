@@ -2,6 +2,7 @@ __author__ = 'tristan_dev'
 
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
+from Enumerations import Event
 from Enumerations import EditableObject
 import xml.dom.minidom as minidom
 import lxml.etree as ET
@@ -24,17 +25,44 @@ class XMLObserver(Observer):
         self._xml_container = XMLContainer(None, None)
         self.construct()
 
+        self._dispatch = {
+            Event.EDGE_CREATE       :   self._xml_container.add_entry,
+            Event.NODE_CREATE       :   self._xml_container.add_entry,
+            Event.OBJECT_CREATE     :   self._xml_container.add_entry,
+            Event.OBJECT_EDIT       :   self._xml_container.edit_entry,
+            Event.NODE_EDIT         :   self._xml_container.edit_entry,
+            Event.EDGE_EDIT         :   self._xml_container.edit_entry,
+            Event.EDGE_DELETE       :   self._xml_container.remove_entry,
+            Event.NODE_DELETE       :   self._xml_container.remove_entry,
+            Event.OBJECT_DELETE     :   self._xml_container.remove_entry,
+            Event.ENVIRONMENT_EDIT  :   self._xml_container.edit_entry,
+            Event.VR_EDIT           :   self._xml_container.edit_entry
+        }
+
     def update(self):
         Debug.printi("\nThe state of the datastore has been updated", Debug.Level.INFO)
 
         # Retrieve the update details from the datastore, and then dispatch the changes to
         # the XML container
-        
+        update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"])
+
 
         self._text_area.config(state=NORMAL)
         self._text_area.delete(1.0, END)
         self._text_area.insert(END, self._xml_container.to_string())
         self._text_area.config(state=DISABLED)
+
+    def _extract_xml_id(self, event, data):
+        if "Edge" in event:
+            return (data["source"], data["target"])
+        elif "Object" in event:
+            return event["name"]
+        elif "Node" in event:
+            return event["node_id"]
+        elif "Environment" in event:
+            return "ENV"
+        else:
+            return "VR"
 
     def construct(self):
         """
@@ -43,6 +71,7 @@ class XMLObserver(Observer):
         """
         top = Toplevel()
         top.withdraw()
+        top.protocol("WM_DELETE_WINDOW", self.view_xml_pane)
         top.columnconfigure(0, weight=1)
         top.rowconfigure(0, weight=1)
         top.title("XML Preview")
@@ -112,6 +141,9 @@ class XMLContainer:
         :param entry_id:            The id of the entry
         :param data:                The dict representing the new data
         """
+        pass
+
+    def remove_entry(self):
         pass
 
     def to_string(self):

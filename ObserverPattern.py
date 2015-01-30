@@ -15,6 +15,8 @@ class Subject:
     def update_state(self):
         for observer in self._observers:
             observer.update()
+    def request_data(self, type, id):
+        pass
 
 
 class Observer:
