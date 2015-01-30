@@ -4,30 +4,43 @@ from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
 from Enumerations import EditableObject
 import xml.dom.minidom as minidom
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
+import lxml.etree as ET
 import Debug
 
 
 class XMLObserver(Observer):
 
     def __init__(self, subject):
+        """
+
+        :param subject:         The data store that the XMLObserver will be watching
+        :type subject:          DataStore.DataStore
+        :return:
+        """
         Observer.__init__(self, subject)
         self._pane = None
         self._text_area = None
         self._active = False
+        self._xml_container = XMLContainer(None, None)
         self.construct()
 
     def update(self):
+        Debug.printi("\nThe state of the datastore has been updated", Debug.Level.INFO)
+
+        # Retrieve the update details from the datastore, and then dispatch the changes to
+        # the XML container
+        
+
         self._text_area.config(state=NORMAL)
-        self._text_area.insert(END, "\nThe state of the datastore has been updated")
+        self._text_area.delete(1.0, END)
+        self._text_area.insert(END, self._xml_container.to_string())
         self._text_area.config(state=DISABLED)
-        # Update the relevant portion of the XML with the changed information from
-        # the datastore
 
     def construct(self):
+        """
+        Construct the window and the frame used to display the XML
+        :return:
+        """
         top = Toplevel()
         top.withdraw()
         top.columnconfigure(0, weight=1)
@@ -47,22 +60,34 @@ class XMLObserver(Observer):
 
 
     def view_xml_pane(self):
-
+        """
+        Toggle the XML window on or offs
+        :return:
+        """
         self._pane.withdraw() if self._active else self._pane.deiconify()
-
         self._active = not self._active
-        # Launch a top level dialog
 
-        # insert all of the needed text into the dialog
 
 
 class XMLContainer:
 
-    def __init__(self, environment, vr_config):
+    XML_LOOKUP = {
+
+    }
+
+    def __init__(self, environment=None, vr_config=None):
         self.environment_dict = environment
         self.vr_config_dict = vr_config
+        self.create_skeleton()
 
-        self._root = ET.Element("graph", attrib=self._envirnonment_dict)
+    def create_skeleton(self):
+
+        self._root = ET.Element("graph")
+        self._floor_tex = ET.SubElement(self._root, "floorTexture")
+        self._wall_height = ET.SubElement(self._root, "wallHeight")
+        self._edge_width = ET.SubElement(self._root, "edgeWidth")
+        self._sky_texture = ET.SubElement(self._root, "skySphereTexture")
+        self._start_node = ET.SubElement(self._root, "startNode")
 
     def read_file(self, file):
         tree = ET.ElementTree(file=file)
@@ -89,9 +114,13 @@ class XMLContainer:
         """
         pass
 
+    def to_string(self):
+        return ET.tostring(self._root, pretty_print=True)
+
 
 
 if __name__ == "__main__":
 
     con = XMLContainer()
     con.read_file("Data/AngleTest.xml")
+    print(con.to_string())
