@@ -26,17 +26,17 @@ class XMLObserver(Observer):
         self.construct()
 
         self._dispatch = {
-            Event.EDGE_CREATE       :   self._xml_container.add_entry,
-            Event.NODE_CREATE       :   self._xml_container.add_entry,
-            Event.OBJECT_CREATE     :   self._xml_container.add_entry,
-            Event.OBJECT_EDIT       :   self._xml_container.edit_entry,
-            Event.NODE_EDIT         :   self._xml_container.edit_entry,
-            Event.EDGE_EDIT         :   self._xml_container.edit_entry,
+            Event.EDGE_CREATE       :   self._xml_container.add_edge_entry,
+            Event.NODE_CREATE       :   self._xml_container.add_node_entry,
+            Event.OBJECT_CREATE     :   self._xml_container.add_object_entry,
+            Event.OBJECT_EDIT       :   self._xml_container.edit_object_entry,
+            Event.NODE_EDIT         :   self._xml_container.edit_node_entry,
+            Event.EDGE_EDIT         :   self._xml_container.edit_edge_entry,
             Event.EDGE_DELETE       :   self._xml_container.remove_entry,
             Event.NODE_DELETE       :   self._xml_container.remove_entry,
             Event.OBJECT_DELETE     :   self._xml_container.remove_entry,
-            Event.ENVIRONMENT_EDIT  :   self._xml_container.edit_entry,
-            Event.VR_EDIT           :   self._xml_container.edit_entry
+            Event.ENVIRONMENT_EDIT  :   self._xml_container.edit_environment,
+            Event.VR_EDIT           :   self._xml_container.edit_vr
         }
 
     def update(self):
@@ -46,7 +46,6 @@ class XMLObserver(Observer):
         # the XML container
         update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
         self._dispatch[update_event[0]](
-            DESCRIPTOR_MAP[update_event[0]],
             self._extract_xml_id(update_event[0], update_event[2]),
             update_event[2]
         )
@@ -111,11 +110,14 @@ class XMLContainer:
     def __init__(self, environment=None, vr_config=None):
         self.environment_dict = environment
         self.vr_config_dict = vr_config
+        self._all_entries = {}
         self.create_skeleton()
 
     def create_skeleton(self):
 
         self._root = ET.Element("graph")
+
+        # Environment params
         self._floor_tex = ET.SubElement(self._root, "floorTexture")
         self._wall_height = ET.SubElement(self._root, "wallHeight")
         self._edge_width = ET.SubElement(self._root, "edgeWidth")
@@ -127,27 +129,43 @@ class XMLContainer:
         root = tree.getroot()
         return ET.tostring(root, encoding="utf8", method='xml')
 
-    def add_entry(self, type, entry_id, data):
-        """
-        Adds a new entry to the XML representation
+    def add_node_entry(self, entry_id, data):
 
-        :param type:                The type of data to be added
-        :param data:        A dict containing the entries to be added
-        :return:
-        """
+        node = ET.SubElement(self._root, "node")
+
+        node.attrib["id"]        = str(data["node_id"])
+        node.attrib["x"]         = str(data["x_coordinate"])
+        node.attrib["y" ]        = str(data["y_coordinate"])
+        node.attrib["texture"]   = str(data["room_texture"])
+
+        if data["wall_pictures"] is not None:
+            # TODO: put the pics as an attribute
+            pass
+
+        self._all_entries[entry_id] = data
+
+    def edit_node_entry(self, entry_id, data):
         pass
 
-    def edit_entry(self, type, entry_id, data):
-        """
-        Edit an existing XML node
+    def add_object_entry(self, entry_id, data):
+        pass
 
-        :param type:                The type of entry that is being edited
-        :param entry_id:            The id of the entry
-        :param data:                The dict representing the new data
-        """
+    def edit_object_entry(self, entry_id, data):
+        pass
+
+    def add_edge_entry(self, entry_id, data):
+        pass
+
+    def edit_edge_entry(self, entry_id, data):
         pass
 
     def remove_entry(self, type, entry_id, data):
+        pass
+
+    def edit_environment(self, entry_id, data):
+        pass
+
+    def edit_vr(self, entry_id, data):
         pass
 
     def to_string(self):
