@@ -14,7 +14,7 @@ File: DataStore.py
 from Containers import Container, EnvironmentContainer, VRContainer
 import Debug
 from Exceptions import InvalidDataException
-from Enumerations import Event, EditableObject
+from Enumerations import Event, EditableObject, DESCRIPTOR_MAP
 from ObserverPattern import Subject
 
 # Classes
@@ -64,18 +64,7 @@ class DataStore(Subject):
                 EditableObject.ENVIRONMENT  :   self._environment_store,
                 EditableObject.VR_CONFIG    :   self._vr_store
             }
-        self._descriptor_map = \
-            {
-                Event.NODE_CREATE       : Container.DESCRIPTOR.NODE_CONTAINER,
-                Event.NODE_EDIT         : Container.DESCRIPTOR.NODE_CONTAINER,
-                Event.EDGE_CREATE       : Container.DESCRIPTOR.EDGE_CONTAINER,
-                Event.EDGE_EDIT         : Container.DESCRIPTOR.EDGE_CONTAINER,
-                Event.OBJECT_CREATE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
-                Event.OBJECT_EDIT     : Container.DESCRIPTOR.OBJECT_CONTAINER,
-                Event.OBJECT_DELETE     : Container.DESCRIPTOR.OBJECT_CONTAINER,
-                Event.ENVIRONMENT_EDIT  : Container.DESCRIPTOR.ENVIRONMENT_CONTAINER,
-                Event.VR_EDIT           : Container.DESCRIPTOR.VR_CONTAINER
-            }
+        self._descriptor_map = DESCRIPTOR_MAP
         self._validator = DataValidator()
         Subject.__init__(self)
 

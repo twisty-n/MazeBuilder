@@ -72,3 +72,16 @@ class ExecutionStage:
     START   = "_START"           # Indicates the start of some user action
     EXECUTE = "_EXECUTE"         # Indicates that a user action is currently executing
     END     = "_END"             # Indicates the end of a user action
+
+DESCRIPTOR_MAP = \
+    {
+        Event.NODE_CREATE: ContainerDescriptor.NODE_CONTAINER,
+        Event.NODE_EDIT: ContainerDescriptor.NODE_CONTAINER,
+        Event.EDGE_CREATE: ContainerDescriptor.EDGE_CONTAINER,
+        Event.EDGE_EDIT: ContainerDescriptor.EDGE_CONTAINER,
+        Event.OBJECT_CREATE: ContainerDescriptor.OBJECT_CONTAINER,
+        Event.OBJECT_EDIT: ContainerDescriptor.OBJECT_CONTAINER,
+        Event.OBJECT_DELETE: ContainerDescriptor.OBJECT_CONTAINER,
+        Event.ENVIRONMENT_EDIT: ContainerDescriptor.ENVIRONMENT_CONTAINER,
+        Event.VR_EDIT: ContainerDescriptor.VR_CONTAINER
+    }

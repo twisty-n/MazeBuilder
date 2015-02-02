@@ -2,7 +2,7 @@ __author__ = 'tristan_dev'
 
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
-from Enumerations import Event
+from Enumerations import Event, DESCRIPTOR_MAP
 from Enumerations import EditableObject
 import xml.dom.minidom as minidom
 import lxml.etree as ET
@@ -44,8 +44,12 @@ class XMLObserver(Observer):
 
         # Retrieve the update details from the datastore, and then dispatch the changes to
         # the XML container
-        update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"])
-
+        update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
+        self._dispatch[update_event[0]](
+            DESCRIPTOR_MAP[update_event[0]],
+            self._extract_xml_id(update_event[0], update_event[2]),
+            update_event[2]
+        )
 
         self._text_area.config(state=NORMAL)
         self._text_area.delete(1.0, END)
@@ -56,9 +60,9 @@ class XMLObserver(Observer):
         if "Edge" in event:
             return (data["source"], data["target"])
         elif "Object" in event:
-            return event["name"]
+            return data["name"]
         elif "Node" in event:
-            return event["node_id"]
+            return data["node_id"]
         elif "Environment" in event:
             return "ENV"
         else:
@@ -123,7 +127,7 @@ class XMLContainer:
         root = tree.getroot()
         return ET.tostring(root, encoding="utf8", method='xml')
 
-    def add_entry(self, type, data):
+    def add_entry(self, type, entry_id, data):
         """
         Adds a new entry to the XML representation
 
@@ -143,7 +147,7 @@ class XMLContainer:
         """
         pass
 
-    def remove_entry(self):
+    def remove_entry(self, type, entry_id, data):
         pass
 
     def to_string(self):
