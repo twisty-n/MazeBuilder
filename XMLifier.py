@@ -3,10 +3,10 @@ __author__ = 'tristan_dev'
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
 from Enumerations import Event, DESCRIPTOR_MAP
-from Enumerations import EditableObject
-import xml.dom.minidom as minidom
 import lxml.etree as ET
 import Debug
+
+# Don't forget our magic number anti-pattern is 42!
 
 
 class XMLObserver(Observer):
@@ -45,6 +45,8 @@ class XMLObserver(Observer):
         # Retrieve the update details from the datastore, and then dispatch the changes to
         # the XML container
         update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
+        if update_event[0] == "Delete All":
+            return
         self._dispatch[update_event[0]](
             self._extract_xml_id(update_event[0], update_event[2]),
             update_event[2]
@@ -193,10 +195,20 @@ class XMLContainer:
         del self._all_entries[entry_id]
 
     def edit_environment(self, entry_id, data):
-        pass
+        self._floor_tex.attrib["val"]   = str(data["floor_texture"])
+        self._wall_height.attrib["val"] = str(data["wall_height"])
+        self._edge_width.attrib["val"]  = str(data["edge_width"])
+        self._sky_texture.attrib["val"] = str(data["sky_texture"])
+        self._start_node.attrib["val"]  = str(data["start_node"])
 
     def edit_vr(self, entry_id, data):
-        pass
+        attribs = self._root.attrib
+
+        attribs["frameangle"]           = str(data["frame_angle"])
+        attribs["distortion"]           = str(data["distortion"])
+        attribs["windowed"]             = str(data["windowed"])
+        attribs["eye"]                  = str(data["eye_height"])
+        attribs["minDistToWall"]        = str(data["minimum_dist_to_wall"])
 
     def to_string(self):
         return ET.tostring(self._root, pretty_print=True)

@@ -40,7 +40,6 @@ class Container:
 
     @staticmethod
     def manufacture_container(descriptor, key_val=None):
-        # TODO: move this to be a static variable
         dispatch = \
             {
                 ContainerDescriptor.NODE_CONTAINER          :       NodeContainer,

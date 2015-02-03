@@ -50,7 +50,6 @@ class EnviroDialog(Dialog):
         :param parent:
         :return:
         """
-        # TODO: fix all of this up so that the references that I actually have are valid
         self._floorSel = ImagePicker(parent, "Floor Texture:",
                                      default=self._entries["floor_texture"])
         self._floorSel.grid(row=0, columnspan=4)
@@ -73,7 +72,6 @@ class EnviroDialog(Dialog):
         Label(parent, text="Starting Node:", anchor=W).grid(row=4, column=0, sticky=W)
         Label(parent, text=self._entries["start_node"], anchor=W).grid(row=4, column=1, sticky=W)
 
-    # TODO populate the handler methods
     def populate(self, manager):
 
         self._entries["floor_texture"]  = manager.floor_texture
