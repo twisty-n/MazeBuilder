@@ -87,3 +87,10 @@ DESCRIPTOR_MAP = \
         Event.ENVIRONMENT_EDIT: ContainerDescriptor.ENVIRONMENT_CONTAINER,
         Event.VR_EDIT: ContainerDescriptor.VR_CONTAINER
     }
+
+OBJECT_MAP = \
+    {
+        Event.NODE_DELETE: EditableObject.NODE,
+        Event.EDGE_DELETE: EditableObject.EDGE,
+        Event.OBJECT_DELETE: EditableObject.OBJECT
+    }

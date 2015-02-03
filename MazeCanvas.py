@@ -670,10 +670,9 @@ class MazePlannerCanvas(Frame):
             if self._edge_bindings[key].item_start == node_id or self._edge_bindings[key].item_end == node_id:
                 self.delete_edge(key)
         # Inform the object manager that a node as been deleted
-        self._delete_object(node_id)
+        if node_id in self._object_listing:
+            self._delete_object(node_id)
         self._manager.inform(DataStore.EVENT.NODE_DELETE, data_id=node_id)
-
-
 
     def delete_edge(self, edge_id):
         """

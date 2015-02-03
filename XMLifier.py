@@ -46,7 +46,7 @@ class XMLObserver(Observer):
         # the XML container
         update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
         self._dispatch[update_event[0]](
-            update_event[1],
+            self._extract_xml_id(update_event[0], update_event[2]),
             update_event[2]
         )
 
@@ -54,6 +54,18 @@ class XMLObserver(Observer):
         self._text_area.delete(1.0, END)
         self._text_area.insert(END, self._xml_container.to_string())
         self._text_area.config(state=DISABLED)
+
+    def _extract_xml_id(self, event, data):
+        if "Edge" in event:
+            return (data["source"], data["target"])
+        elif "Object" in event:
+            return data["name"]
+        elif "Node" in event:
+            return data["node_id"]
+        elif "Environment" in event:
+            return "ENV"
+        else:
+            return "VR"
 
     def construct(self):
         """
@@ -139,10 +151,22 @@ class XMLContainer:
         self.add_node_entry(entry_id, data)
 
     def add_object_entry(self, entry_id, data):
-        pass
+
+        node = ET.SubElement(self._root, "object")
+
+        node.attrib["x"]        = str(data["x_coordinate"])
+        node.attrib["y"]        = str(data["y_coordinate"])
+        node.attrib["name"]     = str(data["name"])
+        if data["mesh"] == "No mesh loaded":
+            data["mesh"] = "default.x"
+        node.attrib["mesh"]     = str(data["mesh"])
+        node.attrib["scale"]    = str(data["scale"])
+
+        self._all_entries[entry_id] = node
 
     def edit_object_entry(self, entry_id, data):
-        pass
+        self._root.remove(self._all_entries[entry_id])
+        self.add_object_entry(entry_id, data)
 
     def add_edge_entry(self, entry_id, data):
 

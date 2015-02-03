@@ -14,7 +14,7 @@ File: DataStore.py
 from Containers import Container, EnvironmentContainer, VRContainer
 import Debug
 from Exceptions import InvalidDataException
-from Enumerations import Event, EditableObject, DESCRIPTOR_MAP
+from Enumerations import Event, EditableObject, DESCRIPTOR_MAP, OBJECT_MAP
 from ObserverPattern import Subject
 
 # Classes
@@ -99,7 +99,7 @@ class DataStore(Subject):
         or event == Event.NODE_DELETE   \
         or event == Event.OBJECT_DELETE:
             try:
-                self._update_cache(event, data_id, None)
+                self._update_cache(event, data_id, self.request(OBJECT_MAP[event], data_id).empty_container())
                 del self._dispatch[event][data_id]
                 self.update_state()
                 return
@@ -154,6 +154,9 @@ class DataStore(Subject):
         self._edge_store.clear()
         self._object_store.clear()
         self._node_store.clear()
+        self._update_cache(Event.DELETE_ALL, None, None)
+        self.update_state()
+
 
     def update_key(self, event, new_key, old_key):
         """
