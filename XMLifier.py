@@ -46,7 +46,7 @@ class XMLObserver(Observer):
         # the XML container
         update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
         self._dispatch[update_event[0]](
-            self._extract_xml_id(update_event[0], update_event[2]),
+            update_event[1],
             update_event[2]
         )
 
@@ -54,18 +54,6 @@ class XMLObserver(Observer):
         self._text_area.delete(1.0, END)
         self._text_area.insert(END, self._xml_container.to_string())
         self._text_area.config(state=DISABLED)
-
-    def _extract_xml_id(self, event, data):
-        if "Edge" in event:
-            return (data["source"], data["target"])
-        elif "Object" in event:
-            return data["name"]
-        elif "Node" in event:
-            return data["node_id"]
-        elif "Environment" in event:
-            return "ENV"
-        else:
-            return "VR"
 
     def construct(self):
         """
@@ -136,16 +124,19 @@ class XMLContainer:
         node.attrib["id"]        = str(data["node_id"])
         node.attrib["x"]         = str(data["x_coordinate"])
         node.attrib["y" ]        = str(data["y_coordinate"])
-        node.attrib["texture"]   = str(data["room_texture"])
+        if data["room_texture"] is None:
+            data["room_texture"] = "Data/default.jpg"
+        node.attrib["texture"]   = str((data["room_texture"].split("/"))[1])
 
         if data["wall_pictures"] is not None:
             # TODO: put the pics as an attribute
             pass
 
-        self._all_entries[entry_id] = data
+        self._all_entries[entry_id] = node
 
     def edit_node_entry(self, entry_id, data):
-        pass
+        self._root.remove(self._all_entries[entry_id])
+        self.add_node_entry(entry_id, data)
 
     def add_object_entry(self, entry_id, data):
         pass
@@ -154,13 +145,28 @@ class XMLContainer:
         pass
 
     def add_edge_entry(self, entry_id, data):
-        pass
+
+        node = ET.SubElement(self._root, "edge")
+        node.attrib["source"] = str(data["source"])
+        node.attrib["target"] = str(data["target"])
+
+        if data["wall1"] is not None:
+            # TODO: implement
+            pass
+
+        if data["wall2"] is not None:
+            # TODO implement
+            pass
+
+        self._all_entries[entry_id] = node
 
     def edit_edge_entry(self, entry_id, data):
-        pass
+        self._root.remove(self._all_entries[entry_id])
+        self.add_edge_entry(entry_id, data)
 
-    def remove_entry(self, type, entry_id, data):
-        pass
+    def remove_entry(self, entry_id, data):
+        self._root.remove(self._all_entries[entry_id])
+        del self._all_entries[entry_id]
 
     def edit_environment(self, entry_id, data):
         pass

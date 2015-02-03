@@ -99,13 +99,14 @@ class DataStore(Subject):
         or event == Event.NODE_DELETE   \
         or event == Event.OBJECT_DELETE:
             try:
+                self._update_cache(event, data_id, None)
                 del self._dispatch[event][data_id]
+                self.update_state()
                 return
             except KeyError:
                 error_msg = "Deletion of data item failed, "
                 "key not in datastore. Key:" + str(data_id) + " Event:" + event
                 Debug.printi(error_msg, Debug.Level.ERROR)
-                KeyError(error_msg)
 
         if event == Event.DELETE_ALL:
             self._delete_all_vals()
@@ -120,9 +121,6 @@ class DataStore(Subject):
         # Else, its a creation or an edit, first validate
         if self.attempt_validation(event, data) is False:
             raise InvalidDataException(event, data)
-
-        # We overwrite the container in the case of an edit at this point
-        # TODO: make it so that containers are updated in place
 
         self._dispatch[event][data_id] = Container.manufacture_container(self._descriptor_map[event], data)
         self._update_cache(event, data_id, data)

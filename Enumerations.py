@@ -77,6 +77,8 @@ DESCRIPTOR_MAP = \
     {
         Event.NODE_CREATE: ContainerDescriptor.NODE_CONTAINER,
         Event.NODE_EDIT: ContainerDescriptor.NODE_CONTAINER,
+        Event.NODE_DELETE: ContainerDescriptor.NODE_CONTAINER,
+        Event.EDGE_DELETE: ContainerDescriptor.EDGE_CONTAINER,
         Event.EDGE_CREATE: ContainerDescriptor.EDGE_CONTAINER,
         Event.EDGE_EDIT: ContainerDescriptor.EDGE_CONTAINER,
         Event.OBJECT_CREATE: ContainerDescriptor.OBJECT_CONTAINER,
