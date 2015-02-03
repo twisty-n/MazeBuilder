@@ -1,3 +1,5 @@
+from DataValidator import DataValidator
+
 __author__ = 'Tristan Newmann'
 
 """
@@ -174,14 +176,3 @@ class DataStore(Subject):
 
     def request_data(self, type, id):
         return self.request(type, id)
-
-
-class DataValidator:
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def validate(event, data):
-        # TODO:  actual validation of the data
-        return True

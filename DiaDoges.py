@@ -1,3 +1,4 @@
+from DataValidator import DataValidator
 import Debug
 
 __author__ = 'Tristan Newmann'
@@ -18,7 +19,7 @@ from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator, TexturePicker
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, SW, Button, ACTIVE, END, StringVar, IntVar
 import tkFileDialog
-from DataStore import DataStore, DataValidator
+from DataStore import DataStore
 
 # Enumerations and Functions
 

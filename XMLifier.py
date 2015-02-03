@@ -2,6 +2,7 @@ __author__ = 'tristan_dev'
 
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
+import tkFileDialog
 from Enumerations import Event, DESCRIPTOR_MAP
 import lxml.etree as ET
 import Debug
@@ -101,6 +102,17 @@ class XMLObserver(Observer):
         self._pane.withdraw() if self._active else self._pane.deiconify()
         self._active = not self._active
 
+    def dump_file(self):
+
+        # Validate, abort if invalid
+
+        # Obtain the file handle to print to
+        handle = tkFileDialog.asksaveasfile(mode='w', defaultextension=".xml")
+        if handle is None:  # asksaveasfile return `None` if dialog closed with "cancel".
+            return
+        handle.write(self._xml_container.to_string())
+        handle.close()  # `()` was missing.
+        Debug.printi("File " + handle.name + " has been saved")
 
 
 class XMLContainer:

@@ -1,3 +1,4 @@
+from DataValidator import DataValidator
 import Debug
 
 __author__ = 'Tristan Newmann'
@@ -17,7 +18,7 @@ Module contains the implementation
 from Tkinter import Canvas, Frame, BOTH, Menu
 from DiaDoges import NodeDialog, EdgeDialog, ObjectDialog
 from Enumerations import Input_Event, EditableObject, ControlSpecifier, ExecutionStage
-from DataStore import DataStore, DataValidator
+from DataStore import DataStore
 from Control import load_controls
 import Containers
 
