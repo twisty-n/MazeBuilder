@@ -41,7 +41,7 @@ class XMLObserver(Observer):
         }
 
     def update(self):
-        Debug.printi("\nThe state of the datastore has been updated", Debug.Level.INFO)
+        Debug.printi("The state of the datastore has been updated", Debug.Level.INFO)
 
         # Retrieve the update details from the datastore, and then dispatch the changes to
         # the XML container
@@ -153,6 +153,7 @@ class XMLContainer:
         if data["room_texture"] is None:
             data["room_texture"] = "Data/default.jpg"
         node.attrib["texture"]   = str((data["room_texture"].split("/"))[1])
+        node.attrib["accessible"] = "true"
 
         if data["wall_pictures"] is not None:
             # TODO: put the pics as an attribute

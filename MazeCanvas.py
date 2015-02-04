@@ -171,13 +171,14 @@ class MazePlannerCanvas(Frame):
         y = coords[1]
         item = self._cache["item"]
         self._validate_node_position(coords)
-        # Clean the cache
-        self._clear_cache(coords)
 
         container = self._manager.request(DataStore.DATATYPE.NODE, item)
         container.x_coordinate = x
         container.y_coordinate = y
         self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container())
+        Debug.printi("Node " + str(self._cache["item"]) + " has been moved", Debug.Level.INFO)
+        # Clean the cache
+        self._clear_cache(coords)
 
     def _validate_node_position(self, coords):
         """
@@ -323,6 +324,7 @@ class MazePlannerCanvas(Frame):
         obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=self._manager.request(DataStore.DATATYPE.OBJECT, item))
         Debug.printi("Editing object " + str(item), Debug.Level.INFO)
         self._manager.inform(DataStore.EVENT.OBJECT_EDIT, obj._entries, item)
+        Debug.printi("Editing object " + str(item), Debug.Level.INFO)
 
     def _delete_object(self, item):
         if item not in self._object_listing:
@@ -363,9 +365,7 @@ class MazePlannerCanvas(Frame):
         self._manager.inform(DataStore.EVENT.OBJECT_CREATE, obj._entries, item)
         self._object_listing[item] = item
         self._canvas.itemconfig(item, fill="blue")
-        Debug.printi("Object created in node " + str(item), Debug.Level.INFO)
-        pass
-
+        Debug.printi("Object created in room " + str(item), Debug.Level.INFO)
 
     def _valid_edge_cache(self):
         """
@@ -428,6 +428,7 @@ class MazePlannerCanvas(Frame):
         # Check if this edge already exists in the program
         if self._check_duplicate_edges(self._edge_cache["item_start"], curr):
             self.delete_edge(self._edge_cache["edge"])
+            Debug.printi("Multiple edges between rooms not permitted", Debug.Level.ERROR)
             return
 
         self._canvas.tag_lower("edge")
@@ -449,6 +450,11 @@ class MazePlannerCanvas(Frame):
                 },
             self._edge_cache["edge"])
 
+        Debug.printi("Edge created between rooms "
+                     + str(self._edge_cache["item_start"])
+                     + " and "
+                     + str(self._edge_cache["item_end"])
+                     , Debug.Level.INFO)
         self._clear_edge_cache()
         self._clear_cache(coords)
 

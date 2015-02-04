@@ -21,6 +21,7 @@ import tkFileDialog
 from PIL import Image, ImageTk
 import shutil, os, sys
 from DataStore import DataStore
+from Debug import OutputPipe
 
 from Exceptions import DuplicateListHeapItemException, DuplicateCommandException, MaxItemLimitReachedException
 
@@ -220,7 +221,7 @@ class ImagePicker(Frame):
     def get(self):
         return self._file_name
 
-class StatusBar(Frame):
+class StatusBar(Frame, OutputPipe):
     """
     A basic definition for a statusBar style widget that can be updated
     during runtime
@@ -257,11 +258,11 @@ class StatusBar(Frame):
         """
         self.set_text_f("%s", text)
 
-    def alert(self, text, level):
+    def alert(self, msg, level):
         """
         Posts text to the status bar, and colours the background based on an alert level
         """
-        self.set_text(text)
+        self.set_text(msg)
         if level is Debug.Level.INFO:
             self.change_bg("green")
         elif level is Debug.Level.ERROR:

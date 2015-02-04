@@ -141,6 +141,7 @@ class MazeBuilder(Frame):
         self._drawer.pack(fill=BOTH, expand=1)
         self._status_bar = StatusBar(status)
         status.pack(side=BOTTOM, fill=X)
+        Debug.d_level.set_message_pad(self._status_bar)
 
         self._status_bar.pack(side=BOTTOM, fill=X)
         self._update_bar.pack(side=BOTTOM, fill=X)

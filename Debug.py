@@ -18,6 +18,12 @@ Module contains debugging output utility class
 
 # Classes
 
+class OutputPipe:
+    def __init__(self):
+        pass
+
+    def alert(self, msg, level):
+        pass
 
 class Level():
     """
@@ -36,6 +42,7 @@ class Level():
         Constructs the "static" instance of level
         """
         self._verbose = True        #Todo: Change to false for release
+        self.message_pad = OutputPipe()
 
     def toggle(self):
         """
@@ -43,10 +50,19 @@ class Level():
         """
         self._verbose = not self._verbose
 
+    def set_message_pad(self, pad):
+        """
+        Set an additional output area to send messages to
+        :param pad:
+        :type pad: OutputPipe
+        :return:
+        """
+        self.message_pad = pad
+
 # "Static" instance of level that is used in determining the debugging output
 d_level = Level()
 
-def printi(mssg, level=Level.INFO):
+def printi(mssg, level=Level.INFO, org=None):
     """
     Print a debug message based on the current verbosity filter
 
@@ -55,6 +71,8 @@ def printi(mssg, level=Level.INFO):
     """
 
     # Will not print the debug info if the level is not verbose
+    if org is not "event":
+        d_level.message_pad.alert(mssg, level)
     if d_level._verbose is False and level is Level.INFO:
         return
     print(level + ": " + mssg)
@@ -75,7 +93,7 @@ def printe(event, level=Level.INFO):
         # We have a key event
         mssg = mssg + "Key Event || Button: " + str(event.keysym) + " ||"
     # Dispatch to the normal print method
-    printi(mssg, level)
+    printi(mssg, level, "event")
 
 def printet(event, event_type, level=Level.INFO):
     """
@@ -84,4 +102,4 @@ def printet(event, event_type, level=Level.INFO):
     :param event:       The event that cause the message
     :param level:       The level the message is to be printed at
     """
-    printi("Event Recorded || " + str(event_type) + " || x=" + str(event.x) + " y=" + str(event.y), level)
+    printi("Event Recorded || " + str(event_type) + " || x=" + str(event.x) + " y=" + str(event.y), level, "event")

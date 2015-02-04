@@ -396,7 +396,7 @@ class EdgeDialog(Dialog):
             self.wall1_height.insert(0, self._entries["wall1"]["height"])
         self.wall2_height = Entry(parent, width=9)
         if self._entries["wall2"]["height"] is not None:
-            self.wall2_height = self._entries["wall2"]["height"]
+            self.wall2_height.insert(0, self._entries["wall2"]["height"])
         self.wall1_height.grid(row=2, column=1)
         self.wall2_height.grid(row=2, column=3)
 
