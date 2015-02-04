@@ -156,9 +156,11 @@ class XMLContainer:
         node.attrib["accessible"] = "true"
 
         if data["wall_pictures"] is not None:
-            # TODO: put the pics as an attribute
-            pass
-
+            for index, (pic_id, pic) in enumerate(data["wall_pictures"].iteritems()):
+                pic_node = ET.SubElement(node, "w"+str(index+1)+"Img")
+                pic_node.attrib["name"]     = str(pic["name"])
+                pic_node.attrib["visible"]  = str(pic["visible"])
+                pic_node.attrib["texture"]  = str(pic["texture"])
         self._all_entries[entry_id] = node
 
     def edit_node_entry(self, entry_id, data):
