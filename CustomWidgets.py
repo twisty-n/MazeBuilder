@@ -39,7 +39,7 @@ class NodePictureDialog(Dialog):
     def body(self, parent):
         Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
         Label(parent, text="Visible:").grid(row=1, column=0, sticky=W)
-        self._texture = ImagePicker(parent, "Texture:")
+        self._texture = ImagePicker(parent, "Texture:", auto_move=True, move_fold="Data")
         self._texture.grid(row=3, columnspan=3)
 
         self._name = Entry(parent, width=10, text=self._entries["name"])
@@ -96,7 +96,8 @@ class PicConfigurator(ListHeap):
 
     def populate(self, populator):
         # Expects a list of wall pics with which to populate the widget
-        pass
+        for key, pic in populator.iteritems():
+            self._add_new_wall_pic(pic)
 
     def _handle_db_click(self, event):
         """
@@ -130,7 +131,7 @@ class PicConfigurator(ListHeap):
         p_menu.add_command(label="Delete All", command=lambda: self.remove_all())
         p_menu.post(event.x_root, event.y_root)
 
-    def _add_new_wall_pic(self):
+    def _add_new_wall_pic(self, pic=None):
         """
         Adds a new wall picture to the node definition
 
@@ -139,9 +140,13 @@ class PicConfigurator(ListHeap):
         node that is being edited
         """
         # Display the dialogue
-        results = NodePictureDialog(self)
-        item_id = results._entries["name"]
-        item = results._entries
+        results = pic
+        if results is None:
+            results = NodePictureDialog(self)
+            results = results._entries
+
+        item_id = results["name"]
+        item = results
         # Extract the return values
         try:
             self.add_new(item, item_id)
@@ -179,7 +184,7 @@ class PicConfigurator(ListHeap):
         Return the information that has been gathered by this widget
         :return: [List] of WallPictureContainers
         """
-        pass
+        return self._items
 
 class TexturePicker(ListHeap):
     def __init__(self, parent, populator):

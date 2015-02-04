@@ -196,7 +196,6 @@ class ObjectContainer(Container):
             }
 
 class EdgeContainer(Container):
-    # TODO remove height
     def __init__(self, key_val=None):
         self.source = None
         self.target = None
