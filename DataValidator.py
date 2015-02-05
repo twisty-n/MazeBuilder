@@ -1,6 +1,7 @@
 __author__ = 'tristan_dev'
 
 from Enumerations import Event
+import Debug
 
 
 class DataValidator:
@@ -11,7 +12,10 @@ class DataValidator:
     @staticmethod
     def validate(event, data):
         #return (True, "")
-        return DataValidator().VALIDATE_MAP[event](data)
+        try:
+            return DataValidator().VALIDATE_MAP[event](data)
+        except KeyError as error:
+            Debug.printi(error.message, Debug.Level.FATAL)
 
     def _validate_environment(data):
         """
@@ -50,6 +54,9 @@ class DataValidator:
         Event.VR_EDIT           : _validate_vr,
         Event.NODE_EDIT         : _validate_node,
         Event.EDGE_EDIT         : _validate_edge,
-        Event.OBJECT_EDIT       : _validate_object
+        Event.OBJECT_EDIT       : _validate_object,
+        Event.NODE_CREATE       : _validate_node,
+        Event.EDGE_CREATE       : _validate_edge,
+        Event.OBJECT_CREATE     : _validate_object
     }
 

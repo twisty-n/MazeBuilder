@@ -82,7 +82,7 @@ class DataStore(Subject):
         :param data:            The data to evaluate
         :return:
         """
-        return self._validator.validate(event, data)
+        return DataValidator.validate(event, data)[0]
 
     def inform(self, event, data=None, data_id="42"):
         """

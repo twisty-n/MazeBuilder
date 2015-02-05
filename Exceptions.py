@@ -53,4 +53,4 @@ class InvalidDataException(Exception):
     Raised when data provided is invalid
     """
     def __init__(self, event, data):
-        Exception.__init__("Invalid data provided for event" + event + "\tData: " + data)
+        Exception.__init__("Invalid data provided for event" + str(event) + "\tData: " + str(data))
