@@ -87,22 +87,24 @@ class WallTextureDialog(Dialog):
         Dialog.__init__(self, parent, "WallBuilder", True, x, y, populator)
 
     def body(self, parent):
-        self._texture = ImagePicker(parent, "Texture:", auto_move=True, move_fold="Data")
-        self._texture.grid(row=0, columnspan=3)
+        self._texture = ImagePicker(parent, "Texture:", auto_move=True, move_fold="Data", default=self._entries["path"])
+        self._texture.grid(row=0, columnspan=5)
 
         Label(parent, text="Height:").grid(row=1, column=0, sticky=W)
         Label(parent, text="Tile X:").grid(row=1, column=2, sticky=W)
         Label(parent, text="Tile Y:").grid(row=1, column=4, sticky=W)
 
-        self._height = Entry(parent, width=10, text=self._entries["height"])
-        self._height.grid(row=1, column=2, sticky=W)
+        self._height = Entry(parent, width=5)
+        self._height.grid(row=1, column=1, sticky=W)
+        self._height.insert(0, self._entries["height"]) if self._entries["height"] is not None else self._height.insert(0,"")
 
-        self._tile_x= Entry(parent, width=10, text=self._entries["tile_x"])
-        self._tile_x.grid(row=1, column=2, sticky=W)
+        self._tile_x = Entry(parent, width=5)
+        self._tile_x.grid(row=1, column=3, sticky=W)
+        self._tile_x.insert(0, self._entries["tile_x"]) if self._entries["tile_x"] is not None else self._height.insert(0,"")
 
-        self._tile_y= Entry(parent, width=10, text=self._entries["tile_y"])
-        self._tile_y.grid(row=1, column=2, sticky=W)
-
+        self._tile_y = Entry(parent, width=5)
+        self._tile_y.grid(row=1, column=5, sticky=W)
+        self._tile_y.insert(0, self._entries["tile_y"]) if self._entries["tile_y"] is not None else self._height.insert(0,"")
 
     def populate(self, manager):
         self._entries["path"] = manager.path
@@ -240,17 +242,16 @@ class TexturePicker(ListHeap):
         self.config(width=10, height=100)
 
     def populate(self, populator):
-        pass
+        for key, tex in populator.iteritems():
+            self._add_new_texture(tex)
 
-    def get(self):
-        """
-        Returns the information that has been gathered by the widget
-        :return:    [List] Of NodePicture containers
-        """
-        pass
 
     def _handle_db_click(self, event):
-        Debug.printi("Double click || Texture Picker", Debug.Level.INFO)
+        Debug.printe(event, Debug.Level.INFO)
+        item = self._listbox.get(ACTIVE)
+        results = WallTextureDialog(self, populator=WallTextureContainer(self._items[item]))
+        self._remove_texture()
+        self._add_new_texture(results._entries)
         pass
 
     def _handle_r_click(self, event):

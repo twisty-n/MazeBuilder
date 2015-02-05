@@ -19,6 +19,8 @@ from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator, TexturePicker
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, SW, Button, ACTIVE, END, StringVar, IntVar
 import tkFileDialog
+import os
+import shutil
 from DataStore import DataStore
 
 # Enumerations and Functions
@@ -331,9 +333,36 @@ class ObjectDialog(Dialog):
         dialog = tkFileDialog.Open(self, filetypes=types)
         file_path = dialog.show()
 
+        file_path = self._move_img(file_path)
+
         self._mesh.delete(0, END)
         self._mesh.insert(0, file_path)
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
+
+    def _move_img(self, file_path):
+        try:
+            src = file_path
+            file_name = self._scrub_name(file_path)
+            dest = os.path.dirname(os.path.realpath(__file__)) + "/" + file_name
+            shutil.copy(src, dest)
+            Debug.printi("Moving file " + file_path + " to location "
+                         + os.path.dirname(os.path.realpath(__file__))
+                         + "/" + file_name, Debug.Level.INFO)
+            return file_name
+        # eg. src and dest are the same file
+        except shutil.Error as e:
+            print('Error: %s' % e + " " + dest)
+        # eg. source or destination doesn't exist
+        except IOError as e:
+            print('Error: %s' % e.strerror + " " + dest)
+
+    def _scrub_name(self, file_path):
+        """
+        Override: Parse and clean the filename
+        """
+        split = file_path.split("/")
+        f_name = "Data/" + split[-1]
+        return f_name
 
     def populate(self, manager):
         self._entries["x_coordinate"]   = manager.x_coordinate
@@ -357,11 +386,11 @@ class EdgeDialog(Dialog):
                 "height" : None,
                 "wall1"  : {
                     "height" : None,
-                    "textures": []
+                    "textures": {}
                 },
                 "wall2"  : {
                     "height" : None,
-                    "textures": []
+                    "textures": {}
                 }
 
             }
