@@ -92,8 +92,8 @@ class EnvironmentContainer(Container):
 class VRContainer(Container):
     def __init__(self, key_val=None):
         self.frame_angle                = None
-        self.distortion                 = None
-        self.windowed                   = None
+        self.distortion                 = False
+        self.windowed                   = False
         self.eye_height                 = None
         self.minimum_dist_to_wall       = None
         Container.__init__(self, key_val)

@@ -73,7 +73,6 @@ class MainMBMenuBar():
         self.construct()
 
     def construct(self):
-        #TODO: remap all hardcoded calls to the Command Manager
         """
         Construct the default menu bar with all of the default options
 

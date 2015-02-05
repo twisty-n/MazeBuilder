@@ -723,7 +723,9 @@ class MazePlannerCanvas(Frame):
 
 
 class EdgeBind():
-
+    """
+    Class that holds all of the informaiton needed to deal with edges between nodes
+    """
     def __init__(self, dict):
         self.x_start = dict["x_start"]
         self.y_start = dict["y_start"]

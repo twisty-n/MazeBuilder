@@ -308,6 +308,8 @@ class Dialog(Toplevel):
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
         self.buttonbox()
+
+        # Needed to grab the window on Linux machines
         while True:
             try:
                 self.grab_set()
@@ -315,7 +317,6 @@ class Dialog(Toplevel):
                 continue
             else:
                 break
-
 
         if not self.initial_focus:
             self.initial_focus = self
@@ -381,6 +382,7 @@ class Dialog(Toplevel):
         if not self.validate():
             self.initial_focus.focus_set()
             return
+
         self.withdraw()
         self.update_idletasks()
         self.apply()

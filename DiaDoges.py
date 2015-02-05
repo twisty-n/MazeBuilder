@@ -18,7 +18,7 @@ Module contains the custom user interface dialogs
 from UtilWidgets import Dialog, ImagePicker
 from CustomWidgets import PicConfigurator, TexturePicker
 from Tkinter import Scale, Label, Entry, HORIZONTAL, E, W, Checkbutton, SW, Button, ACTIVE, END, StringVar, IntVar
-import tkFileDialog
+import tkFileDialog, tkMessageBox
 import os
 import shutil
 from DataStore import DataStore
@@ -54,7 +54,7 @@ class EnviroDialog(Dialog):
         :return:
         """
         self._floorSel = ImagePicker(parent, "Floor Texture:",
-                                     default=self._entries["floor_texture"])
+                                     default=self._entries["floor_texture"], auto_move=True, move_fold="Data")
         self._floorSel.grid(row=0, columnspan=4)
         self._skySel = ImagePicker(parent, "Sky Texture:", default=self._entries["sky_texture"], auto_move=True, move_fold="Data")
         self._skySel.grid(row=1, columnspan=4)
@@ -85,7 +85,10 @@ class EnviroDialog(Dialog):
         self._entries["wall_height"]    = manager.wall_height
 
     def validate(self):
-        return DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        (result, message) = DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        if result is not True:
+            tkMessageBox.showerror("Input Error", message)
+        return result
 
     def apply(self):
         self._entries["floor_texture"] = self._floorSel.get()
@@ -189,7 +192,10 @@ class VRConfigDialog(Dialog):
         self._distortion_var.set( 0 if manager.distortion is False else 1 )
 
     def validate(self):
-        return DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        (result, message) = DataValidator.validate(DataStore.EVENT.VR_EDIT, self._entries)
+        if result is not True:
+            tkMessageBox.showerror("Input Error", message)
+        return result
 
     def apply(self):
         self._entries["frame_angle"] = self._frameAngle.get()
@@ -213,7 +219,7 @@ class NodeDialog(Dialog):
             "x_coordinate"   : None,
             "y_coordinate"   : None,
             "room_texture" : None,
-            "wall_pictures" : []
+            "wall_pictures" : {}
         }
         Dialog.__init__(self, parent, "NodeBuilder", True, x, y, populator)
 
@@ -247,7 +253,15 @@ class NodeDialog(Dialog):
         self._entries["wall_pictures"]  = manager.wall_pictures
 
     def validate(self):
-        return True
+        (result, message) = \
+            DataValidator.validate(
+                DataStore.EVENT.NODE_EDIT,
+                {
+                    "room_texture" : self._texture_selector.get()
+                })
+        if result is not True:
+            tkMessageBox.showerror("Input Error", message)
+        return result
 
     def apply(self):
         self._entries["room_texture"] = self._texture_selector.get()
@@ -312,7 +326,10 @@ class ObjectDialog(Dialog):
         self._scale.grid(row=3, column=2, columnspan=2, sticky=W)
 
     def validate(self):
-        return True
+        (result, message) = DataValidator.validate(DataStore.EVENT.OBJECT_EDIT, self._entries)
+        if result is not True:
+            tkMessageBox.showerror("Input Error", message)
+        return result
 
     def apply(self):
         self._entries["name"] = self._object_name.get()
@@ -340,6 +357,11 @@ class ObjectDialog(Dialog):
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
 
     def _move_img(self, file_path):
+        """
+        Move the DirectX file to the Data folder automagically
+        :param file_path:           The file path of the file to be moved
+        :return:
+        """
         try:
             src = file_path
             file_name = self._scrub_name(file_path)
@@ -358,7 +380,9 @@ class ObjectDialog(Dialog):
 
     def _scrub_name(self, file_path):
         """
-        Override: Parse and clean the filename
+        Scrubs the file name so taht it is /really/long/abs/path/fil.x
+        to
+        Data/file.x
         """
         split = file_path.split("/")
         f_name = "Data/" + split[-1]
@@ -450,5 +474,8 @@ class EdgeDialog(Dialog):
         self._entries["wall2"]["textures"] = self.wall2_tex_select.get()
 
     def validate(self):
-        return True
+        (result, message) = DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        if result is not True:
+            tkMessageBox.showerror("Input Error", message)
+        return result
 

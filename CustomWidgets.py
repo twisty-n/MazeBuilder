@@ -27,6 +27,9 @@ from Containers import NodePictureContainer, WallTextureContainer
 
 
 class NodePictureDialog(Dialog):
+    """
+    Dialog that allows the user to enter information to configue a Picture for a room in the maze
+    """
     def __init__(self, parent, x=None, y=None, populator=None):
         # By default we will set the texture as visible
         self._entries = {
@@ -73,9 +76,13 @@ class NodePictureDialog(Dialog):
         self._entries["visible"] = self._visi_var.get()
 
     def validate(self):
+        # TODO: inline validation
         return True
 
 class WallTextureDialog(Dialog):
+    """
+    Dialog that allows the user to input configuration for the wall segments of the maze
+    """
     def __init__(self, parent, x=None, y=None, populator=None):
         # By default we will set the texture as visible
         self._entries = {
@@ -120,6 +127,7 @@ class WallTextureDialog(Dialog):
         self._entries["height"] = self._height.get()
 
     def validate(self):
+        # TODO inline validation
         return True
 
 
