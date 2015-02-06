@@ -43,11 +43,32 @@ class DataValidator:
             result = False
             messages = "Room Texture must be defined\n"
         return result, messages
+
     def _validate_edge(data):
-        pass
+        result = True
+        message = ""
+        if len(data["wall1"]["textures"]) < 1 or len(data["wall2"]["textures"]) < 1:
+            result = False
+            message = "Walls must have at least 1 texture. Please input a texture for each wall\n"
+        if data["wall1"]["height"] is "" or data["wall2"]["height"] is "":
+            result = False
+            message = "You must specify a height for each wall"
+
+        return result, message
 
     def _validate_object(data):
-        pass
+        # object must have a name
+        # the name must be individual --> this should be checked as part of tghe export check
+        result = True
+        message = ""
+        if data["name"] is "":
+            result = False
+            message = "The object must be given a unique name\n"
+        if data["mesh"] is "":
+            result = False
+            message = "You must select a mesh to use for the object"
+
+        return result, message
 
     VALIDATE_MAP = {
         Event.ENVIRONMENT_EDIT  : _validate_environment,
@@ -56,7 +77,7 @@ class DataValidator:
         Event.EDGE_EDIT         : _validate_edge,
         Event.OBJECT_EDIT       : _validate_object,
         Event.NODE_CREATE       : _validate_node,
-        Event.EDGE_CREATE       : _validate_edge,
+        Event.EDGE_CREATE       : lambda data: (True, ""),
         Event.OBJECT_CREATE     : _validate_object
     }
 

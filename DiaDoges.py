@@ -326,7 +326,11 @@ class ObjectDialog(Dialog):
         self._scale.grid(row=3, column=2, columnspan=2, sticky=W)
 
     def validate(self):
-        (result, message) = DataValidator.validate(DataStore.EVENT.OBJECT_EDIT, self._entries)
+        (result, message) = DataValidator.validate(DataStore.EVENT.OBJECT_EDIT,
+            {
+                "name"  :    self._object_name.get(),
+                "mesh"  :   self._mesh.get()
+            })
         if result is not True:
             tkMessageBox.showerror("Input Error", message)
         return result
@@ -474,7 +478,19 @@ class EdgeDialog(Dialog):
         self._entries["wall2"]["textures"] = self.wall2_tex_select.get()
 
     def validate(self):
-        (result, message) = DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        (result, message) = DataValidator.validate(
+            DataStore.EVENT.EDGE_EDIT,
+            {
+                "wall1"  :   {
+                    "height"    :   self.wall1_height.get(),
+                    "textures"  :   self.wall1_tex_select.get()
+                }
+                ,
+                "wall2" :   {
+                    "height"    :   self.wall2_height.get(),
+                    "textures"  :   self.wall2_tex_select.get()
+                }
+            })
         if result is not True:
             tkMessageBox.showerror("Input Error", message)
         return result

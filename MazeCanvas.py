@@ -317,7 +317,18 @@ class MazePlannerCanvas(Frame):
         self._clear_cache(coords)
 
     def _edit_object(self, coords):
+
+        """
+        Awkward moment when you find a threading related bug in the Tkinter library, caused by some
+        Tcl issue or something like that.
+        The below line must be left commented out otherwise the window_wait call in the dialog will crash
+        out with a Tcl ponter based issue :/
+        item = self._get_current_item((self._cache["x"], self._cache["y"]))
+        This means that we can only use the mouse to edit objects
+        """
+
         item = self._get_current_item(coords)
+
         if item not in self._object_listing:
             Debug.printi("Not a valid object to edit", Debug.Level.ERROR)
             return
@@ -351,9 +362,7 @@ class MazePlannerCanvas(Frame):
             Debug.printi("This room already has an object in it", Debug.Level.ERROR)
             return
         # Retrieve its coordinates
-        item_coordinates = self._canvas.coords(item)
         # Launch the object maker dialog
-        obj_coords = (((item_coordinates[2] - item_coordinates[0]) / 2), ((item_coordinates[3] - item_coordinates[1])/2))
         obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
             "x_coordinate"  :   coords[0],
             "y_coordinate"  :   coords[1],

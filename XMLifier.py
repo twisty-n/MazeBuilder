@@ -201,8 +201,13 @@ class XMLContainer:
                 tex_node.attrib["tileY"] = val["tile_y"]
 
         if data["wall2"] is not None:
-            # TODO implement
-            pass
+            wall2 = ET.SubElement(node, "Wall2")
+            wall2.attrib["height"] = str(data["wall2"]["height"])
+            for key, val in data["wall2"]["textures"].iteritems():
+                tex_node = ET.SubElement(wall2, "Texture")
+                tex_node.attrib["path"] = val["path"]
+                tex_node.attrib["tileX"] = val["tile_x"]
+                tex_node.attrib["tileY"] = val["tile_y"]
 
         self._all_entries[entry_id] = node
 
