@@ -41,7 +41,7 @@ class DataValidator:
         messages = ""
         if data["room_texture"] is None:
             result = False
-            messages = "Room Texture must be defined\n"
+            messages += "Room Texture must be defined\n"
         return result, messages
 
     def _validate_edge(data):
@@ -49,10 +49,10 @@ class DataValidator:
         message = ""
         if len(data["wall1"]["textures"]) < 1 or len(data["wall2"]["textures"]) < 1:
             result = False
-            message = "Walls must have at least 1 texture. Please input a texture for each wall\n"
+            message += "Walls must have at least 1 texture. Please input a texture for each wall\n"
         if data["wall1"]["height"] is "" or data["wall2"]["height"] is "":
             result = False
-            message = "You must specify a height for each wall"
+            message += "You must specify a height for each wall"
 
         return result, message
 
@@ -63,10 +63,10 @@ class DataValidator:
         message = ""
         if data["name"] is "":
             result = False
-            message = "The object must be given a unique name\n"
+            message += "The object must be given a unique name\n"
         if data["mesh"] is "":
             result = False
-            message = "You must select a mesh to use for the object"
+            message += "You must select a mesh to use for the object"
 
         return result, message
 
@@ -77,6 +77,7 @@ class DataValidator:
         Event.EDGE_EDIT         : _validate_edge,
         Event.OBJECT_EDIT       : _validate_object,
         Event.NODE_CREATE       : _validate_node,
+        # HaX0R
         Event.EDGE_CREATE       : lambda data: (True, ""),
         Event.OBJECT_CREATE     : _validate_object
     }

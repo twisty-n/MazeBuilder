@@ -16,6 +16,7 @@ Module contains custom widgets for the MazeBuilder project
 # Imports
 from UtilWidgets import ListHeap, Dialog, ImagePicker
 from Tkinter import Menu, Canvas, IntVar, Label, Entry, Checkbutton, W, ACTIVE
+import tkMessageBox
 from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedException
 from Containers import NodePictureContainer, WallTextureContainer
 
@@ -76,8 +77,20 @@ class NodePictureDialog(Dialog):
         self._entries["visible"] = self._visi_var.get()
 
     def validate(self):
-        # TODO: inline validation
-        return True
+        error = False
+        mssg = ""
+        if self._name.get() is "":
+            error = True
+            mssg += "You must assign a name to this picture\n"
+        if self._texture.get() is None:
+            error = True
+            mssg += "You must assign a texture to this picture"
+
+        if error:
+            tkMessageBox.showerror("Input Error", mssg)
+
+        # Need to invert for the validation logic
+        return not error
 
 class WallTextureDialog(Dialog):
     """
@@ -127,8 +140,20 @@ class WallTextureDialog(Dialog):
         self._entries["height"] = self._height.get()
 
     def validate(self):
-        # TODO inline validation
-        return True
+        error = False
+        mssg = ""
+        if self._texture.get() is None:
+            error = True
+            mssg += "You must assign a texture to this picture\n"
+        if self._tile_x.get() or self._tile_y.get() is None:
+            error = True
+            mssg += "You must specify the tiling for this texture"
+
+        if error:
+            tkMessageBox.showerror("Input Error", mssg)
+
+        # Need to invert for the validation logic
+        return not error
 
 
 class PicConfigurator(ListHeap):
