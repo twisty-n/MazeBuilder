@@ -145,7 +145,7 @@ class WallTextureDialog(Dialog):
         if self._texture.get() is None:
             error = True
             mssg += "You must assign a texture to this picture\n"
-        if self._tile_x.get() or self._tile_y.get() is None:
+        if self._tile_x.get() is None or self._tile_y.get() is None:
             error = True
             mssg += "You must specify the tiling for this texture"
 

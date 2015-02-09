@@ -23,7 +23,7 @@ class DataValidator:
 
         if  databank["vr_config_store"]["minimum_dist_to_wall"] is not None and  \
             databank["environment_store"]["edge_width"] is not None:
-            if 2*int(databank["vr_config_store"]["mimimum_dist_to_wall"]) >= \
+            if 2*int(databank["vr_config_store"]["minimum_dist_to_wall"]) >= \
                 int(databank["environment_store"]["edge_width"]):
                 valid = False
                 messages += "2 x Minimum Distance to Wall MUST be lower then the specified edge width\n"

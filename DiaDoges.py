@@ -360,7 +360,7 @@ class ObjectDialog(Dialog):
         file_path = self._move_img(file_path)
 
         self._mesh.delete(0, END)
-        self._mesh.insert(0, file_path)
+        self._mesh.insert(0, str(file_path))
         Debug.printi("Mesh Filepath:" + file_path, Debug.Level.INFO)
 
     def _move_img(self, file_path):
@@ -381,9 +381,11 @@ class ObjectDialog(Dialog):
         # eg. src and dest are the same file
         except shutil.Error as e:
             print('Error: %s' % e + " " + dest)
+            return file_name
         # eg. source or destination doesn't exist
         except IOError as e:
             print('Error: %s' % e.strerror + " " + dest)
+            return file_name
 
     def _scrub_name(self, file_path):
         """

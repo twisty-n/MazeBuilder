@@ -23,7 +23,7 @@ class XMLObserver(Observer):
         self._pane = None
         self._text_area = None
         self._active = False
-        self._xml_container = XMLContainer(None, None)
+        self._xml_container = XMLContainer()
         self.construct()
 
         self._dispatch = {
@@ -41,13 +41,11 @@ class XMLObserver(Observer):
         }
 
     def import_maze(self, filepath, datastore, canvas):
-        self._xml_container.import_maze(filepath())
+        self._xml_container.import_maze(filepath(), canvas, datastore)
         # We can use the canvas to manage all of the creation ops
-        # If any of the coordinates are negative, we need to change the cancas scroll region
+        # If any of the coordinates are negative, we need to change the canvas scroll region
         outer_x_region = 0
         outer_y_region = 0
-
-
 
     def update(self):
         Debug.printi("The state of the datastore has been updated", Debug.Level.INFO)
@@ -131,11 +129,11 @@ class XMLObserver(Observer):
 
 class XMLContainer:
 
-    def __init__(self, environment=None, vr_config=None):
+    def __init__(self):
         self._all_entries = {}
         self.create_skeleton()
 
-    def import_maze(self, filepath):
+    def import_maze(self, filepath, canvas, datastore):
         """
         Imports a maze from an XML file
 
@@ -145,26 +143,78 @@ class XMLContainer:
         """
         inputter = XMlInputer()
         inputter.read_file(filepath)
-        self._root = inputter._root
+        Debug.printi("Maze input file " + filepath + " has been read", Debug.Level.INFO)
         self._all_entries.clear()
 
-        for node in self._root.iter("node"):
+        for node in inputter._root.iter("node"):
             self._all_entries[node.attrib["id"]] = node
-        for edge in self._root.iter("edge"):
-            self._all_entries[(edge.attrib["source"], edge.attrib["target"])] = edge
-        for object in self._root.iter("object"):
-            self._all_entries[object.attrib["name"]] = object
+            attributes = node.attrib
+            canvas.create_new_node(
+                (
+                    int(attributes["x"]),
+                    int(attributes["y"])
+                ),
+                prog = True,
+                data=attributes        # TODO: add in the stuff
+            )
+            Debug.printi("New Node Created from file ID:" + node.attrib["id"], Debug.Level.INFO)
 
-        for floor_tex in self._root.iter("floorTexture"):
-            self._floor_tex = floor_tex.attrib["val"]
-        for wall_height in self._root.iter("wallHeight"):
-            self._wall_height = wall_height.attrib["val"]
-        for edge_width in self._root.iter("edgeWidth"):
-            self._edge_width = edge_width.attrib["val"]
-        for sky_tex in self._root.iter("skySphereTexture"):
-            self._sky_texture = sky_tex.attrib["val"]
-        for start_node in self._root.iter("startNode"):
-            self._start_node = start_node.attrib["id"]
+        for edge in inputter._root.iter("edge"):
+            self._all_entries[(edge.attrib["source"], edge.attrib["target"])] = edge
+            source_coords = int(self._all_entries[edge.attrib["source"]].attrib["x"]), int(self._all_entries[edge.attrib["source"]].attrib["y"])
+            target_coords = int(self._all_entries[edge.attrib["target"]].attrib["x"]), int(self._all_entries[edge.attrib["target"]].attrib["y"])
+            canvas._begin_edge(source_coords)
+            canvas._end_edge(target_coords,
+                               prog=True,
+                               data={
+                                       "source": edge.attrib["source"],
+                                       "target": edge.attrib["target"],
+                                       "height": None,
+                                       "wall1": None,   # TODO, populate
+                                       "wall2": None    # TODO, populate
+                               })
+            Debug.printi("New EDGE Created from file Source:" + edge.attrib["source"]
+                         + " Target: " + edge.attrib["target"], Debug.Level.INFO)
+
+        for object in inputter._root.iter("object"):
+            self._all_entries[object.attrib["name"]] = object
+            canvas._mark_object((int(object.attrib["x"]), int(object.attrib["y"])),
+                                prog=True,
+                                data={
+                                        "x_coordinate": object.attrib["x"],
+                                        "y_coordinate": object.attrib["y"],
+                                        "name": object.attrib["name"],
+                                        "mesh": object.attrib["mesh"],
+                                        "scale": object.attrib["scale"]
+                                })
+            Debug.printi("New Object Created from file Name:" + object.attrib["name"], Debug.Level.INFO)
+
+        self._floor_tex = ET.SubElement(self._root, "floorTexture")
+        self._wall_height = ET.SubElement(self._root, "wallHeight")
+        self._edge_width = ET.SubElement(self._root, "edgeWidth")
+        self._sky_texture = ET.SubElement(self._root, "skySphereTexture")
+        self._start_node = ET.SubElement(self._root, "startNode")
+
+        for floor_tex in inputter._root.iter("floorTexture"):
+            self._floor_tex.attrib["val"] = floor_tex.attrib["val"]
+        for wall_height in inputter._root.iter("wallHeight"):
+            self._wall_height.attrib["val"] = wall_height.attrib["val"]
+        for edge_width in inputter._root.iter("edgeWidth"):
+            self._edge_width.attrib["val"] = edge_width.attrib["val"]
+        for sky_tex in inputter._root.iter("skySphereTexture"):
+            self._sky_texture.attrib["val"] = sky_tex.attrib["val"]
+        for start_node in inputter._root.iter("startNode"):
+            self._start_node.attrib["id"] = start_node.attrib["id"]
+
+        datastore.inform("Environment Edit", data={
+            "floor_texture": self._floor_tex.attrib["val"],
+            "wall_height": self._wall_height.attrib["val"],
+            "edge_width": self._edge_width.attrib["val"],
+            "sky_texture": self._sky_texture.attrib["val"],
+            "start_node": self._start_node.attrib["id"]
+        })
+
+        self._root = inputter._root
 
 
     def create_skeleton(self):
@@ -187,7 +237,7 @@ class XMLContainer:
         node.attrib["y" ]        = str(data["y_coordinate"])
         if data["room_texture"] is None:
             data["room_texture"] = "Data/default.jpg"
-        node.attrib["texture"]   = str((data["room_texture"].split("/"))[1])
+        node.attrib["texture"]   = str((data["room_texture"].split("/"))[1]) if "Data" in data["room_texture"] else data["room_texture"]
         node.attrib["accessible"] = "true"
 
         if data["wall_pictures"] is not None:

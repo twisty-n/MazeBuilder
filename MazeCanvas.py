@@ -345,7 +345,7 @@ class MazePlannerCanvas(Frame):
         self._manager.inform(DataStore.EVENT.OBJECT_DELETE, data_id=item)
         self._canvas.itemconfig(item, outline="red", fill="black", activeoutline="black", activefill="red")
 
-    def _mark_object(self, coords):
+    def _mark_object(self, coords, prog=False, data=None):
         """
         Mark a node as containing an object
         :param coords:
@@ -354,24 +354,34 @@ class MazePlannerCanvas(Frame):
         # Retrieve the item
         item = self._get_current_item(coords)
 
-        if item not in self._node_listing:
-            Debug.printi("Invalid object placement selection", Debug.Level.ERROR)
-            return
+        if not prog:
+            if item not in self._node_listing:
+                Debug.printi("Invalid object placement selection", Debug.Level.ERROR)
+                return
 
-        if item in self._object_listing:
-            Debug.printi("This room already has an object in it", Debug.Level.ERROR)
-            return
-        # Retrieve its coordinates
-        # Launch the object maker dialog
-        obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
-            "x_coordinate"  :   coords[0],
-            "y_coordinate"  :   coords[1],
-            "name"          :   None,
-            "mesh"          :   None,
-            "scale"         :   None
-        }))
+            if item in self._object_listing:
+                Debug.printi("This room already has an object in it", Debug.Level.ERROR)
+                return
+            # Retrieve its coordinates
+            # Launch the object maker dialog
+            obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
+                "x_coordinate"  :   coords[0],
+                "y_coordinate"  :   coords[1],
+                "name"          :   None,
+                "mesh"          :   None,
+                "scale"         :   None
+            }))
+            entries = obj._entries
+        else:
+            entries = {
+                "x_coordinate": coords[0],
+                "y_coordinate": coords[1],
+                "name": data["name"],
+                "mesh": data["mesh"],
+                "scale": data["scale"]
+            }
         # Save informatoin to the manager
-        self._manager.inform(DataStore.EVENT.OBJECT_CREATE, obj._entries, item)
+        self._manager.inform(DataStore.EVENT.OBJECT_CREATE, entries, item)
         self._object_listing[item] = item
         self._canvas.itemconfig(item, fill="blue")
         Debug.printi("Object created in room " + str(item), Debug.Level.INFO)
@@ -420,7 +430,7 @@ class MazePlannerCanvas(Frame):
         self._edge_cache["x_start"] = self._cache["x"]
         self._edge_cache["y_start"] = self._cache["y"]
 
-    def _end_edge(self, coords):
+    def _end_edge(self, coords, prog=False, data=None):
         """
         Perform the operations required to complete an edge creation operation
         :param coords:
@@ -428,17 +438,18 @@ class MazePlannerCanvas(Frame):
         """
         # Check if the cursor is over a node, if so continue, else abort
         curr = self._get_current_item((coords[0], coords[1]))
-        if curr is None or not self._valid_edge_cache() or curr not in self._node_listing:
-            # Abort the edge creation process
-            self._canvas.delete(self._edge_cache["edge"])
-            self._clear_edge_cache()
-            return
+        if not prog:
+            if curr is None or not self._valid_edge_cache() or curr not in self._node_listing:
+                # Abort the edge creation process
+                self._canvas.delete(self._edge_cache["edge"])
+                self._clear_edge_cache()
+                return
 
-        # Check if this edge already exists in the program
-        if self._check_duplicate_edges(self._edge_cache["item_start"], curr):
-            self.delete_edge(self._edge_cache["edge"])
-            Debug.printi("Multiple edges between rooms not permitted", Debug.Level.ERROR)
-            return
+            # Check if this edge already exists in the program
+            if self._check_duplicate_edges(self._edge_cache["item_start"], curr):
+                self.delete_edge(self._edge_cache["edge"])
+                Debug.printi("Multiple edges between rooms not permitted", Debug.Level.ERROR)
+                return
 
         self._canvas.tag_lower("edge")
         self._edge_cache["item_end"] = curr
@@ -448,16 +459,30 @@ class MazePlannerCanvas(Frame):
         self._edge_bindings[self._edge_cache["edge"]].x_end = coords[0]
         self._edge_bindings[self._edge_cache["edge"]].y_end = coords[1]
         # Inform the manager
-        self._manager.inform(
-            DataStore.EVENT.EDGE_CREATE,
+        if not prog:
+            self._manager.inform(
+                DataStore.EVENT.EDGE_CREATE,
+                    {
+                        "source"    :   self._edge_cache["item_start"],
+                        "target"    :   self._edge_cache["item_end"],
+                        "height"    :   None,
+                        "wall1"     :   None,
+                        "wall2"     :   None,
+                    },
+                self._edge_cache["edge"])
+        else:
+            # We are programmatically adding the edges in
+            self._manager.inform(
+                DataStore.EVENT.EDGE_CREATE,
                 {
-                    "source"    :   self._edge_cache["item_start"],
-                    "target"    :   self._edge_cache["item_end"],
-                    "height"    :   None,
-                    "wall1"     :   None,
-                    "wall2"     :   None,
+                    "source": self._edge_cache["item_start"],
+                    "target": self._edge_cache["item_end"],
+                    "height": None,
+                    "wall1": None,  # Todo: specify
+                    "wall2": None, # Todo: specfiy
                 },
-            self._edge_cache["edge"])
+                self._edge_cache["edge"])
+            self._execute_edge(coords)
 
         Debug.printi("Edge created between rooms "
                      + str(self._edge_cache["item_start"])
@@ -489,7 +514,7 @@ class MazePlannerCanvas(Frame):
         self._canvas.delete(self._edge_cache["edge"])
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
-            coords[0]-1, coords[1]-1, tags="edge", activefill = "RoyalBlue1", tag="edge")
+            coords[0]-1, coords[1]-1, tags="edge", activefill="RoyalBlue1", tag="edge")
 
     def _update_cache(self, item, coords):
         """
@@ -624,7 +649,7 @@ class MazePlannerCanvas(Frame):
             self._edit_object(coords)
             return
 
-    def create_new_node(self, coords):
+    def create_new_node(self, coords, prog = False, data=None):
         """
         Creates a new node on the Canvas and adds it to the datastore
         :param coords:
@@ -634,12 +659,12 @@ class MazePlannerCanvas(Frame):
         self._cache["item"] = self._canvas.create_rectangle(coords[0], coords[1], coords[0]+25, coords[1]+25,
                                                             outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
 
-        # Get the coordinates to launch the dialog
-        true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
         self._node_listing[self._cache["item"]] = self._cache["item"]
 
         # then open the dialog
-        new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
+        if not prog:
+            true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
+            new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
                               populator=Containers.NodeContainer(
                                   {
                                       "node_id": self._cache["item"],
@@ -648,8 +673,17 @@ class MazePlannerCanvas(Frame):
                                       "room_texture": None,
                                       "wall_pictures": None
                                   }))
+            entries = new_node._entries
+        else:
+            entries = {
+                "node_id": data["id"],
+                "x_coordinate": data["x"],
+                "y_coordinate": data["y"],
+                "room_texture": data["texture"],
+                "wall_pictures": {} # TODO: define
+            }
         # Inform the datastore
-        self._manager.inform(DataStore.EVENT.NODE_CREATE, new_node._entries, self._cache["item"])
+        self._manager.inform(DataStore.EVENT.NODE_CREATE, entries, self._cache["item"])
 
     def delete_all(self):
         """

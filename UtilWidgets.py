@@ -16,7 +16,7 @@ Contains a custom, but generalised widgets library -.-
 
 from Tkinter import SUNKEN, W, Label, X, Frame, Toplevel, \
     ACTIVE, Button, LEFT, E, Canvas, Listbox, SINGLE, END, \
-    ANCHOR, Menu, StringVar, TclError
+    ANCHOR, Menu, StringVar, TclError, DISABLED
 import tkFileDialog
 from PIL import Image, ImageTk
 import shutil, os, sys
@@ -321,7 +321,7 @@ class Dialog(Toplevel):
         if not self.initial_focus:
             self.initial_focus = self
 
-        self.protocol("WM_DELETE_WINDOW", self.cancel)
+        self.protocol("WM_DELETE_WINDOW", lambda: Debug.printi("Window Close Disabled", Debug.Level.ERROR))
         if x is None and y is None:
             self.geometry("+%d+%d" % (parent.winfo_rootx() + 50,
                                   parent.winfo_rooty() + 50))
@@ -365,6 +365,7 @@ class Dialog(Toplevel):
         b.pack(side=LEFT, padx=5, pady=5)
         w = Button(box, text="Cancel", width=10, command=self.cancel)
         w.pack(side=LEFT, padx=5, pady=5)
+        w["state"] = DISABLED
 
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)
