@@ -40,6 +40,9 @@ class XMLObserver(Observer):
             Event.VR_EDIT           :   self._xml_container.edit_vr
         }
 
+    def import_maze(self, filepath, datastore, canvas):
+        self._xml_container.import_maze(filepath())
+
     def update(self):
         Debug.printi("The state of the datastore has been updated", Debug.Level.INFO)
 
@@ -122,13 +125,41 @@ class XMLObserver(Observer):
 
 class XMLContainer:
 
-    XML_LOOKUP = {
-
-    }
-
     def __init__(self, environment=None, vr_config=None):
         self._all_entries = {}
         self.create_skeleton()
+
+    def import_maze(self, filepath):
+        """
+        Imports a maze from an XML file
+
+        This will overwrite any current information, you will lose the current work
+        :param filepath:
+        :return:
+        """
+        inputter = XMlInputer()
+        inputter.read_file(filepath)
+        self._root = inputter._root
+        self._all_entries.clear()
+
+        for node in self._root.iter("node"):
+            self._all_entries[node.attrib["id"]] = node
+        for edge in self._root.iter("edge"):
+            self._all_entries[(edge.attrib["source"], edge.attrib["target"])] = edge
+        for object in self._root.iter("object"):
+            self._all_entries[object.attrib["name"]] = object
+
+        for floor_tex in self._root.iter("floorTexture"):
+            self._floor_tex = floor_tex.attrib["val"]
+        for wall_height in self._root.iter("wallHeight"):
+            self._wall_height = wall_height.attrib["val"]
+        for edge_width in self._root.iter("edgeWidth"):
+            self._edge_width = edge_width.attrib["val"]
+        for sky_tex in self._root.iter("skySphereTexture"):
+            self._sky_texture = sky_tex.attrib["val"]
+        for start_node in self._root.iter("startNode"):
+            self._start_node = start_node.attrib["id"]
+
 
     def create_skeleton(self):
 

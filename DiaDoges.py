@@ -306,7 +306,7 @@ class ObjectDialog(Dialog):
         Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
 
         #Define the text entry widgets
-        self._object_name = Entry(parent, width=5)
+        self._object_name = Entry(parent, width=5)      # TODO: make name autoassigned
         if self._entries["name"] is not None:
             self._object_name.insert(0, self._entries["name"])
         self._object_name.grid(column=1, row=0, sticky=W)
