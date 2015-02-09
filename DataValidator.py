@@ -17,6 +17,32 @@ class DataValidator:
         except KeyError as error:
             Debug.printi(error.message, Debug.Level.FATAL)
 
+    def export_validation(self, databank):
+        messages = ""
+        valid = True
+
+        if  databank["vr_config_store"]["minimum_dist_to_wall"] is not None and  \
+            databank["environment_store"]["edge_width"] is not None:
+            if 2*int(databank["vr_config_store"]["mimimum_dist_to_wall"]) >= \
+                int(databank["environment_store"]["edge_width"]):
+                valid = False
+                messages += "2 x Minimum Distance to Wall MUST be lower then the specified edge width\n"
+        # Check that all of the stuff has been filled in for the VRConfig and the environment
+        for key, item in databank["environment_store"].iteritems():
+            if item is None:
+                valid = False
+                messages += "You must provide a value for " + str(key) + "\n"
+        for key, item in databank["vr_config_store"].iteritems():
+            if item is None:
+                valid = False
+                messages += "You must provide a value for " + str(key) + "\n"
+
+        if databank["environment_store"]["start_node"] not in databank["node_store"].keys():
+            valid = False
+            messages += "The starting node selected is invalid, please select a new starting node"
+
+        return valid, messages
+
     def _validate_environment(data):
         """
         Validate the environment configuration
@@ -77,7 +103,7 @@ class DataValidator:
         Event.EDGE_EDIT         : _validate_edge,
         Event.OBJECT_EDIT       : _validate_object,
         Event.NODE_CREATE       : _validate_node,
-        # HaX0R
+        # HaX0R ergh
         Event.EDGE_CREATE       : lambda data: (True, ""),
         Event.OBJECT_CREATE     : _validate_object
     }

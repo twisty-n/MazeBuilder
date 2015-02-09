@@ -2,7 +2,7 @@ __author__ = 'tristan_dev'
 
 from ObserverPattern import Observer
 from Tkinter import Toplevel, Text, Scrollbar, DISABLED, END, NORMAL
-import tkFileDialog
+import tkFileDialog, tkMessageBox
 from Enumerations import Event, DESCRIPTOR_MAP
 import lxml.etree as ET
 import Debug
@@ -105,6 +105,11 @@ class XMLObserver(Observer):
     def dump_file(self):
 
         # Validate, abort if invalid
+        result, message = self._subject.export_finalize()
+        if result  is False:
+            # throw error, return
+            tkMessageBox.showerror("Invalid Data", message)
+            return
 
         # Obtain the file handle to print to
         handle = tkFileDialog.asksaveasfile(mode='w', defaultextension=".xml")
@@ -122,8 +127,6 @@ class XMLContainer:
     }
 
     def __init__(self, environment=None, vr_config=None):
-        self.environment_dict = environment
-        self.vr_config_dict = vr_config
         self._all_entries = {}
         self.create_skeleton()
 
@@ -137,11 +140,6 @@ class XMLContainer:
         self._edge_width = ET.SubElement(self._root, "edgeWidth")
         self._sky_texture = ET.SubElement(self._root, "skySphereTexture")
         self._start_node = ET.SubElement(self._root, "startNode")
-
-    def read_file(self, file):
-        tree = ET.ElementTree(file=file)
-        root = tree.getroot()
-        return ET.tostring(root, encoding="utf8", method='xml')
 
     def add_node_entry(self, entry_id, data):
 
@@ -237,6 +235,15 @@ class XMLContainer:
 
     def to_string(self):
         return ET.tostring(self._root, pretty_print=True)
+
+class XMlInputer:
+
+    def __init__(self):
+        self._root = None
+
+    def read_file(self, file):
+        tree = ET.ElementTree(file=file)
+        self._root = root = tree.getroot()
 
 
 

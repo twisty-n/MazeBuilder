@@ -85,7 +85,10 @@ class EnviroDialog(Dialog):
         self._entries["wall_height"]    = manager.wall_height
 
     def validate(self):
-        (result, message) = DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+        (result, message) = DataValidator.validate(DataStore.EVENT.ENVIRONMENT_EDIT, {
+            "floor_texture" : self._floorSel.get(),
+            "sky_texture"   : self._skySel.get()
+        })
         if result is not True:
             tkMessageBox.showerror("Input Error", message)
         return result

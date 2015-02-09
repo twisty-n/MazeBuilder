@@ -70,6 +70,19 @@ class DataStore(Subject):
         self._validator = DataValidator()
         Subject.__init__(self)
 
+    def export_finalize(self):
+        """
+        Finalizes the contents of the data store to be ready to be exported
+        :return:
+        """
+        return self._validator.export_validation({
+            "node_store"        : self._node_store,
+            "edge_store"        : self._edge_store,
+            "object_store"      : self._object_store,
+            "environment_store" : self._environment_store["42"].empty_container(),
+            "vr_config_store"   : self._vr_store["42"].empty_container()
+        })
+
     def attempt_validation(self, event, data):
         """
         Call before passing data to the datastore through inform
