@@ -42,6 +42,12 @@ class XMLObserver(Observer):
 
     def import_maze(self, filepath, datastore, canvas):
         self._xml_container.import_maze(filepath())
+        # We can use the canvas to manage all of the creation ops
+        # If any of the coordinates are negative, we need to change the cancas scroll region
+        outer_x_region = 0
+        outer_y_region = 0
+
+
 
     def update(self):
         Debug.printi("The state of the datastore has been updated", Debug.Level.INFO)
