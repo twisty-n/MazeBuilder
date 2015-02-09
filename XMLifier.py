@@ -146,9 +146,14 @@ class XMLContainer:
         Debug.printi("Maze input file " + filepath + " has been read", Debug.Level.INFO)
         self._all_entries.clear()
 
+        i = 0
         for node in inputter._root.iter("node"):
-            self._all_entries[node.attrib["id"]] = node
+            # Use an index to assign the id to the nodes
+            i += 1
+            self._all_entries[i] = node
             attributes = node.attrib
+            old_id = attributes["id"]
+            attributes["id"] = str(i)
             canvas.create_new_node(
                 (
                     int(attributes["x"]),
@@ -159,11 +164,19 @@ class XMLContainer:
             )
             Debug.printi("New Node Created from file ID:" + node.attrib["id"], Debug.Level.INFO)
 
+            # Since we are changing the id's we need to update all of the edges that use them
+            for edge in inputter._root.iter("edge"):
+                if edge.attrib["source"] == old_id:
+                    edge.attrib["source"] = str(i)
+                if edge.attrib["target"] == old_id:
+                    edge.attrib["target"] = str(i)
+
         for edge in inputter._root.iter("edge"):
             self._all_entries[(edge.attrib["source"], edge.attrib["target"])] = edge
             source_coords = int(self._all_entries[edge.attrib["source"]].attrib["x"]), int(self._all_entries[edge.attrib["source"]].attrib["y"])
             target_coords = int(self._all_entries[edge.attrib["target"]].attrib["x"]), int(self._all_entries[edge.attrib["target"]].attrib["y"])
             canvas._begin_edge(source_coords)
+            canvas._execute_edge(target_coords)
             canvas._end_edge(target_coords,
                                prog=True,
                                data={

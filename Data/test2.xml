@@ -1,0 +1,17 @@
+<graph frameangle="-5" distortion="False" windowed="False" eye="50" minDistToWall="1">
+  <floorTexture val="Data/stitch_toothless.png"/>
+  <wallHeight val="10"/>
+  <edgeWidth val="10"/>
+  <skySphereTexture val="Data/02980_kingoftheskies_2880x1800.jpg"/>
+  <startNode val="3"/>
+  <node id="2" x="442" y="156" texture="arrowheads.gif" accessible="true"/>
+  <node id="3" x="123" y="353" texture="stitch_toothless.png" accessible="true"/>
+  <node id="4" x="455" y="385" texture="stitch_toothless.png" accessible="true"/>
+  <edge source="1" target="2"/>
+  <edge source="2" target="4"/>
+  <edge source="4" target="3"/>
+  <edge source="3" target="1"/>
+  <edge source="2" target="3"/>
+  <edge source="1" target="4"/>
+  <node id="1" x="107" y="112" texture="arrowheads.gif" accessible="true"/>
+</graph>

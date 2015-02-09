@@ -1,0 +1,17 @@
+<graph frameangle="-5" distortion="False" windowed="False" eye="74" minDistToWall="1">
+  <floorTexture val="Data/02980_kingoftheskies_2880x1800.jpg"/>
+  <wallHeight val="10"/>
+  <edgeWidth val="10"/>
+  <skySphereTexture val="Data/over_the_pacific-wallpaper-2880x1800.jpg"/>
+  <startNode val="2"/>
+  <node id="2" x="125" y="323" texture="02980_kingoftheskies_2880x1800.jpg" accessible="true"/>
+  <node id="1" x="131" y="106" texture="02980_kingoftheskies_2880x1800.jpg" accessible="true"/>
+  <node id="3" x="438" y="106" texture="arrowheads.gif" accessible="true"/>
+  <node id="4" x="445" y="326" texture="stitch_toothless.png" accessible="true"/>
+  <edge source="1" target="3"/>
+  <edge source="3" target="4"/>
+  <edge source="4" target="2"/>
+  <edge source="2" target="1"/>
+  <edge source="2" target="3"/>
+  <edge source="1" target="4"/>
+</graph>
