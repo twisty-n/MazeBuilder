@@ -117,6 +117,11 @@ class MazePlannerCanvas(Frame):
         :event:             The tk provided event object
         """
         self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
+        item = self._get_current_item((event.x, event.y))
+        if self._is_node(item):
+            Debug.printi("Node: " + str(item), Debug.Level.INFO)
+        if self._is_edge(item):
+            Debug.printi("Edge: " + str(item) + " | Source: " + str(self._edge_bindings[item].item_start)+ " | Target: " + str(self._edge_bindings[item].item_end)+ " | Length: ")
         self._cache["x"] = event.x
         self._cache["y"] = event.y
 
@@ -175,7 +180,7 @@ class MazePlannerCanvas(Frame):
         container = self._manager.request(DataStore.DATATYPE.NODE, item)
         container.x_coordinate = x
         container.y_coordinate = y
-        self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container())
+        self._manager.inform(DataStore.EVENT.NODE_EDIT, container.empty_container(), self._cache["item"])
         Debug.printi("Node " + str(self._cache["item"]) + " has been moved", Debug.Level.INFO)
         # Clean the cache
         self._clear_cache(coords)

@@ -322,7 +322,7 @@ class XMLContainer:
         self._wall_height.attrib["val"] = str(data["wall_height"])
         self._edge_width.attrib["val"]  = str(data["edge_width"])
         self._sky_texture.attrib["val"] = str(data["sky_texture"])
-        self._start_node.attrib["val"]  = str(data["start_node"])
+        self._start_node.attrib["id"]  = str(data["start_node"])
 
     def edit_vr(self, entry_id, data):
         attribs = self._root.attrib

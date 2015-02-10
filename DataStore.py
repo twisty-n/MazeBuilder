@@ -127,6 +127,9 @@ class DataStore(Subject):
             self._delete_all_vals()
             return
 
+        if (event != Event.VR_EDIT or event != event.ENVIRONMENT_EDIT) and data_id == "42":
+            return
+
         # To expand functionality we will first perform some type evaluations to make
         # certain that the type that we are using is correct
         if isinstance(data, Container):
