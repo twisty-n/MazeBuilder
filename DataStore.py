@@ -21,6 +21,8 @@ from ObserverPattern import Subject
 
 # Classes
 
+MAGIC_NUM = "42"
+
 class DataStore(Subject):
 
     EVENT = Event
@@ -36,10 +38,10 @@ class DataStore(Subject):
         self._edge_store = {}                               # Will hold hashmap of Containers
         self._object_store = {}                             # Will hold hashmap of Containers
         self._environment_store = {
-            "42"  :   EnvironmentContainer()
+            MAGIC_NUM  :   EnvironmentContainer()
         }                        # Will hold the raw container
         self._vr_store = {
-            "42"  :   VRContainer()
+            MAGIC_NUM  :   VRContainer()
         }                                 # Will hold the raw container
         self._dispatch = \
             {
@@ -79,8 +81,8 @@ class DataStore(Subject):
             "node_store"        : self._node_store,
             "edge_store"        : self._edge_store,
             "object_store"      : self._object_store,
-            "environment_store" : self._environment_store["42"].empty_container(),
-            "vr_config_store"   : self._vr_store["42"].empty_container()
+            "environment_store" : self._environment_store[MAGIC_NUM].empty_container(),
+            "vr_config_store"   : self._vr_store[MAGIC_NUM].empty_container()
         })
 
     def attempt_validation(self, event, data):
@@ -97,7 +99,7 @@ class DataStore(Subject):
         """
         return DataValidator.validate(event, data)[0]
 
-    def inform(self, event, data=None, data_id="42"):
+    def inform(self, event, data=None, data_id=MAGIC_NUM):
         """
         Inform the DataStore that a new event has happen, and provide and event type and data binding
 
@@ -127,7 +129,7 @@ class DataStore(Subject):
             self._delete_all_vals()
             return
 
-        if (event != Event.VR_EDIT or event != Event.ENVIRONMENT_EDIT) and data_id == "42":
+        if (event != Event.VR_EDIT or event != Event.ENVIRONMENT_EDIT) and data_id == MAGIC_NUM:
             return
 
         # To expand functionality we will first perform some type evaluations to make
@@ -150,7 +152,7 @@ class DataStore(Subject):
         self._cache["ID"]       = data_id
         self._cache["DATA"]     = data
 
-    def request(self, datatype, data_id="42"):
+    def request(self, datatype, data_id=MAGIC_NUM):
         """
         Return a data container containing all of the available informaiton
         about the object with the provided ID

@@ -21,6 +21,7 @@ from Enumerations import Input_Event, EditableObject, ControlSpecifier, Executio
 from DataStore import DataStore
 from Control import load_controls
 import Containers
+import math
 
 
 # Enumerations and Functions
@@ -121,7 +122,14 @@ class MazePlannerCanvas(Frame):
         if self._is_node(item):
             Debug.printi("Node: " + str(item), Debug.Level.INFO)
         if self._is_edge(item):
-            Debug.printi("Edge: " + str(item) + " | Source: " + str(self._edge_bindings[item].item_start)+ " | Target: " + str(self._edge_bindings[item].item_end)+ " | Length: ")
+            d_x = self._edge_bindings[item].x_start - self._edge_bindings[item].x_end
+            d_y = self._edge_bindings[item].y_start - self._edge_bindings[item].y_end
+            square = (d_x * d_x) + (d_y * d_y)
+            distance = int(math.sqrt(square))
+            Debug.printi("Edge: " + str(item) + " | Source: "
+                         + str(self._edge_bindings[item].item_start) + " | Target: "
+                         + str(self._edge_bindings[item].item_end) + " | Length: "
+                         + str(distance))
         self._cache["x"] = event.x
         self._cache["y"] = event.y
 
@@ -519,6 +527,11 @@ class MazePlannerCanvas(Frame):
         self._edge_cache["edge"] = self._canvas.create_line( \
             self._edge_cache["x_start"], self._edge_cache["y_start"],
             coords[0]-1, coords[1]-1, tags="edge", activefill="RoyalBlue1", tag="edge")
+        d_x = self._edge_cache["x_start"] - coords[0]
+        d_y = self._edge_cache["y_start"] - coords[1]
+        square = (d_x * d_x) + (d_y * d_y)
+        distance = math.sqrt(square)
+        Debug.printi("Current cooridoor distance: " + str(int(distance)))
 
     def _update_cache(self, item, coords):
         """
@@ -562,13 +575,12 @@ class MazePlannerCanvas(Frame):
         :param coords:                  The current coordinates of the mouse
         :return:
         """
-        Debug.printi("X:" + str(self._cache["x"]) + " Y:" + str(self._cache["y"]), Debug.Level.INFO)
         item = self._canvas.find_overlapping(coords[0]-1, coords[1]-1, coords[0]+1, coords[1]+1)
 
         if item is ():
             return None
 
-        # Hacky solution for now TODO make it better!
+        # Hacky solution
         # Return the first node that we come across, since they seem to be returned by tkinter
         # in reverse order to their visual positioning, we'll go through the list backwards
         for val in item[::-1]:

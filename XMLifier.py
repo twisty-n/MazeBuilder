@@ -143,6 +143,11 @@ class XMLContainer:
         :return:
         """
         inputter = XMlInputer()
+
+        if filepath is '':
+            Debug.printi("No input file to read", Debug.Level.INFO)
+            return
+
         inputter.read_file(filepath)
         Debug.printi("Maze input file " + filepath + " has been read", Debug.Level.INFO)
         self._all_entries.clear()

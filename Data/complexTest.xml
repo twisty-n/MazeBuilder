@@ -1,0 +1,23 @@
+<graph>
+  <floorTexture/>
+  <wallHeight/>
+  <edgeWidth/>
+  <skySphereTexture/>
+  <startNode/>
+  <node id="1" x="115" y="79" texture="default.jpg" accessible="true"/>
+  <node id="2" x="139" y="279" texture="default.jpg" accessible="true"/>
+  <node id="3" x="417" y="97" texture="default.jpg" accessible="true"/>
+  <node id="4" x="425" y="300" texture="default.jpg" accessible="true"/>
+  <node id="5" x="613" y="96" texture="default.jpg" accessible="true"/>
+  <node id="6" x="619" y="326" texture="default.jpg" accessible="true"/>
+  <edge source="1" target="3"/>
+  <edge source="3" target="5"/>
+  <edge source="5" target="6"/>
+  <edge source="6" target="4"/>
+  <edge source="4" target="2"/>
+  <edge source="2" target="1"/>
+  <edge source="3" target="2"/>
+  <edge source="1" target="4"/>
+  <edge source="4" target="5"/>
+  <edge source="6" target="3"/>
+</graph>
