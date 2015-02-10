@@ -487,7 +487,6 @@ class MazePlannerCanvas(Frame):
                     "wall2": None, # Todo: specfiy
                 },
                 self._edge_cache["edge"])
-            self._execute_edge(coords)
 
         Debug.printi("Edge created between rooms "
                      + str(self._edge_cache["item_start"])
