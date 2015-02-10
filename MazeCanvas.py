@@ -689,6 +689,7 @@ class MazePlannerCanvas(Frame):
             }
         # Inform the datastore
         self._manager.inform(DataStore.EVENT.NODE_CREATE, entries, self._cache["item"])
+        self._clear_cache(coords)
 
     def delete_all(self):
         """

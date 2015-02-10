@@ -3,6 +3,7 @@ __author__ = 'tristan_dev'
 from Enumerations import Event
 import Debug
 
+DEBUG = True
 
 class DataValidator:
 
@@ -11,13 +12,20 @@ class DataValidator:
 
     @staticmethod
     def validate(event, data):
-        #return (True, "")
+
+        if Debug:
+            return True, ""
         try:
             return DataValidator().VALIDATE_MAP[event](data)
         except KeyError as error:
             Debug.printi(error.message, Debug.Level.FATAL)
 
     def export_validation(self, databank):
+
+        # Don't bother validateing while im debugging
+        if Debug:
+            return True, ""
+
         messages = ""
         valid = True
 
