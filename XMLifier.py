@@ -153,7 +153,13 @@ class XMLContainer:
         self._all_entries.clear()
 
         for node in inputter._root.iter("node"):
+            original_id = node.attrib["id"]
             node.attrib["id"] = "n_" + node.attrib["id"]
+            for edge in inputter._root.iter("edge"):
+                if edge.attrib["source"] == original_id:
+                    edge.attrib["source"] = node.attrib["id"]
+                if edge.attrib["target"] == original_id:
+                    edge.attrib["target"] = node.attrib["id"]
 
         i = 0
         for node in inputter._root.iter("node"):

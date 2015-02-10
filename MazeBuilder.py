@@ -15,7 +15,7 @@ File: MazeBuilder.py
 
 #Imports
 
-from Tkinter import Frame, Tk, Menu, BOTTOM, X, BOTH
+from Tkinter import Frame, Tk, Menu, BOTTOM, X, BOTH, Scrollbar, HORIZONTAL, VERTICAL, RIGHT, Y, LEFT
 import tkFileDialog
 from UtilWidgets import StatusBar
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
@@ -27,6 +27,8 @@ from XMLifier import XMLObserver
 WIN_X = 700         #Defines the window X width
 WIN_Y = 500         #Defines the window Y width
 POSITION = 200      #Defines the x, y window position
+MAX_CANVAS_X = 10000
+MAX_CANVAS_Y = 10000
 
 def build():
     """
@@ -138,11 +140,25 @@ class MazeBuilder(Frame):
         status = Frame(self)
         self._update_bar = StatusBar(status)
         self._drawer = MazeCanvas.MazePlannerCanvas(self, self._update_bar, manager=self.manager)
-        self._drawer.pack(fill=BOTH, expand=1)
+        self._drawer.pack(expand=True,fill=BOTH)
         self._status_bar = StatusBar(status)
-        status.pack(side=BOTTOM, fill=X)
         Debug.d_level.set_message_pad(self._status_bar)
 
         self._status_bar.pack(side=BOTTOM, fill=X)
         self._update_bar.pack(side=BOTTOM, fill=X)
+
+        x_scroll = Scrollbar(self._parent, orient=HORIZONTAL)
+        x_scroll.config(command=self._drawer._canvas.xview)
+        x_scroll.pack(side=BOTTOM,fill=X)
+
+        y_scroll = Scrollbar(self._parent, orient=VERTICAL)
+        y_scroll.config(command=self._drawer._canvas.yview)
+        y_scroll.pack(side=RIGHT,fill=Y)
+
+        self._drawer._canvas.config(xscrollcommand=x_scroll.set, yscrollcommand=y_scroll.set, scrollregion=(-MAX_CANVAS_X, -MAX_CANVAS_Y, MAX_CANVAS_X, MAX_CANVAS_Y))
+
+        status.pack(side=BOTTOM, fill=X)
+
+
+
 
