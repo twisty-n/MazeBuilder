@@ -155,7 +155,10 @@ class MazeBuilder(Frame):
         y_scroll.config(command=self._drawer._canvas.yview)
         y_scroll.pack(side=RIGHT,fill=Y)
 
-        self._drawer._canvas.config(xscrollcommand=x_scroll.set, yscrollcommand=y_scroll.set, scrollregion=(-MAX_CANVAS_X, -MAX_CANVAS_Y, MAX_CANVAS_X, MAX_CANVAS_Y))
+        self._drawer._canvas.config(xscrollcommand=x_scroll.set, yscrollcommand=y_scroll.set,
+                                    scrollregion=(-MAX_CANVAS_X, -MAX_CANVAS_Y,
+                                                  MAX_CANVAS_X, MAX_CANVAS_Y))
+        self._drawer._canvas.bind()
 
         status.pack(side=BOTTOM, fill=X)
 

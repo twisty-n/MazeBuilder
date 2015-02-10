@@ -117,6 +117,8 @@ class MazePlannerCanvas(Frame):
         :m_event:           The specifier for the type of event that has been generated
         :event:             The tk provided event object
         """
+        event.x = self._canvas.canvasx(event.x)
+        event.y = self._canvas.canvasy(event.y)
         self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
         item = self._get_current_item((event.x, event.y))
         if self._is_node(item):
@@ -143,6 +145,8 @@ class MazePlannerCanvas(Frame):
         :m_event:           The specifier for the tupe of event that has been generated
         :event:             The tk provided event object
         """
+        event.x = self._canvas.canvasx(event.x)
+        event.y = self._canvas.canvasy(event.y)
         self._status.set_text("Mouse X:" + str(self._cache["x"]) + "\tMouse Y:" + str(self._cache["y"]))
         Debug.printet(event, m_event, Debug.Level.INFO)
         self._cache["event"] = event
@@ -417,6 +421,7 @@ class MazePlannerCanvas(Frame):
         :param coords:              The current canvas coordinates
         :return:
         """
+        """
         # upper left corner of the visible region
         x0 = self._canvas.winfo_rootx()
         y0 = self._canvas.winfo_rooty()
@@ -424,6 +429,15 @@ class MazePlannerCanvas(Frame):
         # given a canvas coordinate cx/cy, convert it to window coordinates:
         wx0 = x0 + coords[0]
         wy0 = y0 + coords[1]
+        """
+
+        # upper left corner of the visible region
+        x0 = self._canvas.canvasx(0)
+        y0 = self._canvas.canvasy(0)
+
+        # given a canvas coordinate cx/cy, convert it to window coordinates:
+        wx0 = coords[0] - x0
+        wy0 = coords[1] - y0
         return (int(wx0), int(wy0))
 
     def _begin_edge(self, coords):
