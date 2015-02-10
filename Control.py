@@ -1,5 +1,16 @@
-__author__ = 'tristan_dev'
 
+__author__ = 'Tristan Newmann'
+
+"""
+MazeBuilder, Stroke Recovery Project, HMRI
+Author: Tristan Newmann
+Developed with 2.7
+
+File: Control.py
+
+
+Contains implementation of the Control parser and mapper
+"""
 import Debug, sys
 from Enumerations import Input_Event, ControlSpecifier, ExecutionStage
 
@@ -73,7 +84,7 @@ def _parse_controls(control_action_map, function_map):
             )
             item[0] = CONTROL_MAP[item[0]]
         else:
-            # Just remapp the specfier to its input event and add the appropriate executino flag
+            # Just remap the specfier to its input event and add the appropriate executino flag
             item[0] = CONTROL_MAP[item[0]]
             item.append(ExecutionStage.EXECUTE)
 

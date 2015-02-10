@@ -34,7 +34,6 @@
 
 <!-- 
 	Nodes specify rooms in the simulation. Nodes are connected with edges, in a graph design
-
 	Attribute Descriptions:
 		id(string):		Unique identifier for the room
 		x(int):			the cartesian x coordinate of the room

@@ -8,7 +8,7 @@ MazeBuilder, Stroke Recovery Project, HMRI
 Author: Tristan Newmann
 Developed with 2.7
 
-File: Debug.py
+File: DiaDoges.py
 
 Module contains the custom user interface dialogs
 """
@@ -22,6 +22,7 @@ import tkFileDialog, tkMessageBox
 import os
 import shutil
 from DataStore import DataStore
+import Defaults
 
 # Enumerations and Functions
 
@@ -73,7 +74,8 @@ class EnviroDialog(Dialog):
         self._edgeScale.grid(row=3, column=1, columnspan=2, sticky=W)
 
         Label(parent, text="Starting Node:", anchor=W).grid(row=4, column=0, sticky=W)
-        Label(parent, text=self._entries["start_node"], anchor=W).grid(row=4, column=1, sticky=W)
+        self._start_node = Label(parent, text=self._entries["start_node"], anchor=W)
+        self._start_node.grid(row=4, column=1, sticky=W)
 
     def populate(self, manager):
 
@@ -99,6 +101,13 @@ class EnviroDialog(Dialog):
         self._entries["sky_texture"] = self._skySel.get()
         self._entries["wall_height"] = self._wallScale.get()
         self._manager.inform(DataStore.EVENT.ENVIRONMENT_EDIT, self._entries)
+
+    def auto_populate(self):
+        self._floorSel.set(Defaults.Environment.FLOOR_TEXTURE)
+        self._skySel.set(Defaults.Environment.SKY_TEXTURE)
+        self._wallScale.set(Defaults.Environment.WALL_HEIGHT)
+        self._edgeScale.set(Defaults.Environment.EDGE_WIDTH)
+        self._start_node.config(text=Defaults.Environment.START_NODE)
 
 
 class VRConfigDialog(Dialog):
@@ -207,6 +216,13 @@ class VRConfigDialog(Dialog):
 
         self._manager.inform(DataStore.EVENT.VR_EDIT, self._entries)
 
+    def auto_populate(self):
+        self._frameAngle.set(Defaults.VR.FRAME_ANGLE)
+        self._eyeHeight.set(Defaults.VR.EYE_HEIGHT)
+        self._minDistToWall.set(Defaults.VR.MINIMUM_DISTANCE_TO_WALL)
+        self._distortion_var.set(Defaults.VR.DISTORTION)
+        self._win_var.set(Defaults.VR.WINDOWED)
+
 class NodeDialog(Dialog):
     """
     Defines a custom dialog for node configuration
@@ -269,6 +285,9 @@ class NodeDialog(Dialog):
     def apply(self):
         self._entries["room_texture"] = self._texture_selector.get()
         self._entries["wall_pictures"] = self._wall_pics.get()
+
+    def auto_populate(self):
+        self._texture_selector.set(Defaults.Node.ROOM_TEXTURE)
 
 class ObjectDialog(Dialog):
     """
@@ -404,6 +423,11 @@ class ObjectDialog(Dialog):
         self._entries["mesh"]           = manager.mesh
         self._entries["scale"]          = manager.scale
 
+    def auto_populate(self):
+        self._mesh.delete(0, END)
+        self._mesh.insert(0, Defaults.Object.MESH)
+        self._scale.set(Defaults.Object.SCALE)
+
 
 class EdgeDialog(Dialog):
     def __init__(self, parent, x=None, y=None, populator=None):
@@ -499,4 +523,21 @@ class EdgeDialog(Dialog):
         if result is not True:
             tkMessageBox.showerror("Input Error", message)
         return result
+
+    def auto_populate(self):
+        self.wall1_height.delete(0, END)
+        self.wall2_height.delete(0, END)
+        self.wall1_height.insert(0, Defaults.Edge.WALL_HEIGHT)
+        self.wall2_height.insert(0, Defaults.Edge.WALL_HEIGHT)
+
+        self.wall1_tex_select._add_new_texture({
+            "path": Defaults.Wall.PATH,
+            "tile_x": Defaults.Wall.TILE_X,
+            "tile_y": Defaults.Wall.TILE_Y
+        })
+        self.wall2_tex_select._add_new_texture({
+            "path"  : Defaults.Wall.PATH,
+            "tile_x": Defaults.Wall.TILE_X,
+            "tile_y": Defaults.Wall.TILE_Y
+        })
 

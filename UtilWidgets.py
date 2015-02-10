@@ -221,6 +221,10 @@ class ImagePicker(Frame):
     def get(self):
         return self._file_name
 
+    def set(self, val):
+        self._file_name = val
+        self._img_label.config(text=val)
+
 class StatusBar(Frame, OutputPipe):
     """
     A basic definition for a statusBar style widget that can be updated
@@ -363,9 +367,12 @@ class Dialog(Toplevel):
         box = Frame(self)
         b = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
         b.pack(side=LEFT, padx=5, pady=5)
-        w = Button(box, text="Cancel", width=10, command=self.cancel)
-        w.pack(side=LEFT, padx=5, pady=5)
-        w["state"] = DISABLED
+        #w = Button(box, text="Cancel", width=10, command=self.cancel)
+        a= Button(box, text="Autofill", width=10, command=self.auto_populate, default=ACTIVE)
+        a.pack(side=LEFT, padx=5, pady=5)
+        #w.pack(side=LEFT, padx=5, pady=5)
+        #w["state"] = DISABLED
+
 
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)
@@ -408,6 +415,13 @@ class Dialog(Toplevel):
         Apply the results, information gathered by the dialog
         """
         pass
+
+    def auto_populate(self):
+        """
+        Autopopulate the fields in the dialog
+        This function is activated with the spacebar when in a dialog
+        """
+        Debug.printi("Call to autopopulater registered")
 
 class ImageViewDialog(Dialog):
     """

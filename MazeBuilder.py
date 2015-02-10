@@ -24,8 +24,8 @@ from DataStore import DataStore
 from XMLifier import XMLObserver
 
 
-WIN_X = 700         #Defines the window X width
-WIN_Y = 500         #Defines the window Y width
+WIN_X = 1000         #Defines the window X width
+WIN_Y = 700         #Defines the window Y width
 POSITION = 200      #Defines the x, y window position
 MAX_CANVAS_X = 10000
 MAX_CANVAS_Y = 10000

@@ -11,7 +11,7 @@ Developed with 2.7
 File: MazeCanvas.py
 
 
-Module contains the implementation
+Module contains the implementation of the main GUI used for drawing the mazes
 """
 
 # Imports
@@ -38,7 +38,7 @@ class MazePlannerCanvas(Frame):
     """
     def __init__(self, parent, status=None, manager=DataStore()):
         """
-        Contstruct an instance of the MazePlannerCanvas
+        Construct an instance of the MazePlannerCanvas
 
         :param parent:              The parent widget that the mazePlannerCanvas will sit in
         :param status:              The statusbar that will receive mouse updates
@@ -117,8 +117,8 @@ class MazePlannerCanvas(Frame):
         :m_event:           The specifier for the type of event that has been generated
         :event:             The tk provided event object
         """
-        event.x = self._canvas.canvasx(event.x)
-        event.y = self._canvas.canvasy(event.y)
+        event.x = int(self._canvas.canvasx(event.x))
+        event.y = int(self._canvas.canvasy(event.y))
         self._status.set_text("Mouse X:" + str(event.x) + "\tMouse Y:" + str(event.y))
         item = self._get_current_item((event.x, event.y))
         if self._is_node(item):
@@ -145,8 +145,8 @@ class MazePlannerCanvas(Frame):
         :m_event:           The specifier for the tupe of event that has been generated
         :event:             The tk provided event object
         """
-        event.x = self._canvas.canvasx(event.x)
-        event.y = self._canvas.canvasy(event.y)
+        event.x = int(self._canvas.canvasx(event.x))
+        event.y = int(self._canvas.canvasy(event.y))
         self._status.set_text("Mouse X:" + str(self._cache["x"]) + "\tMouse Y:" + str(self._cache["y"]))
         Debug.printet(event, m_event, Debug.Level.INFO)
         self._cache["event"] = event

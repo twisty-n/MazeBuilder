@@ -3,7 +3,7 @@ __author__ = 'tristan_dev'
 from Enumerations import Event
 import Debug
 
-DEBUG = True
+DEBUG = False
 
 class DataValidator:
 
@@ -13,7 +13,7 @@ class DataValidator:
     @staticmethod
     def validate(event, data):
 
-        if Debug:
+        if DEBUG:
             return True, ""
         try:
             return DataValidator().VALIDATE_MAP[event](data)
