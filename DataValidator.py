@@ -53,7 +53,7 @@ class DataValidator:
             if edge.wall1 == {} or edge.wall1 == None \
                 or edge.wall2 == {} or edge.wall2 == None:
                 valid = False
-                messages += "Wall textures must be defined for each coridoor\n"
+                messages += "Wall textures must be defined for each corridor\n"
                 break
 
         return valid, messages
