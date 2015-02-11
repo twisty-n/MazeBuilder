@@ -705,12 +705,14 @@ class MazePlannerCanvas(Frame):
                                   }))
             entries = new_node._entries
         else:
+            pics = data[1]
+            data = data[0]
             entries = {
                 "node_id": data["id"],
                 "x_coordinate": data["x"],
                 "y_coordinate": data["y"],
                 "room_texture": data["texture"],
-                "wall_pictures": {} # TODO: define
+                "wall_pictures": pics
             }
         # Inform the datastore
         self._manager.inform(DataStore.EVENT.NODE_CREATE, entries, self._cache["item"])

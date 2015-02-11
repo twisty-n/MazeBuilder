@@ -143,6 +143,7 @@ class XMLContainer:
         :return:
         """
         inputter = XMlInputer()
+        self
 
         if filepath is '':
             Debug.printi("No input file to read", Debug.Level.INFO)
@@ -169,13 +170,16 @@ class XMLContainer:
             attributes = node.attrib
             old_id = attributes["id"]
             attributes["id"] = str(i)
+            pictures = {}
+            for pic in node.getchildren():
+                pictures[pic.attrib["name"]] = pic.attrib
             canvas.create_new_node(
                 (
                     int(attributes["x"]),
                     int(attributes["y"])
                 ),
                 prog=True,
-                data=attributes        # TODO: add in the stuff
+                data=(attributes, pictures)
             )
             Debug.printi("New Node Created from file ID:" + node.attrib["id"], Debug.Level.INFO)
 
@@ -222,11 +226,11 @@ class XMLContainer:
                                 })
             Debug.printi("New Object Created from file Name:" + object.attrib["name"], Debug.Level.INFO)
 
-        self._floor_tex = ET.SubElement(self._root, "floorTexture")
-        self._wall_height = ET.SubElement(self._root, "wallHeight")
-        self._edge_width = ET.SubElement(self._root, "edgeWidth")
-        self._sky_texture = ET.SubElement(self._root, "skySphereTexture")
-        self._start_node = ET.SubElement(self._root, "startNode")
+        self._floor_tex = ET.SubElement(self._root, "floorTexture")             if self._floor_tex is None else self._floor_tex
+        self._wall_height = ET.SubElement(self._root, "wallHeight")             if self._wall_height is None else self._wall_height
+        self._edge_width = ET.SubElement(self._root, "edgeWidth")               if self._edge_width is None else self._edge_width
+        self._sky_texture = ET.SubElement(self._root, "skySphereTexture")       if self._sky_texture is None else self._sky_texture
+        self._start_node = ET.SubElement(self._root, "startNode")               if self._start_node is None else self._start_node
 
         for floor_tex in inputter._root.iter("floorTexture"):
             self._floor_tex.attrib["val"] = floor_tex.attrib["val"]
@@ -247,7 +251,13 @@ class XMLContainer:
             "start_node": self._start_node.attrib["id"]
         })
 
-        self._root = inputter._root
+        datastore.inform("VR Edit", data={\
+                "frame_angle"           : inputter._root.attrib["frameAngle"],
+                "distortion"            : inputter._root.attrib["distortion"],
+                "windowed"              : inputter._root.attrib["windowed"],
+                "eye_height"            : inputter._root.attrib["eye"],
+                "minimum_dist_to_wall"  : inputter._root.attrib["minDistToWall"]
+        })
 
 
     def create_skeleton(self):
@@ -347,7 +357,7 @@ class XMLContainer:
     def edit_vr(self, entry_id, data):
         attribs = self._root.attrib
 
-        attribs["frameangle"]           = str(data["frame_angle"])
+        attribs["frameAngle"]           = str(data["frame_angle"])
         attribs["distortion"]           = str(data["distortion"])
         attribs["windowed"]             = str(data["windowed"])
         attribs["eye"]                  = str(data["eye_height"])
