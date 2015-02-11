@@ -23,7 +23,7 @@ class DataValidator:
     def export_validation(self, databank):
 
         # Don't bother validateing while im debugging
-        if Debug:
+        if DEBUG:
             return True, ""
 
         messages = ""
@@ -47,7 +47,14 @@ class DataValidator:
 
         if databank["environment_store"]["start_node"] not in databank["node_store"].keys():
             valid = False
-            messages += "The starting node selected is invalid, please select a new starting node"
+            messages += "The starting node selected is invalid, please select a new starting node\n"
+
+        for key, edge in databank["edge_store"].iteritems():
+            if edge.wall1 == {} or edge.wall1 == None \
+                or edge.wall2 == {} or edge.wall2 == None:
+                valid = False
+                messages += "Wall textures must be defined for each coridoor\n"
+                break
 
         return valid, messages
 
