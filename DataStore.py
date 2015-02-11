@@ -129,7 +129,7 @@ class DataStore(Subject):
             self._delete_all_vals()
             return
 
-        if (event != Event.VR_EDIT or event != Event.ENVIRONMENT_EDIT) and data_id == MAGIC_NUM:
+        if (event != Event.VR_EDIT and event != Event.ENVIRONMENT_EDIT) and data_id == MAGIC_NUM:
             return
 
         # To expand functionality we will first perform some type evaluations to make

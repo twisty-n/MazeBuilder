@@ -4,20 +4,26 @@
   <edgeWidth/>
   <skySphereTexture/>
   <startNode/>
-  <node id="1" x="115" y="79" texture="default.jpg" accessible="true"/>
-  <node id="2" x="139" y="279" texture="default.jpg" accessible="true"/>
-  <node id="3" x="417" y="97" texture="default.jpg" accessible="true"/>
-  <node id="4" x="425" y="300" texture="default.jpg" accessible="true"/>
-  <node id="5" x="613" y="96" texture="default.jpg" accessible="true"/>
-  <node id="6" x="619" y="326" texture="default.jpg" accessible="true"/>
-  <edge source="1" target="3"/>
-  <edge source="3" target="5"/>
-  <edge source="5" target="6"/>
-  <edge source="6" target="4"/>
-  <edge source="4" target="2"/>
-  <edge source="2" target="1"/>
-  <edge source="3" target="2"/>
-  <edge source="1" target="4"/>
-  <edge source="4" target="5"/>
-  <edge source="6" target="3"/>
+  <node id="1" x="318" y="290" texture="default_node.png" accessible="true"/>
+  <edge source="1" target="2"/>
+  <node id="2" x="327" y="86" texture="default_node.png" accessible="true"/>
+  <node id="36" x="605" y="90" texture="default_node.png" accessible="true"/>
+  <edge source="2" target="36"/>
+  <edge source="36" target="62"/>
+  <edge source="62" target="1"/>
+  <edge source="1" target="36"/>
+  <edge source="2" target="62"/>
+  <node id="62" x="595" y="289" texture="default_node.png" accessible="true"/>
+  <edge source="194" target="1"/>
+  <edge source="194" target="62"/>
+  <node id="236" x="789" y="175" texture="default_node.png" accessible="true"/>
+  <edge source="36" target="236"/>
+  <edge source="236" target="62"/>
+  <edge source="2" target="281"/>
+  <edge source="281" target="36"/>
+  <edge source="337" target="2"/>
+  <edge source="1" target="337"/>
+  <node id="337" x="128" y="182" texture="default_node.png" accessible="true"/>
+  <node id="194" x="466" y="466" texture="default_node.png" accessible="true"/>
+  <node id="281" x="460" y="-100" texture="default_node.png" accessible="true"/>
 </graph>
