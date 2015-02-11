@@ -302,7 +302,6 @@ class MazePlannerCanvas(Frame):
         p_menu = Menu(self._canvas)
         item = self._get_current_item((self._cache["x"], self._cache["y"]))
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
-
         if item is None:
             # No node is currently selected, create the general menu
             p_menu.add_command(label="Place Node", command=lambda: self.create_new_node((self._cache["x"], self._cache["y"])))
@@ -429,16 +428,18 @@ class MazePlannerCanvas(Frame):
         # given a canvas coordinate cx/cy, convert it to window coordinates:
         wx0 = x0 + coords[0]
         wy0 = y0 + coords[1]
-        """
+
 
         # upper left corner of the visible region
+
         x0 = self._canvas.canvasx(0)
         y0 = self._canvas.canvasy(0)
 
         # given a canvas coordinate cx/cy, convert it to window coordinates:
         wx0 = coords[0] - x0
         wy0 = coords[1] - y0
-        return (int(wx0), int(wy0))
+        #"""
+        return (self._cache["event"].x_root, self._cache["event"].y_root)
 
     def _begin_edge(self, coords):
         """
