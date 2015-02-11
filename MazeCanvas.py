@@ -505,8 +505,8 @@ class MazePlannerCanvas(Frame):
                     "source": self._edge_cache["item_start"],
                     "target": self._edge_cache["item_end"],
                     "height": None,
-                    "wall1": None,  # Todo: specify
-                    "wall2": None, # Todo: specfiy
+                    "wall1": data["wall1"],
+                    "wall2": data["wall2"]
                 },
                 self._edge_cache["edge"])
 

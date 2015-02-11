@@ -198,6 +198,33 @@ class XMLContainer:
             target_coords = int(self._all_entries[edge.attrib["target"]].attrib["x"]), \
                             int(self._all_entries[edge.attrib["target"]].attrib["y"])
 
+            wall1_node = edge.find("Wall1")
+            wall2_node = edge.find("Wall2")
+
+            wall1 = {
+                "height"    : wall1_node.attrib["height"] if len(wall1_node.attrib) > 0 else None,
+                "textures"  : {}
+            }
+
+            wall2 = {
+                "height": wall2_node.attrib["height"] if len(wall2_node.attrib) > 0 else None,
+                "textures": {}
+            }
+
+            for texture in wall1_node.iter("Texture"):
+                wall1["textures"]["path"] = {
+                    "path"  : texture.attrib["path"],
+                    "tile_x": texture.attrib["tileX"],
+                    "tile_y": texture.attrib["tileY"]
+                }
+
+            for texture in wall2_node.iter("Texture"):
+                wall2["textures"]["path"] = {
+                    "path": texture.attrib["path"],
+                    "tile_x": texture.attrib["tileX"],
+                    "tile_y": texture.attrib["tileY"]
+                }
+
             canvas._clear_cache(source_coords)
             canvas._begin_edge(source_coords)
             canvas._execute_edge(target_coords)
@@ -207,8 +234,8 @@ class XMLContainer:
                                        "source": edge.attrib["source"],
                                        "target": edge.attrib["target"],
                                        "height": None,
-                                       "wall1": None,   # TODO, populate
-                                       "wall2": None    # TODO, populate
+                                       "wall1": wall1,
+                                       "wall2": wall2
                                })
             Debug.printi("New EDGE Created from file Source:" + edge.attrib["source"]
                          + " Target: " + edge.attrib["target"], Debug.Level.INFO)
