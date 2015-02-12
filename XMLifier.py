@@ -285,7 +285,8 @@ class XMLContainer:
                 "eye_height"            : inputter._root.attrib["eye"],
                 "minimum_dist_to_wall"  : inputter._root.attrib["minDistToWall"]
         })
-
+        self._root.attrib["takeOffAfter"] = "20"
+        self._root.attrib["displays"] = "3,4,1,2,5,6"
 
     def create_skeleton(self):
 
@@ -297,6 +298,8 @@ class XMLContainer:
         self._edge_width = ET.SubElement(self._root, "edgeWidth")
         self._sky_texture = ET.SubElement(self._root, "skySphereTexture")
         self._start_node = ET.SubElement(self._root, "startNode")
+        self._root.attrib["takeOffAfter"]  = "20"
+        self._root.attrib["displays"]      = "3,4,1,2,5,6"
 
     def add_node_entry(self, entry_id, data):
 
@@ -314,7 +317,7 @@ class XMLContainer:
             for index, (pic_id, pic) in enumerate(data["wall_pictures"].iteritems()):
                 pic_node = ET.SubElement(node, "w"+str(index+1)+"Img")
                 pic_node.attrib["name"]     = str(pic["name"])
-                pic_node.attrib["visible"]  = str(pic["visible"])
+                pic_node.attrib["visible"]  = str(pic["visible"]).lower()
                 pic_node.attrib["texture"]  = str(pic["texture"])
         self._all_entries[entry_id] = node
 
@@ -385,8 +388,8 @@ class XMLContainer:
         attribs = self._root.attrib
 
         attribs["frameAngle"]           = str(data["frame_angle"])
-        attribs["distortion"]           = str(data["distortion"])
-        attribs["windowed"]             = str(data["windowed"])
+        attribs["distortion"]           = str(data["distortion"]).lower()
+        attribs["windowed"]             = str(data["windowed"]).lower()
         attribs["eye"]                  = str(data["eye_height"])
         attribs["minDistToWall"]        = str(data["minimum_dist_to_wall"])
 
