@@ -391,7 +391,7 @@ class XMLContainer:
         attribs["minDistToWall"]        = str(data["minimum_dist_to_wall"])
 
     def to_string(self):
-        return ET.tostring(self._root, pretty_print=True)
+        return ET.tostring(self._root, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
 class XMlInputer:
 
