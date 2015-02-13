@@ -3,3 +3,4 @@ Final Bugfixes
 Change the folder params so that they aren't prepended with Data/
 Tool to change the default values
 Default values autopopulated automagically with no dialog
+Complete autopopulator for the final two dialogs

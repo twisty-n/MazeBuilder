@@ -22,6 +22,7 @@ from DataStore import DataStore
 from Control import load_controls
 import Containers
 import math
+import Defaults
 
 
 # Enumerations and Functions
@@ -493,14 +494,37 @@ class MazePlannerCanvas(Frame):
         self._edge_bindings[self._edge_cache["edge"]].y_end = coords[1]
         # Inform the manager
         if not prog:
+
+
+
             self._manager.inform(
                 DataStore.EVENT.EDGE_CREATE,
                     {
                         "source"    :   self._edge_cache["item_start"],
                         "target"    :   self._edge_cache["item_end"],
                         "height"    :   None,
-                        "wall1"     :   None,
-                        "wall2"     :   None,
+                        "wall1"     :   {
+                            "height":Defaults.Edge.WALL_HEIGHT,
+                            "textures":{
+                                Defaults.Wall.PATH: {
+                                    "path":Defaults.Wall.PATH,
+                                    "tile_x":Defaults.Wall.TILE_X,
+                                    "tile_y":Defaults.Wall.TILE_Y,
+                                    "height":None
+                                }
+                            }
+                        },
+                        "wall2"     : {
+                            "height": Defaults.Edge.WALL_HEIGHT,
+                            "textures": {
+                                Defaults.Wall.PATH: {
+                                    "path": Defaults.Wall.PATH,
+                                    "tile_x": Defaults.Wall.TILE_X,
+                                    "tile_y": Defaults.Wall.TILE_Y,
+                                    "height":None
+                                }
+                            }
+                        }
                     },
                 self._edge_cache["edge"])
         else:
@@ -696,20 +720,28 @@ class MazePlannerCanvas(Frame):
                                                             outline="red", fill="black", activeoutline="black", activefill="red", tag="node")
 
         self._node_listing[self._cache["item"]] = self._cache["item"]
-
-        # then open the dialog
         if not prog:
-            true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
-            new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
-                              populator=Containers.NodeContainer(
-                                  {
-                                      "node_id": self._cache["item"],
-                                      "x_coordinate": self._cache["x"],
-                                      "y_coordinate": self._cache["y"],
-                                      "room_texture": None,
-                                      "wall_pictures": None
-                                  }))
-            entries = new_node._entries
+            if not Defaults.Config.EASY_MAZE:
+
+                true_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
+                new_node = NodeDialog(self, true_coords[0] + 25, true_coords[1] + 25,
+                                      populator=Containers.NodeContainer(
+                                          {
+                                              "node_id": self._cache["item"],
+                                              "x_coordinate": self._cache["x"],
+                                              "y_coordinate": self._cache["y"],
+                                              "room_texture": None,
+                                              "wall_pictures": None
+                                          }))
+                entries = new_node._entries
+            else:
+                entries = {
+                    "node_id": self._cache["item"],
+                    "x_coordinate": self._cache["x"],
+                    "y_coordinate": self._cache["y"],
+                    "room_texture": Defaults.Node.ROOM_TEXTURE,
+                    "wall_pictures": None
+                }
         else:
             pics = data[1]
             data = data[0]
