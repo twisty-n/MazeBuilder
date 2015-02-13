@@ -6,6 +6,7 @@ import tkFileDialog, tkMessageBox
 from Enumerations import Event, DESCRIPTOR_MAP
 import lxml.etree as ET
 import Debug
+import Defaults
 
 # Don't forget our magic number anti-pattern is 42!
 
@@ -23,9 +24,8 @@ class XMLObserver(Observer):
         self._pane = None
         self._text_area = None
         self._active = False
-        self._xml_container = XMLContainer()
         self.construct()
-
+        self._xml_container = XMLContainer(subject)
         self._dispatch = {
             Event.EDGE_CREATE       :   self._xml_container.add_edge_entry,
             Event.NODE_CREATE       :   self._xml_container.add_node_entry,
@@ -39,6 +39,7 @@ class XMLObserver(Observer):
             Event.ENVIRONMENT_EDIT  :   self._xml_container.edit_environment,
             Event.VR_EDIT           :   self._xml_container.edit_vr
         }
+        self._xml_container.create_skeleton(subject)
 
     def import_maze(self, filepath, datastore, canvas):
         self._xml_container.import_maze(filepath(), canvas, datastore)
@@ -130,9 +131,8 @@ class XMLObserver(Observer):
 
 class XMLContainer:
 
-    def __init__(self):
+    def __init__(self, datastore):
         self._all_entries = {}
-        self.create_skeleton()
 
     def import_maze(self, filepath, canvas, datastore):
         """
@@ -288,7 +288,7 @@ class XMLContainer:
         self._root.attrib["takeOffAfter"] = "20"
         self._root.attrib["displays"] = "3,4,1,2,5,6"
 
-    def create_skeleton(self):
+    def create_skeleton(self, datastore):
 
         self._root = ET.Element("graph")
 
@@ -300,6 +300,24 @@ class XMLContainer:
         self._start_node = ET.SubElement(self._root, "startNode")
         self._root.attrib["takeOffAfter"]  = "20"
         self._root.attrib["displays"]      = "3,4,1,2,5,6"
+
+        datastore.inform("Environment Edit", data={
+            "floor_texture":    Defaults.Environment.FLOOR_TEXTURE,
+            "wall_height":      Defaults.Environment.WALL_HEIGHT,
+            "edge_width":       Defaults.Environment.EDGE_WIDTH,
+            "sky_texture":      Defaults.Environment.SKY_TEXTURE,
+            "start_node":       Defaults.Environment.START_NODE,
+        })
+
+        datastore.inform("VR Edit", data={ \
+            "frame_angle"           :Defaults.VR.FRAME_ANGLE,
+            "distortion"            :Defaults.VR.DISTORTION,
+            "windowed"              :Defaults.VR.WINDOWED,
+            "eye_height"            :Defaults.VR.EYE_HEIGHT,
+            "minimum_dist_to_wall"  :Defaults.VR.MINIMUM_DISTANCE_TO_WALL
+        })
+        self._root.attrib["takeOffAfter"] = "20"
+        self._root.attrib["displays"] = "3,4,1,2,5,6"
 
     def add_node_entry(self, entry_id, data):
 
