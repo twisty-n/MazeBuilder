@@ -219,7 +219,7 @@ class VRConfigDialog(Dialog):
     def auto_populate(self):
         self._frameAngle.set(Defaults.VR.FRAME_ANGLE)
         self._eyeHeight.set(Defaults.VR.EYE_HEIGHT)
-        self._minDistToWall.set(Defaults.VR.MINIMUM_DISTANCE_TO_WALL)
+        self._minDistToWall.set(Defaults.VR.MIN_DIST_TO_WALL)
         self._distortion_var.set(Defaults.VR.DISTORTION)
         self._win_var.set(Defaults.VR.WINDOWED)
 

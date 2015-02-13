@@ -314,7 +314,7 @@ class XMLContainer:
             "distortion"            :Defaults.VR.DISTORTION,
             "windowed"              :Defaults.VR.WINDOWED,
             "eye_height"            :Defaults.VR.EYE_HEIGHT,
-            "minimum_dist_to_wall"  :Defaults.VR.MINIMUM_DISTANCE_TO_WALL
+            "minimum_dist_to_wall"  :Defaults.VR.MIN_DIST_TO_WALL
         })
         self._root.attrib["takeOffAfter"] = "20"
         self._root.attrib["displays"] = "3,4,1,2,5,6"

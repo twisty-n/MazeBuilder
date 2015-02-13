@@ -22,6 +22,7 @@ from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
 from DataStore import DataStore
 from XMLifier import XMLObserver
+from DefaultsEditor import DefaultsEditorDialog
 
 
 WIN_X = 1000         #Defines the window X width
@@ -101,7 +102,7 @@ class MainMBMenuBar():
         tools_sub = SubMenu(self._root_menu, "Tools")
         tools_sub.add_option("Debug", (lambda: Debug.d_level.toggle()), "checkbutton")
         tools_sub.add_option("View XML", (lambda: self._xml.view_xml_pane()), "checkbutton")
-        tools_sub.add_option("Configure Controls", (lambda: print("Tools:Configure Controls")), "command")
+        tools_sub.add_option("Configure Defaults", lambda:DefaultsEditorDialog(self._root), "command")
         self.addEntry(tools_sub._label, tools_sub)
 
     def addEntry(self, label, submenu):
