@@ -8,7 +8,6 @@ Developed with 2.7
 
 File: Defaults.py
 
-
 Specifies default values to be used for autopopulation
 """
 

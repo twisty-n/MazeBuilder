@@ -15,10 +15,11 @@ Module contains custom widgets for the MazeBuilder project
 
 # Imports
 from UtilWidgets import ListHeap, Dialog, ImagePicker
-from Tkinter import Menu, Canvas, IntVar, Label, Entry, Checkbutton, W, ACTIVE
+from Tkinter import Menu, Canvas, IntVar, Label, Entry, Checkbutton, W, ACTIVE, END
 import tkMessageBox
 from Exceptions import DuplicateListHeapItemException, MaxItemLimitReachedException
 from Containers import NodePictureContainer, WallTextureContainer
+import Defaults
 
 
 # Enumerations and Functions
@@ -92,6 +93,10 @@ class NodePictureDialog(Dialog):
         # Need to invert for the validation logic
         return not error
 
+    def auto_populate(self):
+        self._texture.set(Defaults.Picture.TEXTURE)
+        self._visi_var.set(Defaults.Picture.VISIBLE)
+
 class WallTextureDialog(Dialog):
     """
     Dialog that allows the user to input configuration for the wall segments of the maze
@@ -154,6 +159,13 @@ class WallTextureDialog(Dialog):
 
         # Need to invert for the validation logic
         return not error
+
+    def auto_populate(self):
+        self._texture.set(Defaults.Wall.PATH)
+        self._tile_x.delete(0, END)
+        self._tile_y.delete(0, END)
+        self._tile_x.insert(0, Defaults.Wall.TILE_X)
+        self._tile_y.insert(0, Defaults.Wall.TILE_Y)
 
 
 class PicConfigurator(ListHeap):

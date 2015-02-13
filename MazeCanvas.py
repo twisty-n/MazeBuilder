@@ -494,9 +494,6 @@ class MazePlannerCanvas(Frame):
         self._edge_bindings[self._edge_cache["edge"]].y_end = coords[1]
         # Inform the manager
         if not prog:
-
-
-
             self._manager.inform(
                 DataStore.EVENT.EDGE_CREATE,
                     {
@@ -513,7 +510,7 @@ class MazePlannerCanvas(Frame):
                                     "height":None
                                 }
                             }
-                        },
+                        } if Defaults.Config.EASY_MAZE else None,
                         "wall2"     : {
                             "height": Defaults.Edge.WALL_HEIGHT,
                             "textures": {
@@ -525,7 +522,7 @@ class MazePlannerCanvas(Frame):
                                 }
                             }
                         }
-                    },
+                    } if Defaults.Config.EASY_MAZE else None,
                 self._edge_cache["edge"])
         else:
             # We are programmatically adding the edges in
