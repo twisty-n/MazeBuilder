@@ -1,7 +1,5 @@
 Final Bugfixes
 
-Disallow paths between the same node
-Make it so that the object name is autoassigned
 Change the folder params so that they aren't prepended with Data/
 Tool to change the default values
 Default values autopopulated automagically with no dialog

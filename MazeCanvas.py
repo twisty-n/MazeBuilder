@@ -383,7 +383,7 @@ class MazePlannerCanvas(Frame):
             obj = ObjectDialog(self, coords[0] + 10, coords[1] + 10, populator=Containers.ObjectContainer(key_val={
                 "x_coordinate"  :   coords[0],
                 "y_coordinate"  :   coords[1],
-                "name"          :   None,
+                "name"          :   "Object_"+str(item),
                 "mesh"          :   None,
                 "scale"         :   None
             }))

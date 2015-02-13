@@ -325,9 +325,7 @@ class ObjectDialog(Dialog):
         Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
 
         #Define the text entry widgets
-        self._object_name = Entry(parent, width=5)      # TODO: make name autoassigned
-        if self._entries["name"] is not None:
-            self._object_name.insert(0, self._entries["name"])
+        self._object_name = Label(parent, text=self._entries["name"])
         self._object_name.grid(column=1, row=0, sticky=W)
         self._x_coord = Label(parent, text=self._entries["x_coordinate"])
         self._x_coord.grid(column=1, row=1, sticky=W)
@@ -350,7 +348,7 @@ class ObjectDialog(Dialog):
     def validate(self):
         (result, message) = DataValidator.validate(DataStore.EVENT.OBJECT_EDIT,
             {
-                "name"  :    self._object_name.get(),
+                "name"  :   self._entries["name"],
                 "mesh"  :   self._mesh.get()
             })
         if result is not True:
@@ -358,7 +356,6 @@ class ObjectDialog(Dialog):
         return result
 
     def apply(self):
-        self._entries["name"] = self._object_name.get()
         self._entries["scale"] = self._scale.get()
         self._entries["mesh"] = self._mesh.get()
 
