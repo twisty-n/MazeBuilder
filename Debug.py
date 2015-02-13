@@ -41,7 +41,7 @@ class Level():
         """
         Constructs the "static" instance of level
         """
-        self._verbose = True        #Todo: Change to false for release
+        self._verbose = True
         self.message_pad = OutputPipe()
 
     def toggle(self):

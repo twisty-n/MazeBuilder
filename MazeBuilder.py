@@ -37,7 +37,6 @@ def build():
     :return:    An instance of Tk to launch
     """
     root = Tk()
-    #TODO, get the icon working
     root.title("MazeBuilder")
     root.geometry(str(WIN_X)+"x"+str(WIN_Y)+"+"+str(POSITION)+"+"+str(POSITION))
     mazeBuilder = MazeBuilder(root)
@@ -102,7 +101,6 @@ class MainMBMenuBar():
         tools_sub = SubMenu(self._root_menu, "Tools")
         tools_sub.add_option("Debug", (lambda: Debug.d_level.toggle()), "checkbutton")
         tools_sub.add_option("View XML", (lambda: self._xml.view_xml_pane()), "checkbutton")
-        # TODO: Write a control parser that reads in control configs
         tools_sub.add_option("Configure Controls", (lambda: print("Tools:Configure Controls")), "command")
         self.addEntry(tools_sub._label, tools_sub)
 

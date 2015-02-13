@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<graph takeOffAfter="20" displays="3,4,1,2,5,6" frameAngle="-5" distortion="false" windowed="false" eye="10" minDistToWall="10">
+  <floorTexture val="default_floor.png"/>
+  <wallHeight val="500"/>
+  <edgeWidth val="100"/>
+  <skySphereTexture val="default_sky.png"/>
+  <startNode id="1570"/>
+  <node id="1571" x="1105" y="527" texture="default_node.png" accessible="true"/>
+  <node id="1570" x="58" y="552" texture="default_node.png" accessible="true"/>
+  <edge source="1570" target="1571">
+    <Wall1 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall1>
+    <Wall2 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall2>
+  </edge>
+</graph>

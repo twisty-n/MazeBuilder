@@ -304,7 +304,7 @@ class MazePlannerCanvas(Frame):
         updated_coords = self._canvas_to_screen((self._cache["x"], self._cache["y"]))
         if item is None:
             # No node is currently selected, create the general menu
-            p_menu.add_command(label="Place Node", command=lambda: self.create_new_node((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Place Room", command=lambda: self.create_new_node((self._cache["x"], self._cache["y"])))
             p_menu.add_command(label="Delete All", command=lambda: self.delete_all())
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
@@ -312,8 +312,8 @@ class MazePlannerCanvas(Frame):
         if self._is_node(item):
             # Create the node specific menu
             p_menu.add_command(label="Place Object", command=lambda: self._mark_object((self._cache["x"], self._cache["y"])))
-            p_menu.add_command(label="Edit Node", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
-            p_menu.add_command(label="Delete Node", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
+            p_menu.add_command(label="Edit Room", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete Room", command=lambda: self.delete_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
             p_menu.add_command(label="Mark as start", command=lambda: self._mark_start_node(self._get_current_item((self._cache["x"], self._cache["y"]))))
 
             if self._is_object(item):
@@ -325,8 +325,8 @@ class MazePlannerCanvas(Frame):
             return
 
         if self._is_edge(item):
-            p_menu.add_command(label="Edit Edge", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
-            p_menu.add_command(label="Delete Edge", command=lambda: self.delete_edge(self._get_current_item((self._cache["x"], self._cache["y"]))))
+            p_menu.add_command(label="Edit Corridor", command=lambda: self._selection_operation((self._cache["x"], self._cache["y"])))
+            p_menu.add_command(label="Delete Corridor", command=lambda: self.delete_edge(self._get_current_item((self._cache["x"], self._cache["y"]))))
             p_menu.tk_popup(updated_coords[0], updated_coords[1])
             return
 
@@ -479,6 +479,11 @@ class MazePlannerCanvas(Frame):
                 Debug.printi("Multiple edges between rooms not permitted", Debug.Level.ERROR)
                 return
 
+            #Ensure that edges arent made between the same room
+            if curr == self._edge_cache["item_start"]:
+                Debug.printi("Cannot allow paths starting and ending in the same room", Debug.Level.ERROR)
+                return
+
         self._canvas.tag_lower("edge")
         self._edge_cache["item_end"] = curr
 
@@ -546,7 +551,7 @@ class MazePlannerCanvas(Frame):
         d_y = self._edge_cache["y_start"] - coords[1]
         square = (d_x * d_x) + (d_y * d_y)
         distance = math.sqrt(square)
-        Debug.printi("Current cooridoor distance: " + str(int(distance)))
+        Debug.printi("Current corridor distance: " + str(int(distance)))
 
     def _update_cache(self, item, coords):
         """

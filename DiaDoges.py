@@ -249,9 +249,9 @@ class NodeDialog(Dialog):
         """
 
         # Define the labels of all of the widgets that are to be used
-        Label(parent, text="Node ID:", anchor=SW).grid(row=0, column=0, sticky=W)
-        Label(parent, text="x-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
-        Label(parent, text="y-Coord:", anchor=SW).grid(row=2, column=0, sticky=W)
+        Label(parent, text="Room ID:", anchor=SW).grid(row=0, column=0, sticky=W)
+        Label(parent, text="X-Coord:", anchor=SW).grid(row=1, column=0, sticky=W)
+        Label(parent, text="Y-Coord:", anchor=SW).grid(row=2, column=0, sticky=W)
 
         self._node_id = Label(parent, text=self._entries["node_id"], anchor=SW).grid(row=0, column=1, sticky=W)
         self._x_coord = Label(parent, text=self._entries["x_coordinate"], anchor=SW).grid(row=1, column=1, sticky=W)
@@ -318,8 +318,8 @@ class ObjectDialog(Dialog):
         """
         # Define the labels of all of the sub widgets that are to be used
         Label(parent, text="Name:").grid(row=0, column=0, sticky=W)
-        Label(parent, text="X Coord:").grid(row=1, column=0, sticky=W)
-        Label(parent, text="Y Coord:").grid(row=1, column=2, sticky=W)
+        Label(parent, text="X-Coord:").grid(row=1, column=0, sticky=W)
+        Label(parent, text="Y-Coord:").grid(row=1, column=2, sticky=W)
         Label(parent, text="Mesh:").grid(row=2, column=0, sticky=W)
         Label(parent, text="Scale:").grid(row=3, column=0, sticky=W)
         Label(parent, textvariable=self._scale_text, bg="grey").grid(row=3, column=1, sticky=W)
@@ -370,8 +370,7 @@ class ObjectDialog(Dialog):
         Debug.printi("Load Mesh called", Debug.Level.INFO)
         types = \
             [
-                ("DirectX", "*.x"),
-                ("Test", "*.txt")
+                ("DirectX", "*.x")
             ]
         dialog = tkFileDialog.Open(self, filetypes=types)
         file_path = dialog.show()
