@@ -12,7 +12,7 @@ Module contains debugging output utility class
 
 
 # Imports
-
+import Defaults
 # Enumerations and Functions
 
 
@@ -41,7 +41,7 @@ class Level():
         """
         Constructs the "static" instance of level
         """
-        self._verbose = True
+        self._verbose = Defaults.Config.DEBUG
         self.message_pad = OutputPipe()
 
     def toggle(self):

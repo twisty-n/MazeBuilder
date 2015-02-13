@@ -49,3 +49,7 @@ class Wall:
 class Picture:
     VISIBLE                                 = True
     TEXTURE                                 = "default_pic.png"
+
+class Config:
+    DEBUG                                   = True
+    EASY_MAZE                               = True
