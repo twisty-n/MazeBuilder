@@ -25,5 +25,5 @@ class VR:
 class Edge:
 	WALL_HEIGHT="500"
 class Config:
-	EASY_MAZE=False
+	EASY_MAZE=True
 	DEBUG=True

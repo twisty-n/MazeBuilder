@@ -67,6 +67,9 @@ class DefaultsEditorDialog(Dialog):
             defaults_file.close()
         except IOError as e:
             Debug.printi(str(e) + "\n Please use backup file to restore Defaults.py", Debug.Level.FATAL)
+            tkMessageBox.showerror("FATAL ERROR", "A fatal error has occured, \n Please use backup file to restore Defaults.py")
+        else:
+            tkMessageBox.showwarning("Restart", "Please restart the application for changes to take effect")
 
 
 

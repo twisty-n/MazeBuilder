@@ -336,7 +336,10 @@ class XMLContainer:
                 pic_node = ET.SubElement(node, "w"+str(index+1)+"Img")
                 pic_node.attrib["name"]     = str(pic["name"])
                 pic_node.attrib["visible"]  = str(pic["visible"]).lower()
-                pic_node.attrib["texture"]  = str(pic["texture"])
+                if "Data\\" in pic["texture"]:
+                    pic_node.attib["texture"] = pic["texture"].replace("Data\\", "")
+                else:
+                    pic_node.attrib["texture"]  = str(pic["texture"])
         self._all_entries[entry_id] = node
 
     def edit_node_entry(self, entry_id, data):
@@ -352,7 +355,7 @@ class XMLContainer:
         node.attrib["name"]     = str(data["name"])
         if data["mesh"] == "No mesh loaded":
             data["mesh"] = "default.x"
-        node.attrib["mesh"]     = str(data["mesh"])
+        node.attrib["mesh"]     = str(data["mesh"]) if "Data" not in data["mesh"] else str(data["mesh"].split("/")[1])
         node.attrib["scale"]    = str(data["scale"])
 
         self._all_entries[entry_id] = node
@@ -372,7 +375,7 @@ class XMLContainer:
             wall1.attrib["height"] = str(data["wall1"]["height"])
             for key, val in data["wall1"]["textures"].iteritems():
                 tex_node = ET.SubElement(wall1, "Texture")
-                tex_node.attrib["path"] = val["path"]
+                tex_node.attrib["path"] = val["path"] if "Data" not in val["path"] else str(val["path"].split("/")[1])
                 tex_node.attrib["tileX"] = val["tile_x"]
                 tex_node.attrib["tileY"] = val["tile_y"]
 
@@ -381,7 +384,7 @@ class XMLContainer:
             wall2.attrib["height"] = str(data["wall2"]["height"])
             for key, val in data["wall2"]["textures"].iteritems():
                 tex_node = ET.SubElement(wall2, "Texture")
-                tex_node.attrib["path"] = val["path"]
+                tex_node.attrib["path"] = val["path"] if "Data" not in val["path"] else str(val["path"].split("/")[1])
                 tex_node.attrib["tileX"] = val["tile_x"]
                 tex_node.attrib["tileY"] = val["tile_y"]
 

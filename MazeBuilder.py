@@ -39,6 +39,7 @@ def build():
     """
     root = Tk()
     root.title("MazeBuilder")
+    root.iconbitmap("Data/favicon.ico")
     root.geometry(str(WIN_X)+"x"+str(WIN_Y)+"+"+str(POSITION)+"+"+str(POSITION))
     mazeBuilder = MazeBuilder(root)
     mazeBuilder.pack(fill=BOTH, expand=1)
