@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<graph takeOffAfter="20" displays="3,4,1,2,5,6" frameAngle="-5" distortion="false" windowed="false" eye="10" minDistToWall="10">
+  <floorTexture val="default_floor.png"/>
+  <wallHeight val="505"/>
+  <edgeWidth val="112"/>
+  <skySphereTexture val="default_sky.png"/>
+  <startNode id="1"/>
+  <node id="1" x="263" y="139" texture="default_node.png" accessible="true"/>
+  <node id="3" x="668" y="152" texture="default_node.png" accessible="true"/>
+  <edge source="3" target="4">
+    <Wall1 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall1>
+    <Wall2 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall2>
+  </edge>
+  <edge source="4" target="2">
+    <Wall1 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall1>
+    <Wall2 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall2>
+  </edge>
+  <edge source="2" target="1">
+    <Wall1 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall1>
+    <Wall2 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall2>
+  </edge>
+  <edge source="1" target="3">
+    <Wall1 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall1>
+    <Wall2 height="500">
+      <Texture path="default_wall.png" tileX="1" tileY="1"/>
+    </Wall2>
+  </edge>
+  <node id="4" x="670" y="446" texture="default_node.png" accessible="true">
+    <w1Img name="Pic1" visible="1" texture="Data/stitch_toothless.png"/>
+  </node>
+  <node id="2" x="259" y="436" texture="default_node.png" accessible="true"/>
+  <object x="259" y="436" name="Object_2" mesh="default.x" scale="1"/>
+</graph>

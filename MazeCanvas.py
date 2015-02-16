@@ -765,6 +765,8 @@ class MazePlannerCanvas(Frame):
         for binding in self._edge_bindings:
             self.delete_edge(binding)
 
+        self._object_listing.clear()
+
         # Delete any naughty objects that are left
         self._canvas.delete("all")
         self._manager.inform(DataStore.EVENT.DELETE_ALL)

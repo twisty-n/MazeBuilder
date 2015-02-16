@@ -55,7 +55,7 @@ class XMLObserver(Observer):
         # the XML container
         update_event = (self._subject._cache["EVENT"], self._subject._cache["ID"], self._subject._cache["DATA"])
         if update_event[0] == "Delete All":
-            self._xml_container.create_skeleton()
+            self._xml_container.create_skeleton(self._subject)
             return
         self._dispatch[update_event[0]](
             self._extract_xml_id(update_event[0], update_event[2]),
