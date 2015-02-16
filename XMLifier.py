@@ -336,10 +336,7 @@ class XMLContainer:
                 pic_node = ET.SubElement(node, "w"+str(index+1)+"Img")
                 pic_node.attrib["name"]     = str(pic["name"])
                 pic_node.attrib["visible"]  = str(pic["visible"]).lower()
-                if "Data\\" in pic["texture"]:
-                    pic_node.attib["texture"] = pic["texture"].replace("Data\\", "")
-                else:
-                    pic_node.attrib["texture"]  = str(pic["texture"])
+                pic_node.attrib["texture"]  = str(pic["texture"]) if "Data" not in pic["texture"] else str(pic["texture"].split("/")[1])
         self._all_entries[entry_id] = node
 
     def edit_node_entry(self, entry_id, data):

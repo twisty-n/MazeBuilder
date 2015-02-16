@@ -33,7 +33,8 @@ MAX_CANVAS_X = 10000
 MAX_CANVAS_Y = 10000
 
 def restart():
-    result = tkMessageBox.askquestion("Restart MazeBuilder", "Are you sure you restart.?\nAll unsaved changes will be lost", icon='warning')
+    result = tkMessageBox.askquestion("Restart MazeBuilder", "Are you sure you restart.?"
+                                                             "\nAll unsaved changes will be lost", icon='warning')
     if not result == "yes":
         return
     subprocess.Popen(["python", "main.py"])
