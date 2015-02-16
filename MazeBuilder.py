@@ -16,13 +16,14 @@ File: MazeBuilder.py
 #Imports
 
 from Tkinter import Frame, Tk, Menu, BOTTOM, X, BOTH, Scrollbar, HORIZONTAL, VERTICAL, RIGHT, Y, LEFT
-import tkFileDialog
+import tkFileDialog, tkMessageBox
 from UtilWidgets import StatusBar
 from DiaDoges import EnviroDialog, VRConfigDialog, NodeDialog, ObjectDialog
 from UtilWidgets import SubMenu
 from DataStore import DataStore
 from XMLifier import XMLObserver
 from DefaultsEditor import DefaultsEditorDialog
+import subprocess, os
 
 
 WIN_X = 1000         #Defines the window X width
@@ -30,6 +31,13 @@ WIN_Y = 700         #Defines the window Y width
 POSITION = 200      #Defines the x, y window position
 MAX_CANVAS_X = 10000
 MAX_CANVAS_Y = 10000
+
+def restart():
+    result = tkMessageBox.askquestion("Restart MazeBuilder", "Are you sure you restart.?\nAll unsaved changes will be lost", icon='warning')
+    if not result == "yes":
+        return
+    subprocess.Popen(["python", "main.py"])
+    exit(0)
 
 def build():
     """
@@ -88,6 +96,7 @@ class MainMBMenuBar():
         file_sub = SubMenu(self._root_menu, "File")
         file_sub.add_option("Load Environment", lambda:self._xml.import_maze(tkFileDialog.askopenfilename, self._manager, self._canvas), "command")
         file_sub.add_option("Save Environment", self._xml.dump_file, "command")
+        file_sub.add_option("Restart", restart, "command")
         file_sub.add_option("Quit", quit, "command")
         self.addEntry(file_sub._label, file_sub)
 
